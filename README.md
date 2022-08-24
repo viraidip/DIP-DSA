@@ -1,1 +1,1 @@
-# Defectife Interfering Particle Deletion Site Analyzer (DIP-DSA)
+# Defective Interfering Particle Deletion Site Analyzer (DIP-DSA)
