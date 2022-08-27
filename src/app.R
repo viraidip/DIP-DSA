@@ -1,5 +1,6 @@
 library(shiny)
 library(shinydashboard)
+library(ggplot2)
 
 
 ### UI ###
@@ -42,15 +43,28 @@ ui <- dashboardPage(
 ### SERVER ###
 # Load the sources for the server logic.
 # Each tab has an own file for its server functions.
-#source("server/dataset.R", local=TRUE)
-#source("server/lengths_locations.R", local=TRUE)
+source("server/dataset.R", local=TRUE)
+source("server/lengths_locations.R", local=TRUE)
 #source("server/nucleotide_distribution.R", local=TRUE)
 #source("server/direct_repeats.R", local=TRUE)
 #source("server/regression.R", local=TRUE)
 #source("server/about.R", local=TRUE)
 
 server <- function(input, output) {
+  ### load/select dataset ###
+  load_dataset <- reactive({
+    path <- file.path("..", "data", paste(input$dataset_name, ".csv", sep=""))
+    read.csv(path)
+  })
 
+  output$dataset_table <- renderTable(load_dataset())
+
+  ### lenghts and locations
+
+  output$lengths_plot <- renderPlot({
+    create_lengths_plot(load_dataset(), input$lengths_segment, input$lengths_flattened)
+  })
+  
 }
 
 
