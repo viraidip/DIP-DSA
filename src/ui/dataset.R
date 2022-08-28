@@ -1,3 +1,7 @@
+library(tools)
+
+all_datasets <- tools::file_path_sans_ext(list.files(file.path("..", "data")))
+
 dataset_tab <- tabItem(tabName="dataset",
   h1("Select/Load dataset"),
   fluidRow(
@@ -6,7 +10,7 @@ dataset_tab <- tabItem(tabName="dataset",
       selectInput(
         inputId="dataset_name",
         label="select an existing dataset:",
-        choices=c("California2007")
+        choices=all_datasets
       ),
     ),
     box(
@@ -17,7 +21,7 @@ dataset_tab <- tabItem(tabName="dataset",
       title="overview",
       width=12,
       "display a table with the data",
-      tableOutput("dataset_table")
+      dataTableOutput("dataset_table")
     )
   )
 )

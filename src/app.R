@@ -1,6 +1,7 @@
 library(shiny)
 library(shinydashboard)
 library(ggplot2)
+library(DT)
 
 
 ### UI ###
@@ -54,10 +55,16 @@ server <- function(input, output) {
   ### load/select dataset ###
   load_dataset <- reactive({
     path <- file.path("..", "data", paste(input$dataset_name, ".csv", sep=""))
-    read.csv(path)
+    read.csv(path, na.strings=c("NaN"))
   })
 
-  output$dataset_table <- renderTable(load_dataset())
+  output$dataset_table <- renderDataTable(
+    datatable(load_dataset(),
+      options = list(
+        pageLength=100
+      )
+    )
+  )
 
   ### lenghts and locations
 
