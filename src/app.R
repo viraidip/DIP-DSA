@@ -4,6 +4,8 @@ library(ggplot2)
 library(DT)
 
 
+SEGMENTS <- c("PB2", "PB1", "PA", "HA", "NP", "NA", "M", "NS")
+
 ### UI ###
 # Loads the sources for the UI of each tab.
 # Each tab is saved in an individual file.
@@ -67,10 +69,14 @@ server <- function(input, output) {
   )
 
   ### lenghts and locations
+  output$locations_plot <- renderPlot({
+    create_locations_plot(load_dataset(), input$locations_segment, input$locations_flattened)
+  })
 
   output$lengths_plot <- renderPlot({
-    create_lengths_plot(load_dataset(), input$lengths_segment, input$lengths_flattened)
+    create_lengths_plot(load_dataset(), input$lengths_segment, input$lengths_flattened, input$lengths_bins)
   })
+
   
 }
 

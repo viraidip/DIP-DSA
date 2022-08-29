@@ -15,7 +15,12 @@ dataset_tab <- tabItem(tabName="dataset",
     ),
     box(
       title="upload dataset",
-      "Allows the user to upload a custom dataset"
+      "Allows the user to upload a custom dataset",
+      "Not only the dataset but also the full length sequences have to be uploaded",
+      fileInput(
+        inputId="dataset_file",
+        label="Upload custom dataset here:"
+      )
     ),
     box(
       title="overview",
