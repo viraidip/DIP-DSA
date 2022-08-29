@@ -15,6 +15,7 @@ source('ui/lengths_locations.R', local=TRUE)
 source('ui/nucleotide_distribution.R', local=TRUE)
 source('ui/direct_repeats.R', local=TRUE)
 source('ui/regression.R', local=TRUE)
+source('ui/single_datapoint.R', local=TRUE)
 source('ui/about.R', local=TRUE)
 
 ui <- dashboardPage(
@@ -27,6 +28,7 @@ ui <- dashboardPage(
       menuItem("Nucleotide Distribution", tabName="nucleotide_distribution", icon=icon("magnifying-glass-chart")),
       menuItem("Direct Repeats", tabName="direct_repeats", icon=icon("repeat")),
       menuItem("Linear Regression", tabName="regression", icon=icon("chart-line")),
+      menuItem("Inspect single datapoint", tabName="single_datapoint", icon=icon("magnifying-glass")),
       hr(),
       menuItem("About", tabName="about", icon=icon("info"))
     )
@@ -53,6 +55,7 @@ source("server/lengths_locations.R", local=TRUE)
 #source("server/nucleotide_distribution.R", local=TRUE)
 #source("server/direct_repeats.R", local=TRUE)
 #source("server/regression.R", local=TRUE)
+#source("server/single_datapoint.R", local=TRUE)
 #source("server/about.R", local=TRUE)
 
 server <- function(input, output) {
@@ -66,7 +69,8 @@ server <- function(input, output) {
     datatable(load_dataset(),
       options = list(
         pageLength=100
-      )
+      ),
+      selection="single"
     )
   )
 
@@ -88,7 +92,12 @@ server <- function(input, output) {
     )
   })
 
-  
+
+  ### single datapoint ###
+  output$single_datapoint <- renderUI({
+    input$dataset_table_rows_selected
+  })
+
 }
 
 ###########
