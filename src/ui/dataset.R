@@ -1,6 +1,6 @@
 library(tools)
 
-all_datasets <- tools::file_path_sans_ext(list.files(file.path("..", "data")))
+all_datasets <- tools::file_path_sans_ext(list.files(file.path("..", "data", "datasets")))
 
 dataset_tab <- tabItem(tabName="dataset",
   h1("Select/Load dataset"),
@@ -8,7 +8,7 @@ dataset_tab <- tabItem(tabName="dataset",
     box(
       title="Select dataset",
       selectInput(
-        inputId="dataset_name",
+        inputId="strain",
         label="select an existing dataset:",
         choices=all_datasets
       ),

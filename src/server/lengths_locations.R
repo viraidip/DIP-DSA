@@ -19,11 +19,12 @@ create_locations_plot <- function(df, segment, flattened) {
 }
 
 
-create_lengths_plot <- function(df, segment, flattened, n_bins) {
+create_lengths_plot <- function(df, segment, strain, flattened, n_bins) {
   # slice df by segment, reformat and bind on position and NGS count
   df <- df[df$Segment == segment, ]
-# TODO: here I need to include the full length segment length
-  df["Length"] <- df["Start"] - df["End"]
+
+  seq_len <- get_seq_len(strain, segment)
+  df["Length"] <- df["Start"] + (seq_len - df["End"] + 1)
   # reformat if data should be displayed flattened
   if (flattened == "flattened") {
     df["NGS_read_count"] <- 1
@@ -31,5 +32,4 @@ create_lengths_plot <- function(df, segment, flattened, n_bins) {
 
   ggplot(df, aes(x=Length)) +
     geom_histogram(binwidth=n_bins)
-
 }

@@ -3,10 +3,11 @@ library(shinydashboard)
 library(ggplot2)
 library(DT)
 
+source("utils.R")
 
-SEGMENTS <- c("PB2", "PB1", "PA", "HA", "NP", "NA", "M", "NS")
-
+##########
 ### UI ###
+##########
 # Loads the sources for the UI of each tab.
 # Each tab is saved in an individual file.
 source('ui/dataset.R', local=TRUE)
@@ -42,8 +43,9 @@ ui <- dashboardPage(
   )
 )
 
-
+##############
 ### SERVER ###
+##############
 # Load the sources for the server logic.
 # Each tab has an own file for its server functions.
 source("server/dataset.R", local=TRUE)
@@ -56,7 +58,7 @@ source("server/lengths_locations.R", local=TRUE)
 server <- function(input, output) {
   ### load/select dataset ###
   load_dataset <- reactive({
-    path <- file.path("..", "data", paste(input$dataset_name, ".csv", sep=""))
+    path <- file.path("..", "data", "datasets", paste(input$strain, ".csv", sep=""))
     read.csv(path, na.strings=c("NaN"))
   })
 
@@ -68,19 +70,29 @@ server <- function(input, output) {
     )
   )
 
-  ### lenghts and locations
+
+  ### lenghts and locations ###
   output$locations_plot <- renderPlot({
-    create_locations_plot(load_dataset(), input$locations_segment, input$locations_flattened)
+    create_locations_plot(load_dataset(),
+      input$locations_segment,
+      input$locations_flattened
+    )
   })
 
   output$lengths_plot <- renderPlot({
-    create_lengths_plot(load_dataset(), input$lengths_segment, input$lengths_flattened, input$lengths_bins)
+    create_lengths_plot(load_dataset(),
+      input$lengths_segment,
+      input$strain,
+      input$lengths_flattened,
+      input$lengths_bins
+    )
   })
 
   
 }
 
-
+###########
 ### APP ###
+###########
 # Main function that builds the application
 shinyApp(ui=ui, server=server)
