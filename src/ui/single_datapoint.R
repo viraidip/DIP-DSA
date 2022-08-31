@@ -1,4 +1,4 @@
-lengths_locations_tab <- tabItem(tabName="single_datapoint",
+single_datapoint_tab <- tabItem(tabName="single_datapoint",
   h1("Inspect a single datapoint"),
   fluidRow(
     box(

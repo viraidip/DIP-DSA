@@ -40,6 +40,7 @@ ui <- dashboardPage(
       nucleotide_distribution_tab,
       direct_repeats_tab,
       regression_tab,
+      single_datapoint_tab,
       about_tab
     )
   )
