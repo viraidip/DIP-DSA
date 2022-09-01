@@ -4,11 +4,6 @@ lengths_locations_tab <- tabItem(tabName="lengths_locations",
     box(
       title="Locations",
       width=12,
-      selectInput(
-        inputId="locations_segment",
-        label="Select segment to show:",
-        choices=SEGMENTS,
-      ),
       radioButtons(
         inputId="locations_flattened",
         label="Show data flattened or unflattened (including NGS count)",
@@ -19,11 +14,6 @@ lengths_locations_tab <- tabItem(tabName="lengths_locations",
     box(
       title="Lengths",
       width=12,
-      selectInput(
-        inputId="lengths_segment",
-        label="Select segment to show:",
-        choices=SEGMENTS,
-      ),
       radioButtons(
         inputId="lengths_flattened",
         label="Show data flattened or unflattened (including NGS count)",
