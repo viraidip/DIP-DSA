@@ -2,6 +2,7 @@ library(shiny)
 library(shinydashboard)
 library(ggplot2)
 library(DT)
+library(shinyWidgets)
 
 source("utils.R")
 
@@ -31,6 +32,11 @@ ui <- dashboardPage(
       menuItem("Inspect single datapoint", tabName="single_datapoint", icon=icon("magnifying-glass")),
       hr(),
       menuItem("About", tabName="about", icon=icon("info"))
+    ),
+    selectInput(
+      inputId="selected_segment",
+      label="Select segment",
+      choices=SEGMENTS
     )
   ),
   dashboardBody(
@@ -53,7 +59,7 @@ ui <- dashboardPage(
 # Each tab has an own file for its server functions.
 source("server/dataset.R", local=TRUE)
 source("server/lengths_locations.R", local=TRUE)
-#source("server/nucleotide_distribution.R", local=TRUE)
+source("server/nucleotide_distribution.R", local=TRUE)
 #source("server/direct_repeats.R", local=TRUE)
 #source("server/regression.R", local=TRUE)
 #source("server/single_datapoint.R", local=TRUE)
@@ -79,17 +85,35 @@ server <- function(input, output) {
   ### lenghts and locations ###
   output$locations_plot <- renderPlot({
     create_locations_plot(load_dataset(),
-      input$locations_segment,
+      input$selected_segment,
       input$locations_flattened
     )
   })
 
   output$lengths_plot <- renderPlot({
     create_lengths_plot(load_dataset(),
-      input$lengths_segment,
+      input$selected_segment,
       input$strain,
       input$lengths_flattened,
       input$lengths_bins
+    )
+  })
+
+
+  ### nucleotide distribution ###
+  output$nuc_dist_start <- renderPlot({
+    create_nuc_dist_plot(load_dataset(),
+      input$strain,
+      input$selected_segment,
+      "Start"
+    )
+  })
+  
+  output$nuc_dist_end <- renderPlot({
+    create_nuc_dist_plot(load_dataset(),
+      input$strain,
+      input$selected_segment,
+      "End"
     )
   })
 
