@@ -8,6 +8,7 @@ lengths_locations_tab <- tabItem(tabName="lengths_locations",
         inputId="locations_flattened",
         label="Show data flattened or unflattened (including NGS count)",
         choices=c("flattened", "unflattened"),
+        inline=TRUE
       ),
       plotOutput("locations_plot")
     ),
@@ -18,6 +19,7 @@ lengths_locations_tab <- tabItem(tabName="lengths_locations",
         inputId="lengths_flattened",
         label="Show data flattened or unflattened (including NGS count)",
         choices=c("flattened", "unflattened"),
+        inline=TRUE
       ),
       sliderInput(
         inputId="lengths_bins",
