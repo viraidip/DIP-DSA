@@ -105,7 +105,8 @@ server <- function(input, output) {
     create_nuc_dist_plot(load_dataset(),
       input$strain,
       input$selected_segment,
-      "Start"
+      "Start",
+      input$nuc_dist_start_flattened
     )
   })
   
@@ -113,7 +114,8 @@ server <- function(input, output) {
     create_nuc_dist_plot(load_dataset(),
       input$strain,
       input$selected_segment,
-      "End"
+      "End",
+      input$nuc_dist_end_flattened
     )
   })
 
