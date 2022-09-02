@@ -1,4 +1,9 @@
-load_dataset <- reactive({
-  path <- file.path("..", "data", "datasets", paste(input$dataset_name, ".csv", sep=""))
-  read.csv(path)
-})
+move_files <- function(from_list, to_list) {
+  for (i in 1:length(from_list)) {
+    print(from_list[[i]])
+    file.copy(
+      from=from_list[[i]],
+      to=to_list[[i]]
+    )
+  }
+}

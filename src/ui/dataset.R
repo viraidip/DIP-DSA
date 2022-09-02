@@ -1,31 +1,66 @@
 library(tools)
 
-all_datasets <- tools::file_path_sans_ext(list.files(file.path("..", "data", "datasets")))
+all_datasets <- tools::file_path_sans_ext(list.files(DATASETSPATH))
 
 dataset_tab <- tabItem(tabName="dataset",
   h1("Select an existing dataset or load a custom one"),
   fluidRow(
     box(
       title="Select dataset",
-      dropMenu(
-        dropdownButton("Info", status='success', icon=icon('info')),
-        h3(strong('Information')),
-        br(),
-        h5('This is really helpful'),
-      ),
       selectInput(
         inputId="strain",
         label="select an existing dataset:",
         choices=all_datasets
       ),
+      "More info about the datasets can be found in the 'About' tab."
     ),
     box(
+      width=12,
       title="Upload dataset",
-      "Allows the user to upload a custom dataset",
-      "Not only the dataset but also the full length sequences have to be uploaded",
+      textInput(
+        inputId="upload_strain",
+        label="Write strain name"
+      ),
       fileInput(
-        inputId="dataset_file",
-        label="Upload custom dataset here:"
+        inputId="upload_dataset_file",
+        label="Upload custom dataset here (.csv, .xlsx):",
+        accept=c(".csv")
+      ),
+      fileInput(
+        inputId="upload_PB2_file",
+        label="Upload PB2 sequence as FASTA:"
+      ),
+      fileInput(
+        inputId="upload_PB1_file",
+        label="Upload PB1 sequence as FASTA:"
+      ),
+      fileInput(
+        inputId="upload_PA_file",
+        label="Upload PA sequence as FASTA:"
+      ),
+      fileInput(
+        inputId="upload_HA_file",
+        label="Upload HA sequence as FASTA:"
+      ),
+      fileInput(
+        inputId="upload_NP_file",
+        label="Upload NP sequence as FASTA:"
+      ),
+      fileInput(
+        inputId="upload_NA_file",
+        label="Upload NA sequence as FASTA:"
+      ),
+      fileInput(
+        inputId="upload_M_file",
+        label="Upload M sequence as FASTA:"
+      ),
+      fileInput(
+        inputId="upload_NS_file",
+        label="Upload NS sequence as FASTA:"
+      ),
+      actionButton(
+        inputId="dataset_submit",
+        label="Upload data"
       )
     ),
     box(
