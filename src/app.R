@@ -19,39 +19,42 @@ source('ui/regression.R', local=TRUE)
 source('ui/single_datapoint.R', local=TRUE)
 source('ui/about.R', local=TRUE)
 
-ui <- dashboardPage(
-  skin="red",
-  dashboardHeader(title="DIP DSA"),
-  dashboardSidebar(
-    sidebarMenu(
-      menuItem("Select/Load Dataset", tabName="dataset", icon=icon("database")),
-      hr(),
-      menuItem("Lengths and Locations", tabName="lengths_locations", icon=icon("ruler-horizontal")),
-      menuItem("Nucleotide Distribution", tabName="nucleotide_distribution", icon=icon("magnifying-glass-chart")),
-      menuItem("Direct Repeats", tabName="direct_repeats", icon=icon("repeat")),
-      menuItem("Linear Regression", tabName="regression", icon=icon("chart-line")),
-      menuItem("Inspect single datapoint", tabName="single_datapoint", icon=icon("magnifying-glass")),
-      hr(),
-      menuItem("About", tabName="about", icon=icon("info"))
+ui <- bootstrapPage(
+  dashboardPage(
+    skin="red",
+    dashboardHeader(title="DIP DSA"),
+    dashboardSidebar(
+      sidebarMenu(
+        menuItem("Select/Load Dataset", tabName="dataset", icon=icon("database")),
+        hr(),
+        menuItem("Lengths and Locations", tabName="lengths_locations", icon=icon("ruler-horizontal")),
+        menuItem("Nucleotide Distribution", tabName="nucleotide_distribution", icon=icon("magnifying-glass-chart")),
+        menuItem("Direct Repeats", tabName="direct_repeats", icon=icon("repeat")),
+        menuItem("Linear Regression", tabName="regression", icon=icon("chart-line")),
+        menuItem("Inspect single datapoint", tabName="single_datapoint", icon=icon("magnifying-glass")),
+        hr(),
+        menuItem("About", tabName="about", icon=icon("info"))
+      ),
+      selectInput(
+        inputId="selected_segment",
+        label="Select segment",
+        choices=SEGMENTS
+      )
     ),
-    selectInput(
-      inputId="selected_segment",
-      label="Select segment",
-      choices=SEGMENTS
-    )
-  ),
-  dashboardBody(
-    tabItems(
-      dataset_tab,
-      lengths_locations_tab,
-      nucleotide_distribution_tab,
-      direct_repeats_tab,
-      regression_tab,
-      single_datapoint_tab,
-      about_tab
+    dashboardBody(
+      tabItems(
+        dataset_tab,
+        lengths_locations_tab,
+        nucleotide_distribution_tab,
+        direct_repeats_tab,
+        regression_tab,
+        single_datapoint_tab,
+        about_tab
+      )
     )
   )
 )
+
 ##############
 ### SERVER ###
 ##############

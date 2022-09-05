@@ -26,38 +26,55 @@ dataset_tab <- tabItem(tabName="dataset",
         label="Upload custom dataset here (.csv, .xlsx):",
         accept=c(".csv")
       ),
-      fileInput(
-        inputId="upload_PB2_file",
-        label="Upload PB2 sequence as FASTA:"
+      div(style="display:inline-block",
+        fileInput(
+          inputId="upload_PB2_file",
+          label="Upload PB2 sequence as FASTA:"
+        )
       ),
-      fileInput(
-        inputId="upload_PB1_file",
-        label="Upload PB1 sequence as FASTA:"
+      div(style="display:inline-block",
+        fileInput(
+          inputId="upload_PB1_file",
+          label="Upload PB1 sequence as FASTA:"
+        )
       ),
-      fileInput(
-        inputId="upload_PA_file",
-        label="Upload PA sequence as FASTA:"
+      div(style="display:inline-block",
+        fileInput(
+          inputId="upload_PA_file",
+          label="Upload PA sequence as FASTA:"
+        )
       ),
-      fileInput(
-        inputId="upload_HA_file",
-        label="Upload HA sequence as FASTA:"
+      div(style="display:inline-block",
+        fileInput(
+          inputId="upload_HA_file",
+          label="Upload HA sequence as FASTA:"
+        )
       ),
-      fileInput(
-        inputId="upload_NP_file",
-        label="Upload NP sequence as FASTA:"
+      div(style="display:inline-block",
+        fileInput(
+          inputId="upload_NP_file",
+          label="Upload NP sequence as FASTA:"
+        )
       ),
-      fileInput(
-        inputId="upload_NA_file",
-        label="Upload NA sequence as FASTA:"
+      div(style="display:inline-block",
+        fileInput(
+          inputId="upload_NA_file",
+          label="Upload NA sequence as FASTA:"
+        )
       ),
-      fileInput(
-        inputId="upload_M_file",
-        label="Upload M sequence as FASTA:"
+      div(style="display:inline-block",
+        fileInput(
+          inputId="upload_M_file",
+          label="Upload M sequence as FASTA:"
+        )
       ),
-      fileInput(
-        inputId="upload_NS_file",
-        label="Upload NS sequence as FASTA:"
+      div(style="display:inline-block",
+        fileInput(
+          inputId="upload_NS_file",
+          label="Upload NS sequence as FASTA:"
+        )
       ),
+      br(),
       actionButton(
         inputId="dataset_submit",
         label="Upload data"
