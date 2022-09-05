@@ -10,7 +10,10 @@ nucleotide_distribution_tab <- tabItem(tabName="nucleotide_distribution",
         choices=c("flattened", "unflattened"),
         inline=TRUE
       ),
-      plotOutput("nuc_dist_start")
+      plotOutput("nuc_dist_start_A"),
+      plotOutput("nuc_dist_start_C"),
+      plotOutput("nuc_dist_start_G"),
+      plotOutput("nuc_dist_start_U")
     ),
     box(
       title="End site",
@@ -21,7 +24,10 @@ nucleotide_distribution_tab <- tabItem(tabName="nucleotide_distribution",
         choices=c("flattened", "unflattened"),
         inline=TRUE
       ),
-      plotOutput("nuc_dist_end")
+      plotOutput("nuc_dist_end_A"),
+      plotOutput("nuc_dist_end_C"),
+      plotOutput("nuc_dist_end_G"),
+      plotOutput("nuc_dist_end_U")
     )
   )
 )

@@ -1,3 +1,5 @@
+library(hash)
+
 counting_routine <- function(l, window, letter, ngs_read_count) {
   count_indices <- unlist(gregexpr(letter, window))
   if (count_indices[1] != -1){
@@ -28,7 +30,7 @@ count_nuc_dist <- function(seq, positions, ngs_read_counts) {
   return(data.frame(rel_occurrence, position, nucleotide))
 }
 
-create_nuc_dist_plot <- function(df, strain, segment, pos, flattened) {
+create_nuc_dist_plot <- function(df, strain, segment, pos, flattened, nuc) {
   # slice dataset
   df <- df[df$Segment == segment,]
   positions <- df[, pos]
@@ -42,10 +44,17 @@ create_nuc_dist_plot <- function(df, strain, segment, pos, flattened) {
 
   # count nuc dist around deletion site
   count_df <- count_nuc_dist(sequence, positions, ngs_read_counts)
+  count_df <- count_df[count_df$nucleotide == nuc,]
+
+  color <- hash()
+  color[["A"]] <- "blue"
+  color[["C"]] <- "green"
+  color[["G"]] <- "yellow"
+  color[["U"]] <- "red"
 
   # create a barplot
   ggplot(data=count_df, aes(x=position, y=rel_occurrence, fill=nucleotide)) +
-    geom_bar(stat="identity", position=position_dodge()) +
+    geom_bar(stat="identity", fill=color[[nuc]], position=position_dodge()) +
     scale_x_continuous(
       breaks=c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
       labels=c("5", "4", "3", "2", "1", "-1", "-2", "-3", "-4", "-5")

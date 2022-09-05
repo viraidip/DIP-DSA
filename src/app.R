@@ -91,7 +91,7 @@ server <- function(input, output, session) {
       input$upload_PB2_file$datapath, input$upload_PB1_file$datapath,
       input$upload_PA_file$datapath, input$upload_HA_file$datapath,
       input$upload_NP_file$datapath, input$upload_NA_file$datapath,
-      input$upload_M_file$datapath,input$upload_NS_file$datapath
+      input$upload_M_file$datapath, input$upload_NS_file$datapath
     )
     to_list <- list(file.path(DATASETSPATH, paste(input$upload_strain, ".csv", sep="")))
     fasta_path <- file.path(FASTAPATH, input$upload_strain)
@@ -138,21 +138,77 @@ server <- function(input, output, session) {
 
 
   ### nucleotide distribution ###
-  output$nuc_dist_start <- renderPlot({
+  output$nuc_dist_start_A <- renderPlot({
     create_nuc_dist_plot(load_dataset(),
       input$strain,
       input$selected_segment,
       "Start",
-      input$nuc_dist_start_flattened
+      input$nuc_dist_start_flattened,
+      "A"
+    )
+  })
+  output$nuc_dist_start_C <- renderPlot({
+    create_nuc_dist_plot(load_dataset(),
+      input$strain,
+      input$selected_segment,
+      "Start",
+      input$nuc_dist_start_flattened,
+      "C"
+    )
+  })
+  output$nuc_dist_start_G <- renderPlot({
+    create_nuc_dist_plot(load_dataset(),
+      input$strain,
+      input$selected_segment,
+      "Start",
+      input$nuc_dist_start_flattened,
+      "G"
+    )
+  })
+  output$nuc_dist_start_U <- renderPlot({
+    create_nuc_dist_plot(load_dataset(),
+      input$strain,
+      input$selected_segment,
+      "Start",
+      input$nuc_dist_start_flattened,
+      "U"
     )
   })
   
-  output$nuc_dist_end <- renderPlot({
+  output$nuc_dist_end_A <- renderPlot({
     create_nuc_dist_plot(load_dataset(),
       input$strain,
       input$selected_segment,
       "End",
-      input$nuc_dist_end_flattened
+      input$nuc_dist_start_flattened,
+      "A"
+    )
+  })
+  output$nuc_dist_end_C <- renderPlot({
+    create_nuc_dist_plot(load_dataset(),
+      input$strain,
+      input$selected_segment,
+      "End",
+      input$nuc_dist_start_flattened,
+      "C"
+    )
+  })
+  output$nuc_dist_end_G <- renderPlot({
+    create_nuc_dist_plot(load_dataset(),
+      input$strain,
+      input$selected_segment,
+      "End",
+      input$nuc_dist_start_flattened,
+      "G"
+    )
+  })
+  output$nuc_dist_end_U <- renderPlot({
+    create_nuc_dist_plot(load_dataset(),
+      input$strain,
+      input$selected_segment,
+      "End",
+      input$nuc_dist_start_flattened,
+      "U"
     )
   })
 
