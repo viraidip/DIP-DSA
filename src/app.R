@@ -138,78 +138,52 @@ server <- function(input, output, session) {
 
 
   ### nucleotide distribution ###
-  output$nuc_dist_start_A <- renderPlot({
-    create_nuc_dist_plot(load_dataset(),
+  observeEvent(input$strain, {
+    create_nuc_dist_data(load_dataset(),
       input$strain,
       input$selected_segment,
-      "Start",
-      input$nuc_dist_start_flattened,
-      "A"
+      input$nuc_dist_start_flattened
     )
+  })
+  observeEvent(input$selected_segment, {
+    create_nuc_dist_data(load_dataset(),
+      input$strain,
+      input$selected_segment,
+      input$nuc_dist_start_flattened
+    )
+  })
+  observeEvent(input$nuc_dist_start_flattened, {
+    create_nuc_dist_data(load_dataset(),
+      input$strain,
+      input$selected_segment,
+      input$nuc_dist_start_flattened
+    )
+  })
+
+  output$nuc_dist_start_A <- renderPlot({
+    create_nuc_dist_plot("Start", "A")
   })
   output$nuc_dist_start_C <- renderPlot({
-    create_nuc_dist_plot(load_dataset(),
-      input$strain,
-      input$selected_segment,
-      "Start",
-      input$nuc_dist_start_flattened,
-      "C"
-    )
+    create_nuc_dist_plot("Start", "C")
   })
   output$nuc_dist_start_G <- renderPlot({
-    create_nuc_dist_plot(load_dataset(),
-      input$strain,
-      input$selected_segment,
-      "Start",
-      input$nuc_dist_start_flattened,
-      "G"
-    )
+    create_nuc_dist_plot("Start", "G")
   })
   output$nuc_dist_start_U <- renderPlot({
-    create_nuc_dist_plot(load_dataset(),
-      input$strain,
-      input$selected_segment,
-      "Start",
-      input$nuc_dist_start_flattened,
-      "U"
-    )
+    create_nuc_dist_plot("Start", "U")
   })
   
   output$nuc_dist_end_A <- renderPlot({
-    create_nuc_dist_plot(load_dataset(),
-      input$strain,
-      input$selected_segment,
-      "End",
-      input$nuc_dist_start_flattened,
-      "A"
-    )
+    create_nuc_dist_plot("End", "A")
   })
   output$nuc_dist_end_C <- renderPlot({
-    create_nuc_dist_plot(load_dataset(),
-      input$strain,
-      input$selected_segment,
-      "End",
-      input$nuc_dist_start_flattened,
-      "C"
-    )
+    create_nuc_dist_plot("End", "C")
   })
   output$nuc_dist_end_G <- renderPlot({
-    create_nuc_dist_plot(load_dataset(),
-      input$strain,
-      input$selected_segment,
-      "End",
-      input$nuc_dist_start_flattened,
-      "G"
-    )
+    create_nuc_dist_plot("End", "G")
   })
   output$nuc_dist_end_U <- renderPlot({
-    create_nuc_dist_plot(load_dataset(),
-      input$strain,
-      input$selected_segment,
-      "End",
-      input$nuc_dist_start_flattened,
-      "U"
-    )
+    create_nuc_dist_plot("End", "U")
   })
 
 
@@ -223,5 +197,6 @@ server <- function(input, output, session) {
 ###########
 ### APP ###
 ###########
-# Main function that builds the application
+# Main function that runs some prechecks and then builds the application
+run_prechecks()
 shinyApp(ui=ui, server=server)

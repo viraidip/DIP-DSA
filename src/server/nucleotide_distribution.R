@@ -30,21 +30,57 @@ count_nuc_dist <- function(seq, positions, ngs_read_counts) {
   return(data.frame(rel_occurrence, position, nucleotide))
 }
 
-create_nuc_dist_plot <- function(df, strain, segment, pos, flattened, nuc) {
-  # slice dataset
+create_sampling_data <- function(pos, n_samples, sequence) {
+  start <- floor(quantile(pos, probs=seq(0, 1, 1/10))[[2]])
+  end <- floor(quantile(pos, probs=seq(0, 1, 1/10))[[10]])
+  random_positions <- floor(runif(n_samples, min=start, max=end+1))
+  random_counts <- rep(1, n_samples)
+  count_nuc_dist(sequence, random_positions, random_counts)
+}
+
+create_nuc_dist_data <- function(df, strain, segment, flattened) {
+  # load observed data
   df <- df[df$Segment == segment,]
-  positions <- df[, pos]
+  positions <- df[, "Start"]
   ngs_read_counts <- df[, "NGS_read_count"]
   if (flattened == "flattened") {
     ngs_read_counts[ngs_read_counts != 1] <- 1
   }
-
+ 
   # load sequence
   sequence <- get_seq(strain, segment)
 
   # count nuc dist around deletion site
-  count_df <- count_nuc_dist(sequence, positions, ngs_read_counts)
-  count_df <- count_df[count_df$nucleotide == nuc,]
+  start_df <- count_nuc_dist(sequence, df[, "Start"], ngs_read_counts)
+  start_df["location"] <- rep("Start", nrow(start_df))
+  end_df <- count_nuc_dist(sequence, df[, "End"], ngs_read_counts)
+  end_df["location"] <- rep("End", nrow(end_df))
+
+  count_df <- rbind(start_df, end_df)
+  count_df["group"] <- rep("observed", nrow(count_df))
+ 
+  # create sampling data
+  n_samples <- nrow(df) * 5
+  sampling_start_df <- create_sampling_data(df[, "Start"], n_samples, sequence)
+  sampling_end_df <- create_sampling_data(df[, "End"], n_samples, sequence)
+  sampling_start_df["location"] <- rep("Start", nrow(sampling_start_df))
+  sampling_end_df["location"] <- rep("End", nrow(sampling_end_df))
+  sampling_df <- rbind(sampling_start_df, sampling_end_df)
+  sampling_df["group"] <- rep("expected", nrow(sampling_df))
+ 
+  final_df <- rbind(count_df, sampling_df)
+  # save as .csv file
+  path <- file.path(TEMPPATH, "temp.csv")
+  write.csv(final_df, path)
+}
+
+create_nuc_dist_plot <- function(pos, nuc) {
+  # load df from .csv file
+  path <- file.path(TEMPPATH, "temp.csv")
+  df <- read.csv(path)
+
+  df <- df[df$location == pos,]
+  df <- df[df$nucleotide == nuc,]
 
   color <- hash()
   color[["A"]] <- "blue"
@@ -53,11 +89,13 @@ create_nuc_dist_plot <- function(df, strain, segment, pos, flattened, nuc) {
   color[["U"]] <- "red"
 
   # create a barplot
-  ggplot(data=count_df, aes(x=position, y=rel_occurrence, fill=nucleotide)) +
-    geom_bar(stat="identity", fill=color[[nuc]], position=position_dodge()) +
+  ggplot(data=df, aes(x=position, y=rel_occurrence, fill=nucleotide, alpha=group)) +
+    geom_bar(stat="identity", fill=color[[nuc]], color="black", position=position_dodge()) +
+    ylim(0, 0.8) +
     scale_x_continuous(
       breaks=c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
       labels=c("5", "4", "3", "2", "1", "-1", "-2", "-3", "-4", "-5")
     )
 
 }
+
