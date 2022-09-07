@@ -83,24 +83,31 @@ create_text_data <- function(df) {
 }
 
 create_nuc_dist_plot <- function(pos, nuc) {
-  # load df from .csv file
+  # load df and data set length from temp files
   path <- file.path(TEMPPATH, "temp.csv")
   df <- read.csv(path)
-
   path <- file.path(TEMPPATH, "temp.txt")
   n <- strtoi(readLines(path))
 
+  # slice dataset by Start/End and nucleotide
   df <- df[df$location == pos,]
   df <- df[df$nucleotide == nuc,]
 
   position <- c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+  # max of expected and observed -> is y location of text
   y_text <- tapply(df$rel_occurrence, df$position, max) + 0.02
 
+  # statistical testing with binom test
   x_df <- df[df$group == "observed",]
   p_df <- df[df$group == "expected",]
-
   p_values <- to_list(for (i in position) binom.test(x_df[i, "rel_occurrence"] * n, n, p_df[i, "rel_occurrence"])$p.value)
   symbols <- lapply(p_values, get_stat_symbol)
+
+  # assign coordinates for grey shadow that marks deletion site
+  x_min <- ifelse(pos == "Start", 5.5, -Inf)
+  x_max <- ifelse(pos == "Start", Inf, 5.5)
+  y_min <- 0
+  y_max <- Inf
 
   # create a barplot
   ggplot(data=df, aes(x=position, y=rel_occurrence, fill=nucleotide, alpha=group)) +
@@ -110,8 +117,8 @@ create_nuc_dist_plot <- function(pos, nuc) {
       breaks=position,
       labels=c("5", "4", "3", "2", "1", "-1", "-2", "-3", "-4", "-5")
     ) +
-    annotate("text", x=position, y=y_text, label=symbols)# +
-    #annotate("rect", x=5, y=0)
+    annotate("text", x=position, y=y_text, label=symbols) +
+    annotate("rect", xmin=x_min, xmax=x_max, ymin=y_min, ymax=y_max, alpha=0.3)
 
 }
 
