@@ -72,7 +72,8 @@ create_nuc_dist_data <- function(df, strain, segment, flattened) {
   # save as .csv file
   path <- file.path(TEMPPATH, "temp.csv")
   write.csv(final_df, path)
-  cat(nrow(df), file=file.path(TEMPPATH, "temp.txt"), sep="\n")
+
+  cat(sum(ngs_read_counts), file=file.path(TEMPPATH, "temp.txt"), sep="\n")
 }
 
 create_text_data <- function(df) {
@@ -106,7 +107,7 @@ create_nuc_dist_plot <- function(pos, nuc) {
     geom_bar(stat="identity", fill=COLOR_MAP[[nuc]], color="black", position=position_dodge()) +
     ylim(0, 0.8) +
     scale_x_continuous(
-      breaks=c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
+      breaks=position,
       labels=c("5", "4", "3", "2", "1", "-1", "-2", "-3", "-4", "-5")
     ) +
     annotate("text", x=position, y=y_text, label=symbols)# +
