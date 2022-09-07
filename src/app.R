@@ -144,6 +144,7 @@ server <- function(input, output, session) {
       input$selected_segment,
       input$nuc_dist_start_flattened
     )
+    update_plots()
   })
   observeEvent(input$selected_segment, {
     create_nuc_dist_data(load_dataset(),
@@ -151,6 +152,7 @@ server <- function(input, output, session) {
       input$selected_segment,
       input$nuc_dist_start_flattened
     )
+    update_plots()
   })
   observeEvent(input$nuc_dist_start_flattened, {
     create_nuc_dist_data(load_dataset(),
@@ -158,34 +160,36 @@ server <- function(input, output, session) {
       input$selected_segment,
       input$nuc_dist_start_flattened
     )
+    update_plots()
   })
 
-  output$nuc_dist_start_A <- renderPlot({
-    create_nuc_dist_plot("Start", "A")
-  })
-  output$nuc_dist_start_C <- renderPlot({
-    create_nuc_dist_plot("Start", "C")
-  })
-  output$nuc_dist_start_G <- renderPlot({
-    create_nuc_dist_plot("Start", "G")
-  })
-  output$nuc_dist_start_U <- renderPlot({
-    create_nuc_dist_plot("Start", "U")
-  })
+  update_plots <- function() {
+    output$nuc_dist_start_A <- renderPlot({
+      create_nuc_dist_plot("Start", "A")
+    })
+    output$nuc_dist_start_C <- renderPlot({
+      create_nuc_dist_plot("Start", "C")
+    })
+    output$nuc_dist_start_G <- renderPlot({
+      create_nuc_dist_plot("Start", "G")
+    })
+    output$nuc_dist_start_U <- renderPlot({
+      create_nuc_dist_plot("Start", "U")
+    })
   
-  output$nuc_dist_end_A <- renderPlot({
-    create_nuc_dist_plot("End", "A")
-  })
-  output$nuc_dist_end_C <- renderPlot({
-    create_nuc_dist_plot("End", "C")
-  })
-  output$nuc_dist_end_G <- renderPlot({
-    create_nuc_dist_plot("End", "G")
-  })
-  output$nuc_dist_end_U <- renderPlot({
-    create_nuc_dist_plot("End", "U")
-  })
-
+    output$nuc_dist_end_A <- renderPlot({
+      create_nuc_dist_plot("End", "A")
+    })
+    output$nuc_dist_end_C <- renderPlot({
+      create_nuc_dist_plot("End", "C")
+    })
+    output$nuc_dist_end_G <- renderPlot({
+      create_nuc_dist_plot("End", "G")
+    })
+    output$nuc_dist_end_U <- renderPlot({
+      create_nuc_dist_plot("End", "U")
+    })
+  }
 
   ### single datapoint ###
   output$single_datapoint <- renderUI({
