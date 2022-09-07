@@ -1,4 +1,4 @@
-library(hash)
+library(comprehenr)
 
 counting_routine <- function(l, window, letter, ngs_read_count) {
   count_indices <- unlist(gregexpr(letter, window))
@@ -72,6 +72,13 @@ create_nuc_dist_data <- function(df, strain, segment, flattened) {
   # save as .csv file
   path <- file.path(TEMPPATH, "temp.csv")
   write.csv(final_df, path)
+  cat(nrow(df), file=file.path(TEMPPATH, "temp.txt"), sep="\n")
+}
+
+create_text_data <- function(df) {
+  position <- c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+  text_df <- data.frame(text_data, position)
+  return(text_df)
 }
 
 create_nuc_dist_plot <- function(pos, nuc) {
@@ -79,23 +86,31 @@ create_nuc_dist_plot <- function(pos, nuc) {
   path <- file.path(TEMPPATH, "temp.csv")
   df <- read.csv(path)
 
+  path <- file.path(TEMPPATH, "temp.txt")
+  n <- strtoi(readLines(path))
+
   df <- df[df$location == pos,]
   df <- df[df$nucleotide == nuc,]
 
-  color <- hash()
-  color[["A"]] <- "blue"
-  color[["C"]] <- "green"
-  color[["G"]] <- "yellow"
-  color[["U"]] <- "red"
+  position <- c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+  y_text <- tapply(df$rel_occurrence, df$position, max) + 0.02
+
+  x_df <- df[df$group == "observed",]
+  p_df <- df[df$group == "expected",]
+
+  p_values <- to_list(for (i in position) binom.test(x_df[i, "rel_occurrence"] * n, n, p_df[i, "rel_occurrence"])$p.value)
+  symbols <- lapply(p_values, get_stat_symbol)
 
   # create a barplot
   ggplot(data=df, aes(x=position, y=rel_occurrence, fill=nucleotide, alpha=group)) +
-    geom_bar(stat="identity", fill=color[[nuc]], color="black", position=position_dodge()) +
+    geom_bar(stat="identity", fill=COLOR_MAP[[nuc]], color="black", position=position_dodge()) +
     ylim(0, 0.8) +
     scale_x_continuous(
       breaks=c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
       labels=c("5", "4", "3", "2", "1", "-1", "-2", "-3", "-4", "-5")
-    )
+    ) +
+    annotate("text", x=position, y=y_text, label=symbols)# +
+    #annotate("rect", x=5, y=0)
 
 }
 
