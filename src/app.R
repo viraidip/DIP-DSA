@@ -25,6 +25,7 @@ ui <- bootstrapPage(
     dashboardHeader(title="DIP DSA"),
     dashboardSidebar(
       sidebarMenu(
+        id="sidebarmenu",
         menuItem("Select/Load Dataset", tabName="dataset", icon=icon("database")),
         hr(),
         menuItem("Lengths and Locations", tabName="lengths_locations", icon=icon("ruler-horizontal")),
@@ -192,6 +193,10 @@ server <- function(input, output, session) {
   }
 
   ### single datapoint ###
+  observeEvent(input$link_to_dataset_tab, {
+    updateTabItems(session, "sidebarmenu", "dataset")
+  })
+
   output$single_datapoint <- renderUI({
     input$dataset_table_rows_selected
   })

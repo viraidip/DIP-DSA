@@ -4,6 +4,11 @@ single_datapoint_tab <- tabItem(tabName="single_datapoint",
     box(
       title="Selected datapoint",
       width=12,
+      "Go to ",
+      actionLink("link_to_dataset_tab", "load/select dataset tab"), 
+      " to select a data point there at the bottom of the page.",
+      br(),
+      br(),
       "The selected datapoint is row",
       uiOutput("single_datapoint")
     ),
