@@ -65,7 +65,7 @@ source("server/dataset.R", local=TRUE)
 source("server/lengths_locations.R", local=TRUE)
 source("server/nucleotide_distribution.R", local=TRUE)
 #source("server/direct_repeats.R", local=TRUE)
-#source("server/regression.R", local=TRUE)
+source("server/regression.R", local=TRUE)
 source("server/single_datapoint.R", local=TRUE)
 #source("server/about.R", local=TRUE)
 
@@ -191,6 +191,16 @@ server <- function(input, output, session) {
       create_nuc_dist_plot("End", "U")
     })
   }
+
+  ### regression ###
+  output$regression_plot <- renderPlot({
+    create_regression_plot(
+      load_dataset(),
+      input$strain,
+      input$regression_segments
+    )
+  })
+
 
   ### single datapoint ###
   observeEvent(input$link_to_dataset_tab, {
