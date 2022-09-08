@@ -66,7 +66,7 @@ source("server/lengths_locations.R", local=TRUE)
 source("server/nucleotide_distribution.R", local=TRUE)
 #source("server/direct_repeats.R", local=TRUE)
 #source("server/regression.R", local=TRUE)
-#source("server/single_datapoint.R", local=TRUE)
+source("server/single_datapoint.R", local=TRUE)
 #source("server/about.R", local=TRUE)
 
 server <- function(input, output, session) {
@@ -197,8 +197,8 @@ server <- function(input, output, session) {
     updateTabItems(session, "sidebarmenu", "dataset")
   })
 
-  output$single_datapoint <- renderUI({
-    input$dataset_table_rows_selected
+  output$single_datapoint_info <- renderText({
+    create_single_datapoint_info(load_dataset(), input$dataset_table_rows_selected, input$strain)
   })
 
 }

@@ -2,15 +2,14 @@ single_datapoint_tab <- tabItem(tabName="single_datapoint",
   h1("Inspect a single datapoint"),
   fluidRow(
     box(
-      title="Selected datapoint",
+      title="Info about the data point",
       width=12,
       "Go to ",
       actionLink("link_to_dataset_tab", "load/select dataset tab"), 
       " to select a data point there at the bottom of the page.",
       br(),
       br(),
-      "The selected datapoint is row",
-      uiOutput("single_datapoint")
+      verbatimTextOutput("single_datapoint_info")
     ),
     box(
       title="Start Site",
