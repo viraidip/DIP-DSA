@@ -26,14 +26,19 @@ create_regression_plot <- function(df, strain, segments) {
   expected_data$group <- rep("expected", nrow(expected_data))
   data <- rbind(data, expected_data)
 
-  label <- paste("y =", format(intercept, digits=2), "+ x *", format(slope, digits=2), "\nR²:", format(r_squared, digits=2))
+  func_label <- paste("y =", format(intercept, digits=2), "+ x *", format(slope, digits=2), "\nR²:", format(r_squared, digits=2))
+
+  intersection <- -intercept/slope
+  intersection_label <- paste("(", format(intersection, digits=0), ", 0)", sep="")
 
   # create the scatterplot
   ggplot(data, aes(x=segment_length, y=relative_count, color=group, label=Segment)) +
     geom_point() +
     geom_text(hjust=0, vjust=0, check_overlap=TRUE) +
     geom_abline(intercept=intercept, slope=slope, show.legend=TRUE) +
-    annotate(geom="text", x=500, y= 0.2, label=label) +
+    annotate(geom="text", x=500, y=0.2, label=func_label) +
+    geom_point(aes(x=intersection, y=0)) +
+    annotate(geom="text", x=intersection, y=0, label=intersection_label, hjust=0) +
     xlim(0, max(data$segment_length)) +
     ylim(0, max(data$relative_count))
 
