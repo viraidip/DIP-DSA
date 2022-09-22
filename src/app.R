@@ -27,29 +27,30 @@ ui <- bootstrapPage(
       sidebarMenu(
         id="sidebarmenu",
         menuItem("Select/Load Dataset", tabName="dataset", icon=icon("database")),
+        menuItem("Inspect single datapoint", tabName="single_datapoint", icon=icon("magnifying-glass")),
         hr(),
+        selectInput(
+          inputId="selected_segment",
+          label="Select segment",
+          choices=SEGMENTS
+        ),
         menuItem("Lengths and Locations", tabName="lengths_locations", icon=icon("ruler-horizontal")),
         menuItem("Nucleotide Distribution", tabName="nucleotide_distribution", icon=icon("magnifying-glass-chart")),
         menuItem("Direct Repeats", tabName="direct_repeats", icon=icon("repeat")),
+        hr(),
         menuItem("Linear Regression", tabName="regression", icon=icon("chart-line")),
-        menuItem("Inspect single datapoint", tabName="single_datapoint", icon=icon("magnifying-glass")),
         hr(),
         menuItem("About", tabName="about", icon=icon("info"))
-      ),
-      selectInput(
-        inputId="selected_segment",
-        label="Select segment",
-        choices=SEGMENTS
       )
     ),
     dashboardBody(
       tabItems(
         dataset_tab,
+        single_datapoint_tab,
         lengths_locations_tab,
         nucleotide_distribution_tab,
         direct_repeats_tab,
         regression_tab,
-        single_datapoint_tab,
         about_tab
       )
     )
@@ -62,15 +63,15 @@ ui <- bootstrapPage(
 # Load the sources for the server logic.
 # Each tab has an own file for its server functions.
 source("server/dataset.R", local=TRUE)
+source("server/single_datapoint.R", local=TRUE)
 source("server/lengths_locations.R", local=TRUE)
 source("server/nucleotide_distribution.R", local=TRUE)
 #source("server/direct_repeats.R", local=TRUE)
 source("server/regression.R", local=TRUE)
-source("server/single_datapoint.R", local=TRUE)
 #source("server/about.R", local=TRUE)
 
 server <- function(input, output, session) {
-  ### load/select dataset ###
+### load/select dataset ###
   load_dataset <- reactive({
     path <- file.path(DATASETSPATH, paste(input$strain, ".csv", sep=""))
     read.csv(path, na.strings=c("NaN"))
@@ -120,7 +121,17 @@ server <- function(input, output, session) {
   )
 
 
-  ### lenghts and locations ###
+### single datapoint ###
+  observeEvent(input$link_to_dataset_tab, {
+    updateTabItems(session, "sidebarmenu", "dataset")
+  })
+
+  output$single_datapoint_info <- renderText({
+    create_single_datapoint_info(load_dataset(), input$dataset_table_rows_selected, input$strain)
+  })
+
+
+### lenghts and locations ###
   output$locations_plot <- renderPlot({
     create_locations_plot(load_dataset(),
       input$selected_segment,
@@ -138,7 +149,7 @@ server <- function(input, output, session) {
   })
 
 
-  ### nucleotide distribution ###
+### nucleotide distribution ###
   observeEvent(input$strain, {
     create_nuc_dist_data(load_dataset(),
       input$strain,
@@ -192,23 +203,13 @@ server <- function(input, output, session) {
     })
   }
 
-  ### regression ###
+### regression ###
   output$regression_plot <- renderPlot({
     create_regression_plot(
       load_dataset(),
       input$strain,
       input$regression_segments
     )
-  })
-
-
-  ### single datapoint ###
-  observeEvent(input$link_to_dataset_tab, {
-    updateTabItems(session, "sidebarmenu", "dataset")
-  })
-
-  output$single_datapoint_info <- renderText({
-    create_single_datapoint_info(load_dataset(), input$dataset_table_rows_selected, input$strain)
   })
 
 }
