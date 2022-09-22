@@ -1,6 +1,9 @@
 
 create_regression_plot <- function(df, strain, segments) {
-  #TODO: slice dataset by selected segments at first
+  df <- df[df$Segment %in% segments,]
+  if (nrow(df) == 0) {
+    return(0)
+  }
 
   # reformat df, segment length x NGS_read_count
   data <- aggregate(list(relative_count=df$NGS_read_count), by=list(Segment=df$Segment), FUN=sum)
