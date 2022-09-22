@@ -29,8 +29,9 @@ create_regression_plot <- function(df, strain, segments) {
   label <- paste("y =", format(intercept, digits=2), "+ x *", format(slope, digits=2), "\nR²:", format(r_squared, digits=2))
 
   # create the scatterplot
-  ggplot(data, aes(x=segment_length, y=relative_count, color=group)) +
+  ggplot(data, aes(x=segment_length, y=relative_count, color=group, label=Segment)) +
     geom_point() +
+    geom_text(hjust=0, vjust=0, check_overlap=TRUE) +
     geom_abline(intercept=intercept, slope=slope, show.legend=TRUE) +
     annotate(geom="text", x=500, y= 0.2, label=label) +
     xlim(0, max(data$segment_length)) +
