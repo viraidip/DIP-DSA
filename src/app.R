@@ -66,7 +66,7 @@ source("server/dataset.R", local=TRUE)
 source("server/single_datapoint.R", local=TRUE)
 source("server/lengths_locations.R", local=TRUE)
 source("server/nucleotide_distribution.R", local=TRUE)
-#source("server/direct_repeats.R", local=TRUE)
+source("server/direct_repeats.R", local=TRUE)
 source("server/regression.R", local=TRUE)
 #source("server/about.R", local=TRUE)
 
@@ -202,6 +202,38 @@ server <- function(input, output, session) {
       create_nuc_dist_plot("End", "U")
     })
   }
+
+### direct repeats ###
+  observeEvent(input$strain, {
+    create_direct_repeats_data(load_dataset(),
+      input$strain,
+      input$selected_segment,
+      input$direct_repeats_flattened
+    )
+    output$direct_repeats_plot <- renderPlot({
+      create_direct_repeats_plot()
+    })
+  })
+  observeEvent(input$selected_segment, {
+    create_direct_repeats_data(load_dataset(),
+      input$strain,
+      input$selected_segment,
+      input$direct_repeats_flattened
+    )
+    output$direct_repeats_plot <- renderPlot({
+      create_direct_repeats_plot()
+    })
+  })
+  observeEvent(input$direct_repeats_flattened, {
+    create_direct_repeats_data(load_dataset(),
+      input$strain,
+      input$selected_segment,
+      input$direct_repeats_flattened
+    )
+    output$direct_repeats_plot <- renderPlot({
+      create_direct_repeats_plot()
+    })
+  })
 
 ### regression ###
   output$regression_plot <- renderPlot({
