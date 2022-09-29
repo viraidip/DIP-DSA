@@ -76,12 +76,6 @@ create_nuc_dist_data <- function(df, strain, segment, flattened) {
   cat(sum(ngs_read_counts), file=file.path(TEMPPATH, "temp.txt"), sep="\n")
 }
 
-create_text_data <- function(df) {
-  position <- c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
-  text_df <- data.frame(text_data, position)
-  return(text_df)
-}
-
 create_nuc_dist_plot <- function(pos, nuc) {
   # load df and data set length from temp files
   path <- file.path(TEMPPATH, "temp.csv")
