@@ -41,7 +41,6 @@ create_sampling_data <- function(pos, n_samples, sequence) {
 create_nuc_dist_data <- function(df, strain, segment, flattened) {
   # load observed data
   df <- df[df$Segment == segment,]
-  positions <- df[, "Start"]
   ngs_read_counts <- df[, "NGS_read_count"]
   if (flattened == "flattened") {
     ngs_read_counts[ngs_read_counts != 1] <- 1
