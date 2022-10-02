@@ -154,7 +154,7 @@ server <- function(input, output, session) {
     create_nuc_dist_data(load_dataset(),
       input$strain,
       input$selected_segment,
-      input$nuc_dist_start_flattened
+      input$nuc_dist_flattened
     )
     update_plots()
   })
@@ -162,15 +162,15 @@ server <- function(input, output, session) {
     create_nuc_dist_data(load_dataset(),
       input$strain,
       input$selected_segment,
-      input$nuc_dist_start_flattened
+      input$nuc_dist_flattened
     )
     update_plots()
   })
-  observeEvent(input$nuc_dist_start_flattened, {
+  observeEvent(input$nuc_dist_flattened, {
     create_nuc_dist_data(load_dataset(),
       input$strain,
       input$selected_segment,
-      input$nuc_dist_start_flattened
+      input$nuc_dist_flattened
     )
     update_plots()
   })
