@@ -18,16 +18,15 @@ create_locations_plot <- function(df, segment, flattened) {
     geom_bar(stat="identity")
 }
 
-
 create_lengths_plot <- function(df, segment, strain, flattened, n_bins) {
   # slice df by segment, reformat and bind on position and NGS count
   df <- df[df$Segment == segment, ]
 
   seq_len <- get_seq_len(strain, segment)
   df["Length"] <- df["Start"] + (seq_len - df["End"] + 1)
-  # reformat if data should be displayed flattened
-  if (flattened == "flattened") {
-    df["NGS_read_count"] <- 1
+  # multiply each column by NGS count if data is unflattened
+  if (flattened != "flattened") {
+    df <- data.frame(lapply(df, rep, df$NGS_read_count))
   }
 
   ggplot(df, aes(x=Length)) +
