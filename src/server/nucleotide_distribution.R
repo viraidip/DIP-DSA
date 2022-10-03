@@ -52,7 +52,8 @@ create_nuc_dist_data <- function(df, strain, segment, flattened) {
   # count nuc dist around deletion site
   start_df <- count_nuc_dist(sequence, df[, "Start"], ngs_read_counts)
   start_df["location"] <- rep("Start", nrow(start_df))
-  end_df <- count_nuc_dist(sequence, df[, "End"], ngs_read_counts)
+  # adjust end site by one to have indexing right afterwards
+  end_df <- count_nuc_dist(sequence, df[, "End"]-1, ngs_read_counts)
   end_df["location"] <- rep("End", nrow(end_df))
 
   count_df <- rbind(start_df, end_df)
@@ -61,7 +62,8 @@ create_nuc_dist_data <- function(df, strain, segment, flattened) {
   # create sampling data
   n_samples <- nrow(df) * 5
   sampling_start_df <- create_sampling_data(df[, "Start"], n_samples, sequence)
-  sampling_end_df <- create_sampling_data(df[, "End"], n_samples, sequence)
+  # adjust end site by one to have indexing right afterwards
+  sampling_end_df <- create_sampling_data(df[, "End"]-1, n_samples, sequence)
   sampling_start_df["location"] <- rep("Start", nrow(sampling_start_df))
   sampling_end_df["location"] <- rep("End", nrow(sampling_end_df))
   sampling_df <- rbind(sampling_start_df, sampling_end_df)
