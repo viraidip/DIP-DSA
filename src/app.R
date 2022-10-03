@@ -129,7 +129,26 @@ server <- function(input, output, session) {
   })
 
   output$single_datapoint_info <- renderText({
-    create_single_datapoint_info(load_dataset(), input$dataset_table_rows_selected, input$strain)
+    create_single_datapoint_info(load_dataset(),
+      input$dataset_table_rows_selected,
+      input$strain
+    )
+  })
+
+  output$single_datapoint_start_window <- renderPlot({
+    plot_deletion_site_window(load_dataset(),
+      input$dataset_table_rows_selected,
+      input$strain,
+      "Start"
+    )
+  })
+
+  output$single_datapoint_end_window <- renderPlot({
+    plot_deletion_site_window(load_dataset(),
+      input$dataset_table_rows_selected,
+      input$strain,
+      "End"
+    )
   })
 
 

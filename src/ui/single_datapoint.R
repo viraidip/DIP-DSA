@@ -14,10 +14,12 @@ single_datapoint_tab <- tabItem(tabName="single_datapoint",
     box(
       title="Start Site",
       width=6,
+      plotOutput("single_datapoint_start_window")
     ),
     box(
       title="End Site",
       width=6,
+      plotOutput("single_datapoint_end_window")
     )
   )
 )
