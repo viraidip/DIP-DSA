@@ -83,7 +83,6 @@ dataset_tab <- tabItem(tabName="dataset",
     box(
       title="Overview",
       width=12,
-      "display a table with the data",
       dataTableOutput("dataset_table")
     )
   )
