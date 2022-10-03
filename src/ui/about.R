@@ -60,6 +60,51 @@ about_tab <- tabItem(tabName="about",
       )
     ),
     box(
+      title="How to enter a custom dataset?",
+      width=12,
+      strong("General Info:"),
+      tags$ol(
+        tags$li("Custom datasets need to be in *.csv format."),
+        tags$li("They have exactly four columns."),
+        tags$li("Ordering of the four columns is crucial!"),
+      ),
+      strong("Example dataset:"),
+      br(),
+      "including correct order and naming of the headers",
+      tags$table(border=2, width="100%",
+        tags$tbody(
+          tags$tr(
+            tags$td(""),
+            tags$td(strong("Column 1")),
+            tags$td(strong("Column 2")),
+            tags$td(strong("Column 3")),
+            tags$td(strong("Column 4"))
+          ),
+          tags$tr(
+            tags$td(strong("header names")),
+            tags$td(tags$i("Segment")),
+            tags$td(tags$i("Start")),
+            tags$td(tags$i("End")),
+            tags$td(tags$i("NGS_read_count"))
+          ),
+          tags$tr(
+            tags$td(strong("column data type")),
+            tags$td("character (string)"),
+            tags$td("integer"),
+            tags$td("integer"),
+            tags$td("integer")
+          ),
+          tags$tr(
+            tags$td(strong("description")),
+            tags$td("Name of the segment that the DI RNA is coming from"),
+            tags$td("Start position of the deletion site"),
+            tags$td("End position of the deletion site"),
+            tags$td("Number of counts in the NGS data of this specific DI RNA sample")
+          )
+        )
+      )
+    ),
+    box(
       title="What are 'Direct Repeats'?",
       width=12,
       "TODO: include an image",

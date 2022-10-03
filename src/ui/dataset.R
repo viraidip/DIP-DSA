@@ -19,32 +19,8 @@ dataset_tab <- tabItem(tabName="dataset",
       title="Upload dataset",
       textInput(
         inputId="upload_strain",
-        label="Write strain name"
+        label="Write the name of the strain of the custom dataset:"
       ),
-      strong("Example for a custom dataset:"),
-      br(),
-      "Custom datasets need to be in *.csv format.",
-      br(),
-      "Names and order of the four columns are very important!",
-      tags$table(border=2, width="100%",
-        tags$tbody(
-          tags$tr(
-            tags$td(strong("headers")),
-            tags$td("'Segment'"),
-            tags$td("'Start'"),
-            tags$td("'End'"),
-            tags$td("'NGS_read_count'")
-          ),
-          tags$tr(
-            tags$td(strong("description")),
-            tags$td("Name of the segment that the DI RNA is coming from"),
-            tags$td("Start position of the deletion site"),
-            tags$td("End position of the deletion site"),
-            tags$td("Number of counts in the NGS data of this specific DI RNA sample")
-          )
-        )
-      ),
-      br(),
       fileInput(
         inputId="upload_dataset_file",
         label="Upload custom dataset here (*.csv):",
