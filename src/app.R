@@ -79,6 +79,10 @@ server <- function(input, output, session) {
     read.csv(path, na.strings=c("NaN"), col.names=col_names, colClasses=col_classes)
   })
 
+  observeEvent(input$link_to_about_tab, {
+    updateTabItems(session, "sidebarmenu", "about")
+  })
+
   observeEvent(input$dataset_submit, {
     # check if all fields are filled
     req(
