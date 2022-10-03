@@ -73,7 +73,6 @@ create_direct_repeats_plot <- function() {
   path <- file.path(TEMPPATH, "direct_repeats_temp.txt")
   n <- strtoi(readLines(path))
 
-  print(df)
   df$direct_repeats <- df$direct_repeats * df$NGS_read_count
   obs_df <- df[df$group == "observed", ]
   exp_df <- df[df$group == "expected", ]
