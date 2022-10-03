@@ -74,7 +74,9 @@ server <- function(input, output, session) {
 ### load/select dataset ###
   load_dataset <- reactive({
     path <- file.path(DATASETSPATH, paste(input$strain, ".csv", sep=""))
-    read.csv(path, na.strings=c("NaN"))
+    col_names <- c("Segment", "Start", "End", "NGS_read_count")
+    col_classes <- c("character", "integer", "integer", "integer")
+    read.csv(path, na.strings=c("NaN"), col.names=col_names, colClasses=col_classes)
   })
 
   observeEvent(input$dataset_submit, {
