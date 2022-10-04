@@ -8,6 +8,7 @@ FASTAPATH <- file.path("..", "data", "strain_segment_fastas")
 TEMPPATH <- file.path("..", "data", "temp")
 
 COLOR_MAP <- hash(A="blue", C="green", G="yellow", U="red")
+NUC_MAP <- hash(A="Adenin", C="Cytosin", G="Guanin", U="Uracil")
 
 run_prechecks <- function() {
   if (!file.exists(TEMPPATH)) {

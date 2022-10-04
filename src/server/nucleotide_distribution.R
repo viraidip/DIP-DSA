@@ -115,7 +115,8 @@ create_nuc_dist_plot <- function(pos, nuc) {
     annotate("text", x=position, y=y_text, label=symbols) +
     geom_rect(xmin=x_min, xmax=x_max, ymin=-1, ymax=1, alpha=0.5, fill="grey") +
     annotate("text", x=ifelse(pos == "Start", 8, 3), y=0.8, label="deleted sequence") +
-    annotate("text", x=ifelse(pos == "Start", 3, 8), y=0.8, label="remaining sequence")
+    annotate("text", x=ifelse(pos == "Start", 3, 8), y=0.8, label="remaining sequence") +
+    labs(title=NUC_MAP[[nuc]])
 
   ggplotly(p)
 }
