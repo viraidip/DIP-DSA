@@ -98,22 +98,25 @@ create_nuc_dist_plot <- function(pos, nuc) {
   p_values <- to_list(for (i in position) binom.test(x_df[i, "rel_occurrence"] * n, n, p_df[i, "rel_occurrence"])$p.value)
   symbols <- lapply(p_values, get_stat_symbol)
 
-  # assign coordinates for grey shadow that marks deletion site
-  x_min <- ifelse(pos == "Start", 5.5, -Inf)
-  x_max <- ifelse(pos == "Start", Inf, 5.5)
-  y_min <- 0
-  y_max <- Inf
+  # assign x coordinates for grey shadow that marks deletion site
+  x_min <- ifelse(pos == "Start", 5.5, 0)
+  x_max <- ifelse(pos == "Start", 11, 5.5)
+
+  labels <- c("5", "4", "3", "2", "1", "-1", "-2", "-3", "-4", "-5")
+  if (pos == "End") {
+    labels <- rev(labels)
+  }
 
   # create a barplot
   p <- ggplot(data=df, aes(x=position, y=rel_occurrence, fill=nucleotide, alpha=group)) +
     geom_bar(stat="identity", fill=COLOR_MAP[[nuc]], color="black", position=position_dodge()) +
     ylim(0, 0.8) +
-    scale_x_continuous(
-      breaks=position,
-      labels=c("5", "4", "3", "2", "1", "-1", "-2", "-3", "-4", "-5")
-    ) +
+    scale_x_continuous(breaks=position, labels=labels) +
     annotate("text", x=position, y=y_text, label=symbols) +
-    annotate("rect", xmin=x_min, xmax=x_max, ymin=y_min, ymax=y_max, alpha=0.3)
+    geom_rect(xmin=x_min, xmax=x_max, ymin=-1, ymax=1, alpha=0.5, fill="grey") +
+    annotate("text", x=ifelse(pos == "Start", 8, 3), y=0.8, label="deleted sequence") +
+    annotate("text", x=ifelse(pos == "Start", 3, 8), y=0.8, label="remaining sequence")
+
   ggplotly(p)
 }
 
