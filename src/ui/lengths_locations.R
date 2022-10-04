@@ -10,7 +10,7 @@ lengths_locations_tab <- tabItem(tabName="lengths_locations",
         choices=c("flattened", "unflattened"),
         inline=TRUE
       ),
-      plotOutput("locations_plot")
+      plotlyOutput("locations_plot")
     ),
     box(
       title="Lengths",
@@ -26,7 +26,7 @@ lengths_locations_tab <- tabItem(tabName="lengths_locations",
         label="Set size of bins for histogram",
         1, 100, 20
       ),
-      plotOutput("lengths_plot")
+      plotlyOutput("lengths_plot")
     )
   )
 )

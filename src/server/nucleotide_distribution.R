@@ -105,7 +105,7 @@ create_nuc_dist_plot <- function(pos, nuc) {
   y_max <- Inf
 
   # create a barplot
-  ggplot(data=df, aes(x=position, y=rel_occurrence, fill=nucleotide, alpha=group)) +
+  p <- ggplot(data=df, aes(x=position, y=rel_occurrence, fill=nucleotide, alpha=group)) +
     geom_bar(stat="identity", fill=COLOR_MAP[[nuc]], color="black", position=position_dodge()) +
     ylim(0, 0.8) +
     scale_x_continuous(
@@ -114,6 +114,6 @@ create_nuc_dist_plot <- function(pos, nuc) {
     ) +
     annotate("text", x=position, y=y_text, label=symbols) +
     annotate("rect", xmin=x_min, xmax=x_max, ymin=y_min, ymax=y_max, alpha=0.3)
-
+  ggplotly(p)
 }
 

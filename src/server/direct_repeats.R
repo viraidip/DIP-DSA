@@ -1,7 +1,6 @@
 
 
 direct_repeats_counting_routine <- function(row, sequence) {
-  # TODO: check if indexing is done rigth
   start <- as.integer(row["Start"])
   end <- as.integer(row["End"])
   i_s_1 <- start-15
@@ -97,7 +96,8 @@ create_direct_repeats_plot <- function() {
  # symbols <- lapply(p_values, get_stat_symbol)
 
   # create a barplot
-  ggplot(data=plot_df, aes(x=length, y=freq, alpha=group)) +
+  p <- ggplot(data=plot_df, aes(x=length, y=freq, alpha=group)) +
     geom_bar(stat="identity", color="black", position=position_dodge())
+  ggplotly(p)
 }
 

@@ -14,8 +14,9 @@ create_locations_plot <- function(df, segment, flattened) {
     df["NGS_read_count"] <- 1
   }
 
-  ggplot(df, aes(x=Position, y=NGS_read_count, fill=Class)) +
+  p <- ggplot(df, aes(x=Position, y=NGS_read_count, fill=Class)) +
     geom_bar(stat="identity")
+  ggplotly(p)
 }
 
 create_lengths_plot <- function(df, segment, strain, flattened, n_bins) {
@@ -29,6 +30,7 @@ create_lengths_plot <- function(df, segment, strain, flattened, n_bins) {
     df <- data.frame(lapply(df, rep, df$NGS_read_count))
   }
 
-  ggplot(df, aes(x=Length)) +
+  p <- ggplot(df, aes(x=Length)) +
     geom_histogram(binwidth=n_bins)
+  ggplotly(p)
 }

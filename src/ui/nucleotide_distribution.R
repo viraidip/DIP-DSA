@@ -14,18 +14,18 @@ nucleotide_distribution_tab <- tabItem(tabName="nucleotide_distribution",
     box(
       title="Start site",
       width=6,
-      plotOutput("nuc_dist_start_A"),
-      plotOutput("nuc_dist_start_C"),
-      plotOutput("nuc_dist_start_G"),
-      plotOutput("nuc_dist_start_U")
+      plotlyOutput("nuc_dist_start_A"),
+      plotlyOutput("nuc_dist_start_C"),
+      plotlyOutput("nuc_dist_start_G"),
+      plotlyOutput("nuc_dist_start_U")
     ),
     box(
       title="End site",
       width=6,
-      plotOutput("nuc_dist_end_A"),
-      plotOutput("nuc_dist_end_C"),
-      plotOutput("nuc_dist_end_G"),
-      plotOutput("nuc_dist_end_U")
+      plotlyOutput("nuc_dist_end_A"),
+      plotlyOutput("nuc_dist_end_C"),
+      plotlyOutput("nuc_dist_end_G"),
+      plotlyOutput("nuc_dist_end_U")
     )
   )
 )

@@ -10,7 +10,7 @@ direct_repeats_tab <- tabItem(tabName="direct_repeats",
         choices=c("flattened", "unflattened"),
         inline=TRUE
       ),
-      plotOutput("direct_repeats_plot")
+      plotlyOutput("direct_repeats_plot")
     )
   )
 )

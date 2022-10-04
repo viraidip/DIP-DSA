@@ -3,6 +3,7 @@ library(shinydashboard)
 library(ggplot2)
 library(DT)
 library(shinyWidgets)
+library(plotly)
 
 source("utils.R")
 
@@ -157,14 +158,14 @@ server <- function(input, output, session) {
 
 
 ### lenghts and locations ###
-  output$locations_plot <- renderPlot({
+  output$locations_plot <- renderPlotly({
     create_locations_plot(load_dataset(),
       input$selected_segment,
       input$locations_flattened
     )
   })
 
-  output$lengths_plot <- renderPlot({
+  output$lengths_plot <- renderPlotly({
     create_lengths_plot(load_dataset(),
       input$selected_segment,
       input$strain,
@@ -201,29 +202,29 @@ server <- function(input, output, session) {
   })
 
   update_plots <- function() {
-    output$nuc_dist_start_A <- renderPlot({
+    output$nuc_dist_start_A <- renderPlotly({
       create_nuc_dist_plot("Start", "A")
     })
-    output$nuc_dist_start_C <- renderPlot({
+    output$nuc_dist_start_C <- renderPlotly({
       create_nuc_dist_plot("Start", "C")
     })
-    output$nuc_dist_start_G <- renderPlot({
+    output$nuc_dist_start_G <- renderPlotly({
       create_nuc_dist_plot("Start", "G")
     })
-    output$nuc_dist_start_U <- renderPlot({
+    output$nuc_dist_start_U <- renderPlotly({
       create_nuc_dist_plot("Start", "U")
     })
   
-    output$nuc_dist_end_A <- renderPlot({
+    output$nuc_dist_end_A <- renderPlotly({
       create_nuc_dist_plot("End", "A")
     })
-    output$nuc_dist_end_C <- renderPlot({
+    output$nuc_dist_end_C <- renderPlotly({
       create_nuc_dist_plot("End", "C")
     })
-    output$nuc_dist_end_G <- renderPlot({
+    output$nuc_dist_end_G <- renderPlotly({
       create_nuc_dist_plot("End", "G")
     })
-    output$nuc_dist_end_U <- renderPlot({
+    output$nuc_dist_end_U <- renderPlotly({
       create_nuc_dist_plot("End", "U")
     })
   }
@@ -235,7 +236,7 @@ server <- function(input, output, session) {
       input$selected_segment,
       input$direct_repeats_flattened
     )
-    output$direct_repeats_plot <- renderPlot({
+    output$direct_repeats_plot <- renderPlotly({
       create_direct_repeats_plot()
     })
   })
@@ -245,7 +246,7 @@ server <- function(input, output, session) {
       input$selected_segment,
       input$direct_repeats_flattened
     )
-    output$direct_repeats_plot <- renderPlot({
+    output$direct_repeats_plot <- renderPlotly({
       create_direct_repeats_plot()
     })
   })
@@ -255,7 +256,7 @@ server <- function(input, output, session) {
       input$selected_segment,
       input$direct_repeats_flattened
     )
-    output$direct_repeats_plot <- renderPlot({
+    output$direct_repeats_plot <- renderPlotly({
       create_direct_repeats_plot()
     })
   })
