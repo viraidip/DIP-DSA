@@ -87,6 +87,7 @@ create_direct_repeats_plot <- function() {
   colnames(exp_df) <- c("length", "freq", "group")
 
   plot_df <- merge(obs_df, exp_df, all=TRUE)
+  plot_df$length <- as.numeric(as.character(plot_df$length))
 
   # TODO: use change test
   # statistical testing with binom test
