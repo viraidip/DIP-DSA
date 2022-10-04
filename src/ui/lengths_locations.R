@@ -2,7 +2,7 @@ lengths_locations_tab <- tabItem(tabName="lengths_locations",
   h1("Length and location of deletion sites"),
   fluidRow(
     box(
-      title="Locations",
+      title="Deletion site locations on full segment",
       width=12,
       radioButtons(
         inputId="locations_flattened",
@@ -13,7 +13,7 @@ lengths_locations_tab <- tabItem(tabName="lengths_locations",
       plotlyOutput("locations_plot")
     ),
     box(
-      title="Lengths",
+      title="Lengths of remaining sequence (without deleted part)",
       width=12,
       radioButtons(
         inputId="lengths_flattened",

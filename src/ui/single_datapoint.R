@@ -1,5 +1,5 @@
 single_datapoint_tab <- tabItem(tabName="single_datapoint",
-  h1("Inspect a single datapoint"),
+  h1("Inspect a single data point"),
   fluidRow(
     box(
       title="Info about the data point",
@@ -12,12 +12,12 @@ single_datapoint_tab <- tabItem(tabName="single_datapoint",
       verbatimTextOutput("single_datapoint_info")
     ),
     box(
-      title="Start Site",
+      title="Start site",
       width=6,
       plotOutput("single_datapoint_start_window")
     ),
     box(
-      title="End Site",
+      title="End site",
       width=6,
       plotOutput("single_datapoint_end_window")
     )

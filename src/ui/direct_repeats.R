@@ -1,8 +1,8 @@
 direct_repeats_tab <- tabItem(tabName="direct_repeats",
-  h1("Direct Repeats around deletion sites"),
+  h1("Direct repeats around deletion sites"),
   fluidRow(
     box(
-      title="direct repeats",
+      title="Frequency of direct repeats",
       width=12,
       radioButtons(
         inputId="direct_repeats_flattened",

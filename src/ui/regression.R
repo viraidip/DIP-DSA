@@ -2,7 +2,7 @@ regression_tab <- tabItem(tabName="regression",
   h1("Linear regression of segment length and NGS count"),
   fluidRow(
     box(
-      title="Regression Plot",
+      title="Regression plot",
       width=12,
       selectInput(
         inputId="regression_segments",
