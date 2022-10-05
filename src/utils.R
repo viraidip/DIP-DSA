@@ -8,7 +8,7 @@ DATASETSPATH <- file.path(DATAPATH, "datasets")
 FASTAPATH <- file.path(DATAPATH, "strain_segment_fastas")
 TEMPPATH <- file.path(DATAPATH, "temp")
 
-COLOR_MAP <- hash(A="blue", C="green", G="yellow", U="red")
+COLOR_MAP <- hash(A="blue", C="yellow", G="green", U="red")
 NUC_MAP <- hash(A="Adenin", C="Cytosin", G="Guanin", U="Uracil")
 
 run_prechecks <- function() {
