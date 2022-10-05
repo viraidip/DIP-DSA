@@ -69,7 +69,7 @@ source("server/lengths_locations.R", local=TRUE)
 source("server/nucleotide_distribution.R", local=TRUE)
 source("server/direct_repeats.R", local=TRUE)
 source("server/regression.R", local=TRUE)
-#source("server/about.R", local=TRUE)
+source("server/about.R", local=TRUE)
 
 server <- function(input, output, session) {
 ### load/select dataset ###
@@ -268,6 +268,11 @@ server <- function(input, output, session) {
       input$strain,
       input$regression_segments
     )
+  })
+
+### about ###
+  output$dataset_info_table <- renderTable({
+    create_dataset_info_table()
   })
 
 }

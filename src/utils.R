@@ -3,9 +3,10 @@ library(hash)
 
 SEGMENTS <- c("PB2", "PB1", "PA", "HA", "NP", "NA", "M", "NS")
 
-DATASETSPATH <- file.path("..", "data", "datasets")
-FASTAPATH <- file.path("..", "data", "strain_segment_fastas")
-TEMPPATH <- file.path("..", "data", "temp")
+DATAPATH <- file.path("..", "data")
+DATASETSPATH <- file.path(DATAPATH, "datasets")
+FASTAPATH <- file.path(DATAPATH, "strain_segment_fastas")
+TEMPPATH <- file.path(DATAPATH, "temp")
 
 COLOR_MAP <- hash(A="blue", C="green", G="yellow", U="red")
 NUC_MAP <- hash(A="Adenin", C="Cytosin", G="Guanin", U="Uracil")
