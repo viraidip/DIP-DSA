@@ -83,22 +83,37 @@ create_direct_repeats_plot <- function() {
 
   obs_df <- data.frame(obs_table, rep("observed", length(obs_table)))
   colnames(obs_df) <- c("length", "freq", "group")
+  obs_df$length <- as.numeric(as.character(obs_df$length))
   exp_df <- data.frame(exp_table, rep("expected", length(exp_table)))
   colnames(exp_df) <- c("length", "freq", "group")
+  exp_df$length <- as.numeric(as.character(exp_df$length))
+
+  for (i in 1:nrow(obs_df)) {
+    element <- obs_df[i,1]
+    if (!any(element==exp_df[,1])) { #if number is not in exp_df add to exp_df
+      exp_df <- rbind(exp_df, c(element, 0.0, "expected"))
+    }
+  }
+  for (i in 1:nrow(exp_df)) {
+    element <- exp_df[i,1]
+    if (!any(element==obs_df)) { #if number is not in obs_df add to obs_df
+      obs_df <- rbind(obs_df, c(element, 0.0, "observed"))
+    }
+  }
 
   plot_df <- merge(obs_df, exp_df, all=TRUE)
-  plot_df$length <- as.numeric(as.character(plot_df$length))
+  plot_df$freq <- as.numeric(plot_df$freq)
 
-  # TODO: use change test
-  # statistical testing with binom test
-#  x_df <- df[df$group == "observed",]
- # p_df <- df[df$group == "expected",]
-#  p_values <- to_list(for (i in position) binom.test(x_df[i, "rel_occurrence"] * n, n, p_df[i, "rel_occurrence"])$p.value)
- # symbols <- lapply(p_values, get_stat_symbol)
+  # statistical testing with Wilcoxon/Mann-Witney test
+  obs_data <- df[df$group == "observed", ]$direct_repeats
+  exp_data <- df[df$group == "expected", ]$direct_repeats
+  res <- wilcox.test(obs_data, exp_data)
+  symbol <- get_stat_symbol(res$p.value)
 
   # create a barplot
   p <- ggplot(data=plot_df, aes(x=length, y=freq, alpha=group)) +
-    geom_bar(stat="identity", color="black", position=position_dodge())
+    geom_bar(stat="identity", color="black", position=position_dodge()) +
+    annotate("text", x=5, y=0.5, label=symbol)
   ggplotly(p)
 }
 
