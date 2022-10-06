@@ -111,8 +111,8 @@ create_direct_repeats_plot <- function() {
   symbol <- get_stat_symbol(res$p.value)
 
   # create a barplot
-  p <- ggplot(data=plot_df, aes(x=length, y=freq, alpha=group)) +
-    geom_bar(stat="identity", color="black", position=position_dodge()) +
+  p <- ggplot(data=plot_df, aes(x=length, y=freq, fill=group)) +
+    geom_bar(stat="identity", position=position_dodge()) +
     annotate("text", x=5, y=0.5, label=symbol)
   ggplotly(p)
 }
