@@ -12,7 +12,7 @@ dataset_tab <- tabItem(tabName="dataset",
         label="select an existing dataset:",
         choices=all_datasets
       ),
-      "More info about the datasets can be found in the",
+      "More info about the predefined datasets can be found in the",
       actionLink("link_to_about_tab", "About"),
       "tab."
     ),
