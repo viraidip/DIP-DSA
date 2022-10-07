@@ -1,5 +1,4 @@
 
-
 direct_repeats_counting_routine <- function(row, sequence) {
   start <- as.integer(row["Start"])
   end <- as.integer(row["End"])
@@ -91,13 +90,13 @@ create_direct_repeats_plot <- function() {
   for (i in 1:nrow(obs_df)) {
     element <- obs_df[i,1]
     if (!any(element==exp_df[,1])) { #if number is not in exp_df add to exp_df
-      exp_df <- rbind(exp_df, c(element, 0.0, "expected"))
+      exp_df <- rbind(exp_df, list(element, 0.0, "expected"))
     }
   }
   for (i in 1:nrow(exp_df)) {
     element <- exp_df[i,1]
     if (!any(element==obs_df)) { #if number is not in obs_df add to obs_df
-      obs_df <- rbind(obs_df, c(element, 0.0, "observed"))
+      obs_df <- rbind(obs_df, list(element, 0.0, "observed"))
     }
   }
 
