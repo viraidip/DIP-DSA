@@ -1,4 +1,4 @@
-create_locations_plot <- function(df, segment, flattened) {
+create_locations_plot <- function(df, strain, segment, flattened) {
   # slice df by segment, reformat and bind on position and NGS count
   df <- df[df$Segment == segment, ]
   start_df <- df[, c("Start", "NGS_read_count")]
@@ -16,6 +16,20 @@ create_locations_plot <- function(df, segment, flattened) {
 
   p <- ggplot(df, aes(x=Position, y=NGS_read_count, fill=Class)) +
     geom_bar(stat="identity")
+  # add info about packaging signal if it exists
+  if (packaging_signal_data_exists(strain)) {
+    packaging_signal <- load_packaging_signal_data(strain)
+    slen <- get_seq_len(strain, segment)
+    x <- unlist(packaging_signal[segment])
+    y <- layer_scales(p)$y$get_limits()[2]
+    color <- c("blue", "blue", "red", "red")
+    fill <- c("incorporation signal", "bundling signal")
+    p <- p + geom_vline(xintercept=x, color=color, linetype="dotted") +
+      geom_rect(aes(xmin=0   , xmax=x[1], ymin=0, ymax=y, fill=fill[1]), alpha=0.3) +
+      geom_rect(aes(xmin=x[2], xmax=slen, ymin=0, ymax=y, fill=fill[1]), alpha=0.3) +
+      geom_rect(aes(xmin=x[3], xmax=x[1], ymin=0, ymax=y, fill=fill[2]), alpha=0.3) +
+      geom_rect(aes(xmin=x[4], xmax=x[2], ymin=0, ymax=y, fill=fill[2]), alpha=0.3)
+  }
   ggplotly(p)
 }
 
