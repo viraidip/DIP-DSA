@@ -64,7 +64,25 @@ create_direct_repeats_data <- function(df, strain, segment, flattened) {
   cat(sum(df$NGS_read_counts), file=file.path(TEMPPATH, "direct_repeats_temp.txt"), sep="\n")
 }
 
-create_direct_repeats_plot <- function() {
+add_correction <- function(df) {
+  df["freq_corrected"] <- rep(0.0, nrow(df))
+  for (i in df$length) {
+    orig_value <- df[df$length == i, "freq"]
+    if (orig_value != 0) {
+      divided_value <- orig_value/(i+1)
+      df[df$length == i, "freq_corrected"] <- divided_value
+      for (j in 0:i-1) {
+        df[df$length == j, "freq_corrected"] <- df[df$length == j, "freq_corrected"] + divided_value
+      }
+    }
+  }
+
+  df$freq <- df$freq_corrected
+  df <- subset(df, select=-c(freq_corrected))
+  return(df)
+}
+
+create_direct_repeats_plot <- function(correction) {
   # load df and data set length from temp files
   path <- file.path(TEMPPATH, "direct_repeats_temp.csv")
   df <- read.csv(path)
@@ -87,17 +105,19 @@ create_direct_repeats_plot <- function() {
   colnames(exp_df) <- c("length", "freq", "group")
   exp_df$length <- as.numeric(as.character(exp_df$length))
 
-  for (i in 1:nrow(obs_df)) {
-    element <- obs_df[i,1]
-    if (!any(element==exp_df[,1])) { #if number is not in exp_df add to exp_df
-      exp_df <- rbind(exp_df, list(element, 0.0, "expected"))
+  max_length <- max(max(obs_df$length), max(exp_df$length))
+  for (i in 0:max_length) {
+    if (!any(i==obs_df[,1])) {
+      obs_df <- rbind(obs_df, list(i, 0.0, "observed"))
+    }
+    if (!any(i==exp_df[,1])) {
+      exp_df <- rbind(exp_df, list(i, 0.0, "expected"))
     }
   }
-  for (i in 1:nrow(exp_df)) {
-    element <- exp_df[i,1]
-    if (!any(element==obs_df)) { #if number is not in obs_df add to obs_df
-      obs_df <- rbind(obs_df, list(element, 0.0, "observed"))
-    }
+
+  if (correction == "Yes") {
+    obs_df <- add_correction(obs_df)
+    exp_df <- add_correction(exp_df)
   }
 
   plot_df <- merge(obs_df, exp_df, all=TRUE)
@@ -106,6 +126,10 @@ create_direct_repeats_plot <- function() {
   # statistical testing with Wilcoxon/Mann-Witney test
   obs_data <- df[df$group == "observed", ]$direct_repeats
   exp_data <- df[df$group == "expected", ]$direct_repeats
+#  if (correction == "Yes") {
+ #   print(obs_data)
+  #  print(exp_data)
+ # }
   res <- wilcox.test(obs_data, exp_data)
   symbol <- get_stat_symbol(res$p.value)
 

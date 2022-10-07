@@ -237,7 +237,7 @@ server <- function(input, output, session) {
       input$direct_repeats_flattened
     )
     output$direct_repeats_plot <- renderPlotly({
-      create_direct_repeats_plot()
+      create_direct_repeats_plot(input$direct_repeats_correction)
     })
   })
   observeEvent(input$selected_segment, {
@@ -247,7 +247,7 @@ server <- function(input, output, session) {
       input$direct_repeats_flattened
     )
     output$direct_repeats_plot <- renderPlotly({
-      create_direct_repeats_plot()
+      create_direct_repeats_plot(input$direct_repeats_correction)
     })
   })
   observeEvent(input$direct_repeats_flattened, {
@@ -257,8 +257,12 @@ server <- function(input, output, session) {
       input$direct_repeats_flattened
     )
     output$direct_repeats_plot <- renderPlotly({
-      create_direct_repeats_plot()
+      create_direct_repeats_plot(input$direct_repeats_correction)
     })
+  })
+
+  output$direct_repeats_plot <- renderPlotly({
+    create_direct_repeats_plot(input$direct_repeats_correction)
   })
 
 ### regression ###

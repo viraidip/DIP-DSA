@@ -10,6 +10,12 @@ direct_repeats_tab <- tabItem(tabName="direct_repeats",
         choices=c("flattened", "unflattened"),
         inline=TRUE
       ),
+      radioButtons(
+        inputId="direct_repeats_correction",
+        label="Perform adjustment/correction of data:",
+        choices=c("Yes", "No"),
+        inline=TRUE
+      ),
       plotlyOutput("direct_repeats_plot")
     )
   )
