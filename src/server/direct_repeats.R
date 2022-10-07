@@ -41,7 +41,7 @@ create_direct_repeats_data <- function(df, strain, segment, flattened) {
   if (flattened == "flattened") {
     df$NGS_read_count[df$NGS_read_count != 1] <- 1
   }
- 
+
   # load sequence
   sequence <- get_seq(strain, segment)
 
@@ -60,8 +60,8 @@ create_direct_repeats_data <- function(df, strain, segment, flattened) {
   # save as .csv file
   path <- file.path(TEMPPATH, "direct_repeats_temp.csv")
   write.csv(final_df, path)
-
-  cat(sum(df$NGS_read_counts), file=file.path(TEMPPATH, "direct_repeats_temp.txt"), sep="\n")
+  
+  cat(sum(df$NGS_read_count), file=file.path(TEMPPATH, "direct_repeats_temp.txt"), sep="\n")
 }
 
 add_correction <- function(df) {
@@ -87,11 +87,14 @@ create_direct_repeats_plot <- function(correction) {
   path <- file.path(TEMPPATH, "direct_repeats_temp.csv")
   df <- read.csv(path)
   path <- file.path(TEMPPATH, "direct_repeats_temp.txt")
-  n <- strtoi(readLines(path))
+  n_samples <- strtoi(readLines(path))
 
   df$direct_repeats <- df$direct_repeats * df$NGS_read_count
   obs_df <- df[df$group == "observed", ]
   exp_df <- df[df$group == "expected", ]
+
+  n_obs <- nrow(obs_df)
+  n_exp <- nrow(exp_df)
 
   obs_table <- table(obs_df$direct_repeats)
   obs_table <- obs_table/sum(obs_table)
@@ -124,19 +127,28 @@ create_direct_repeats_plot <- function(correction) {
   plot_df$freq <- as.numeric(plot_df$freq)
 
   # statistical testing with Wilcoxon/Mann-Witney test
-  obs_data <- df[df$group == "observed", ]$direct_repeats
-  exp_data <- df[df$group == "expected", ]$direct_repeats
-#  if (correction == "Yes") {
- #   print(obs_data)
-  #  print(exp_data)
- # }
+  if (correction == "Yes") {
+    obs_data <- c()
+    exp_data <- c()
+    for (i in 0:max_length) {
+      n <- plot_df[plot_df$length == i & plot_df$group == "observed", "freq"]
+      obs_data <- c(obs_data, rep(i, round(n*n_obs)))
+      n <- plot_df[plot_df$length == i & plot_df$group == "expected", "freq"]
+      exp_data <- c(exp_data, rep(i, round(n*n_exp)))
+    }
+  }
+  else {
+    obs_data <- df[df$group == "observed", ]$direct_repeats
+    exp_data <- df[df$group == "expected", ]$direct_repeats
+  }
   res <- wilcox.test(obs_data, exp_data)
   symbol <- get_stat_symbol(res$p.value)
 
   # create a barplot
   p <- ggplot(data=plot_df, aes(x=length, y=freq, fill=group)) +
     geom_bar(stat="identity", position=position_dodge()) +
-    annotate("text", x=5, y=0.5, label=symbol)
+    ylim(0, 1.0) +
+    ggtitle(paste("frequency of different direct repeat lengths (n=", n_samples, ") ", symbol, sep=""))
   ggplotly(p)
 }
 
