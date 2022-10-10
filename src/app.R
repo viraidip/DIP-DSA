@@ -160,6 +160,7 @@ server <- function(input, output, session) {
 ### lenghts and locations ###
   output$locations_plot <- renderPlotly({
     create_locations_plot(load_dataset(),
+      input$strain,
       input$selected_segment,
       input$locations_flattened
     )

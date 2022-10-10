@@ -1,5 +1,6 @@
 library("Biostrings")
 library(hash)
+library(jsonlite)
 
 SEGMENTS <- c("PB2", "PB1", "PA", "HA", "NP", "NA", "M", "NS")
 
@@ -44,3 +45,16 @@ get_stat_symbol <- function(p) {
     return("")
   }
 }
+
+packaging_signal_data_exists <- function(strain) {
+  path <- file.path(DATAPATH, "packaging_signal", paste(strain, ".json", sep=""))
+  return(file.exists(path))
+}
+
+load_packaging_signal_data <- function(strain) {
+  path <- file.path(DATAPATH, "packaging_signal", paste(strain, ".json", sep=""))
+  data <- read_json(path)
+  return(data)
+}
+
+
