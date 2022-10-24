@@ -23,6 +23,43 @@ create_single_datapoint_info <- function(df, row, strain) {
   }
 }
 
+create_single_datapoint_packaging_signal_info <- function(df, row, strain, segment) {
+  if (is.null(row)) {
+    paste("No data point selected.")
+  } else {
+    if (!packaging_signal_data_exists(strain)) {
+      paste("No packaging signal data available.")
+    }
+    else {
+      start <- df[row, "Start"]
+      end <- df[row, "End"]
+      packaging_signal <- unlist(load_packaging_signal_data(strain)[segment])
+      if (start > packaging_signal[1]) {
+        l1 <- "Start is outside of incorporation signal."
+      } else {
+        l1 <- "Start is inside of incorporation signal."
+      }
+      if (end < packaging_signal[2]) {
+        l2 <- "End is outside of incorporation signal."
+      } else {
+        l2 <- "End is inside of incorporation signal."
+      }
+      if (start > packaging_signal[3]) {
+        l3 <- "Start is outside of bundling signal."
+      } else {
+        l3 <- "Start is inside of bundling signal."
+      }
+      if (end < packaging_signal[4]) {
+        l4 <- "End is outside of bundling signal."
+      } else {
+        l4 <- "End is inside of bundling signal."
+      }
+      return(paste(l1, l2, l3, l4, sep="\n")
+      )
+    }
+  }
+}
+
 get_color <- function(nuc) {
   COLOR_MAP[[nuc]]
 }

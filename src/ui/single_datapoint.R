@@ -9,7 +9,10 @@ single_datapoint_tab <- tabItem(tabName="single_datapoint",
       " to select a data point there at the bottom of the page.",
       br(),
       br(),
-      verbatimTextOutput("single_datapoint_info")
+      verbatimTextOutput("single_datapoint_info"),
+      br(),
+      "packaging signal",
+      verbatimTextOutput("single_datapoint_packaging_signal_info")
     ),
     box(
       title="Start site",
