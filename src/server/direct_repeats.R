@@ -120,7 +120,6 @@ create_direct_repeats_plot <- function(correction) {
 
   if (correction == "Yes") {
     obs_df <- add_correction(obs_df)
-    exp_df <- add_correction(exp_df)
   }
 
   plot_df <- merge(obs_df, exp_df, all=TRUE)
