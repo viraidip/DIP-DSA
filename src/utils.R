@@ -20,6 +20,9 @@ run_prechecks <- function() {
 
 get_seq <- function(strain, segment) {
   path <- file.path(FASTAPATH, strain, paste(segment, ".fasta", sep=""))
+  if (!file.exists(path)) {
+    return(NULL)
+  }
   fasta <- readDNAStringSet(path)
   return(RNAString(fasta[[1]]))
 }

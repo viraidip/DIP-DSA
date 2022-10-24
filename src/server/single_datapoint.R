@@ -28,10 +28,15 @@ get_color <- function(nuc) {
 }
 
 plot_deletion_site_window <- function(df, row, strain, pos) {
+
   segment <- df[row, "Segment"]
   # adjust by 1 if End site is given, to have indexing right afterwards
   position_int <- ifelse(pos == "End", df[row, pos]-1, df[row, pos])
   sequence <- get_seq(strain, segment)
+  print(sequence)
+  if (is.null(sequence)) {
+    return(0)
+  }
   
   window <- subseq(sequence, start=position_int-4, end=position_int+5)
   nucleotide_list <- unlist(strsplit(as.character(window), split=""))
