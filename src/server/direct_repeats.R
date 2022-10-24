@@ -38,17 +38,22 @@ create_direct_repeats_data <- function(df, strain, segment, flattened) {
   # load observed data
   df <- df[df$Segment == segment,]
   df <- subset(df, select=-c(Segment))
-  if (flattened == "flattened") {
-    df$NGS_read_count[df$NGS_read_count != 1] <- 1
-  }
 
   # load sequence
   sequence <- get_seq(strain, segment)
 
-  # count nuc dist around deletion site
-  count_df <- df
+  # include NGS count or not
+  if (flattened == "flattened") {
+    df$NGS_read_count[df$NGS_read_count != 1] <- 1
+    count_df <- df
+  } else {
+    count_df <- data.frame(Start=integer(), End=integer(), NGS_read_count=integer())
+    for (i in 1:nrow(df)) {
+      count_df <- rbind(count_df, df[rep(i, df[i,3]),])
+    }
+  }
   count_df["group"] <- rep("observed", nrow(count_df))
- 
+
   # create sampling data
   n_samples <- nrow(df) * 5
   sampling_df <- create_direct_repeat_sampling_data(df, n_samples, sequence)
@@ -89,7 +94,6 @@ create_direct_repeats_plot <- function(correction) {
   path <- file.path(TEMPPATH, "direct_repeats_temp.txt")
   n_samples <- strtoi(readLines(path))
 
-  df$direct_repeats <- df$direct_repeats * df$NGS_read_count
   obs_df <- df[df$group == "observed", ]
   exp_df <- df[df$group == "expected", ]
 
