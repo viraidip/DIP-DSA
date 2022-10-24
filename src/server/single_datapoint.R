@@ -33,7 +33,6 @@ plot_deletion_site_window <- function(df, row, strain, pos) {
   # adjust by 1 if End site is given, to have indexing right afterwards
   position_int <- ifelse(pos == "End", df[row, pos]-1, df[row, pos])
   sequence <- get_seq(strain, segment)
-  print(sequence)
   if (is.null(sequence)) {
     return(0)
   }
