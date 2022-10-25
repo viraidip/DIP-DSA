@@ -1,4 +1,3 @@
-library(comprehenr)
 
 counting_routine <- function(l, window, letter, ngs_read_count) {
   count_indices <- unlist(gregexpr(letter, window))

@@ -2,8 +2,13 @@ library(shiny)
 library(shinydashboard)
 library(ggplot2)
 library(DT)
-library(shinyWidgets)
 library(plotly)
+
+library("Biostrings")
+library(hash)
+library(jsonlite)
+
+library(comprehenr)
 
 source("utils.R")
 

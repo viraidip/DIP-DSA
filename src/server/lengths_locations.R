@@ -1,3 +1,4 @@
+
 create_locations_plot <- function(df, strain, segment, flattened) {
   # slice df by segment, reformat and bind on position and NGS count
   df <- df[df$Segment == segment, ]
