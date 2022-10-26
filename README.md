@@ -50,6 +50,11 @@ It will automatically open the application on http://localhost:1234
 
 ### Example dataset
 
+When uploading a custom data set the user has to provide the data in a specific
+format. It is a csv file with four columns. The order correct ordering of the
+columns is crucial! For more information about the content see the following
+table:
+
 |                 | Column1 | Column2  | Column3 | Column4      |
 |-----------------|---------|----------|---------|--------------|
 | header names    | Segment                                              | Start                               |End                                | NGS_read_count                                                 |
