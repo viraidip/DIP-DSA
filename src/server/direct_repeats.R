@@ -24,6 +24,7 @@ generate_positions <- function(pos, n_samples) {
   start <- floor(quantile(pos, probs=seq(0, 1, 1/10))[[2]])
   end <- floor(quantile(pos, probs=seq(0, 1, 1/10))[[10]])
   random_positions <- floor(runif(n_samples, min=start, max=end+1))
+  return(random_positions)
 }
 
 create_direct_repeat_sampling_data <- function(df, n_samples, sequence) {
@@ -31,7 +32,7 @@ create_direct_repeat_sampling_data <- function(df, n_samples, sequence) {
   End <- generate_positions(df[, "End"], n_samples)
   NGS_read_count <- rep(1, n_samples)
 
-  data.frame(Start, End, NGS_read_count)
+  return(data.frame(Start, End, NGS_read_count))
 }
 
 create_direct_repeats_data <- function(df, strain, segment, flattened) {

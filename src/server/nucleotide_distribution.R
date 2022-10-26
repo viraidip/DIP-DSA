@@ -34,7 +34,7 @@ create_sampling_data <- function(pos, n_samples, sequence) {
   end <- floor(quantile(pos, probs=seq(0, 1, 1/10))[[10]])
   random_positions <- floor(runif(n_samples, min=start, max=end+1))
   random_counts <- rep(1, n_samples)
-  count_nuc_dist(sequence, random_positions, random_counts)
+  return(count_nuc_dist(sequence, random_positions, random_counts))
 }
 
 create_nuc_dist_data <- function(df, strain, segment, flattened) {

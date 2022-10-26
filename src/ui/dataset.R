@@ -1,7 +1,3 @@
-library(tools)
-
-all_datasets <- tools::file_path_sans_ext(list.files(DATASETSPATH))
-
 dataset_tab <- tabItem(tabName="dataset",
   h1("Select an existing dataset or load a custom one"),
   fluidRow(
@@ -10,7 +6,7 @@ dataset_tab <- tabItem(tabName="dataset",
       selectInput(
         inputId="strain",
         label="select an existing dataset:",
-        choices=all_datasets
+        choices=tools::file_path_sans_ext(list.files(DATASETSPATH))
       ),
       "More info about the predefined datasets can be found in the",
       actionLink("link_to_about_tab", "About"),

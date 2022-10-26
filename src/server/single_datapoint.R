@@ -1,7 +1,7 @@
 
 create_single_datapoint_info <- function(df, row, strain) {
   if (is.null(row)) {
-    paste("No data point selected.")
+    return("No data point selected.")
   }
   else {
     segment <- df[row, "Segment"]
@@ -25,10 +25,10 @@ create_single_datapoint_info <- function(df, row, strain) {
 
 create_single_datapoint_packaging_signal_info <- function(df, row, strain, segment) {
   if (is.null(row)) {
-    paste("No data point selected.")
+    return("No data point selected.")
   } else {
     if (!packaging_signal_data_exists(strain)) {
-      paste("No packaging signal data available.")
+      return("No packaging signal data available.")
     }
     else {
       start <- df[row, "Start"]
@@ -60,12 +60,12 @@ create_single_datapoint_packaging_signal_info <- function(df, row, strain, segme
   }
 }
 
+# is used in lapply(), that is why it is created as extra function
 get_color <- function(nuc) {
-  COLOR_MAP[[nuc]]
+  return(COLOR_MAP[[nuc]])
 }
 
 plot_deletion_site_window <- function(df, row, strain, pos) {
-
   segment <- df[row, "Segment"]
   # adjust by 1 if End site is given, to have indexing right afterwards
   position_int <- ifelse(pos == "End", df[row, pos]-1, df[row, pos])
@@ -100,6 +100,5 @@ plot_deletion_site_window <- function(df, row, strain, pos) {
   text(x=c(0, 11), y=0.2, label=nucleotide_indexing)
   text(x=ifelse(pos == "End", 2, 9), y=1.9, "deleted sequence")
   text(x=ifelse(pos == "End", 9, 2), y=1.9, "remaining sequence")
-
 }
 

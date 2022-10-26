@@ -1,5 +1,5 @@
 
-packages = list("shiny", "shinydashboard", "ggplot2", "DT", "shinyWidgets", "tools", "comprehenr",  "hash")
+packages = list("shiny", "shinydashboard", "ggplot2", "DT", "comprehenr", "hash", "plotly", "jsonlite", "tools")
 
 install.packages(setdiff(packages, rownames(installed.packages())))
 
@@ -9,3 +9,4 @@ if (!require("Biostrings")) {
   }
   BiocManager::install("Biostrings")
 }
+

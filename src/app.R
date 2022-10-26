@@ -6,6 +6,7 @@ library(jsonlite)
 library(plotly)
 library(shiny)
 library(shinydashboard)
+library(tools)
 
 library("Biostrings")
 
@@ -117,16 +118,17 @@ server <- function(input, output, session) {
     # select the new submitted dataset
     all_datasets <- tools::file_path_sans_ext(list.files(DATASETSPATH))
     updateSelectInput(
-      session, inputId="strain", label="strain",choices=all_datasets,
+      session,
+      inputId="strain",
+      label="strain",
+      choices=all_datasets,
       selected=input$upload_strain
-      )
+    )
   })
 
   output$dataset_table <- renderDataTable(
     datatable(load_dataset(),
-      options = list(
-        pageLength=100
-      ),
+      options=list(pageLength=100),
       selection="single"
     )
   )
@@ -214,6 +216,7 @@ server <- function(input, output, session) {
     update_plots()
   })
 
+  # function is called, when one of the three inputs is changed (lines above)
   update_plots <- function() {
     output$nuc_dist_start_A <- renderPlotly({
       create_nuc_dist_plot("Start", "A")
@@ -241,6 +244,7 @@ server <- function(input, output, session) {
       create_nuc_dist_plot("End", "U")
     })
   }
+
 
 ### direct repeats ###
   observeEvent(input$strain, {
@@ -278,6 +282,7 @@ server <- function(input, output, session) {
     create_direct_repeats_plot(input$direct_repeats_correction)
   })
 
+
 ### regression ###
   output$regression_plot <- renderPlot({
     create_regression_plot(
@@ -287,12 +292,14 @@ server <- function(input, output, session) {
     )
   })
 
+
 ### about ###
   output$dataset_info_table <- renderTable({
     create_dataset_info_table()
   })
 
 }
+
 
 ###########
 ### APP ###

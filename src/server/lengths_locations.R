@@ -49,3 +49,4 @@ create_lengths_plot <- function(df, segment, strain, flattened, n_bins) {
     geom_histogram(binwidth=n_bins)
   ggplotly(p)
 }
+
