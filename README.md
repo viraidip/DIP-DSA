@@ -50,13 +50,9 @@ It will automatically open the application on http://localhost:1234
 
 ### Example dataset
 
-| Name           | Strain                                        | Timepoint              | Start MOI  | DOI                      |
-|----------------|-----------------------------------------------|------------------------|------------|--------------------------|
-| California2007 | A/California/07/2009 (A/Cal07; seasonal H1N1) | 24 hpi                 | “high-MOI” | 10.1128/JVI    .00354-19 |
-| NewCaledonia   | A/New Caledonia/1999 (A/NC99; seasonal H1N1   | 24 hpi                 | “high-MOI” | 10.1128/JVI.003    54-19 |
-| Lee            | B/Lee/1940 (B/Lee; lab-adapted IBV)           | 24 hpi                 | “high-MOI” | 10.1128/JVI.00354-19     |
-| Perth          | A/Perth/16/2009 (A/Perth; seasonal H3N2)      | 24 hpi                 | “high-MOI” | 10.1128/JVI.00354-19     |
-| PR8_Alnaji     | A/Puerto Rico/8/1934 (PR8)                    | "3 hpi, 6 hpi, 24 hpi" | 10         | 10.1128/mBio.02959-21    |
-| PR8_Pelz       | A/PR/8/34                                     | Over 21 days           | 0.1        | 10.1128/JVI.01174-21     |
-| PR8_Kupke      | A/PR/8/34 (PR8)                               | "0 hpi, 12 hpi"        | 10         | 10.3390/v12010071        |
+|                 | Column1 | Column2  | Column3 | Column4      |
+|-----------------|---------|----------|---------|--------------|
+| header names    | Segment                                              | Start                               |End                                | NGS_read_count                                                 |
+| column data type| character                                            | integer                             | integer                           | integer                                                        |
+| description     | Name of the segment that the DI RNA is comming from  | Start position of the deletion site | End position of the deletion site | Number of counts in the NGS data of the specific DI RNA sample |
 
