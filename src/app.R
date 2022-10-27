@@ -1,3 +1,4 @@
+library(bslib)
 library(comprehenr)
 library(DT)
 library(ggplot2)
@@ -27,7 +28,7 @@ source('ui/about.R', local=TRUE)
 
 ui <- bootstrapPage(
   dashboardPage(
-    skin="red",
+    skin="green",
     dashboardHeader(title="DIP DSA"),
     dashboardSidebar(
       sidebarMenu(
