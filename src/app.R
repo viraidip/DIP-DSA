@@ -107,8 +107,18 @@ server <- function(input, output, session) {
       input$upload_NP_file$datapath, input$upload_NA_file$datapath,
       input$upload_M_file$datapath, input$upload_NS_file$datapath
     )
-    to_list <- list(file.path(DATASETSPATH, paste(input$upload_strain, ".csv", sep="")))
-    fasta_path <- file.path(FASTAPATH, input$upload_strain)
+    strain <- input$upload_strain
+    file <- file.path(DATASETSPATH, paste(strain, ".csv", sep=""))
+
+    # check if file already exists and rename if so
+    idx <- 0
+    while (file.exists(file)) {
+      idx <- idx + 1
+      file <- file.path(DATASETSPATH, paste(strain, "_", idx, ".csv", sep=""))
+    }
+
+    to_list <- list(file)
+    fasta_path <- file.path(FASTAPATH, paste(strain, "_", idx, sep=""))
     dir.create(fasta_path)
     for (s in SEGMENTS) {
       to_list <- append(to_list, file.path(fasta_path, paste(s, ".fasta", sep="")))
@@ -122,7 +132,7 @@ server <- function(input, output, session) {
       inputId="strain",
       label="strain",
       choices=all_datasets,
-      selected=input$upload_strain
+      selected=strain
     )
   })
 
