@@ -112,12 +112,19 @@ about_tab <- tabItem(tabName="about",
     box(
       title="What are 'Direct Repeats'?",
       width=12,
-      "TODO: include an image",
-      br(),
       "The sequence of the RNA before the starting point and end point can be",
       "the same (is repeated). If this is so it is called a 'direct repat'.",
       "Direct Repeats can be of different length and are disscussed to be a",
-      "driving factor in the generation of de novo DI RNAs."
+      "driving factor in the generation of de novo DI RNAs.",
+      br(),
+      tags$img(src="direct_repeats.png"),
+      br(),
+      "The actual Start and End point of a DIP that has a direct repeat",
+      "longer than 0 can not be determined certainly. In the given image a",
+      "direct repeat of length 3 is given. There are four possible ways on",
+      "how it could have been created during the experiment. If n is the",
+      "length of the direct repeat, there are always n+1 options on how it",
+      "could have been created."
     ),
     box(
       title="Contact information",
