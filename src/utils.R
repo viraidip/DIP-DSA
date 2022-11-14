@@ -47,12 +47,12 @@ get_stat_symbol <- function(p) {
 }
 
 packaging_signal_data_exists <- function(strain) {
-  path <- file.path(DATAPATH, "packaging_signal", paste(strain, ".json", sep=""))
+  path <- file.path(DATASETSPATH, strain, "packaging_signal.json")
   return(file.exists(path))
 }
 
 load_packaging_signal_data <- function(strain) {
-  path <- file.path(DATAPATH, "packaging_signal", paste(strain, ".json", sep=""))
+  path <- file.path(DATASETSPATH, strain, "packaging_signal.json")
   data <- read_json(path)
   return(data)
 }
