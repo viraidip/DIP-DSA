@@ -21,8 +21,14 @@ dataset_tab <- tabItem(tabName="dataset",
     box(
       width=12,
       title="Upload dataset",
-      textInput(
+      selectizeInput(
         inputId="upload_strain",
+        label="Select the name of the strain of the custom dataset or write a new one:",
+        choices=list.dirs(DATASETSPATH, full.names=FALSE, recursive=FALSE),
+        options=list(create=TRUE)
+      ),
+      textInput(
+        inputId="upload_dataset",
         label="Write the name of the strain of the custom dataset:"
       ),
       fileInput(

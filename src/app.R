@@ -101,7 +101,8 @@ server <- function(input, output, session) {
   observeEvent(input$dataset_submit, {
     # check if all fields are filled
     req(
-      input$upload_strain, input$upload_dataset_file,
+      input$upload_strain, input$upload_dataset,
+      input$upload_dataset_file,
       input$upload_PB2_file, input$upload_PB1_file,
       input$upload_PA_file, input$upload_HA_file,
       input$upload_NP_file, input$upload_NA_file,
@@ -116,33 +117,53 @@ server <- function(input, output, session) {
       input$upload_NP_file$datapath, input$upload_NA_file$datapath,
       input$upload_M_file$datapath, input$upload_NS_file$datapath
     )
-    strain <- input$upload_strain
-    file <- file.path(DATASETSPATH, paste(strain, ".csv", sep=""))
+
+    strain_path <- file.path(DATASETSPATH, input$upload_strain)
+    # check if strain exists create a folder if not
+    if (!dir.exists(strain_path)) {
+      dir.create(strain_path)
+      update_dataset <- FALSE
+    } else {
+      update_dataset <- TRUE
+    }
+
+    dataset_name <- input$upload_dataset
+    file <- file.path(strain_path, paste(dataset_name, ".csv", sep=""))
 
     # check if file already exists and rename if so
     idx <- 0
     while (file.exists(file)) {
       idx <- idx + 1
-      file <- file.path(DATASETSPATH, paste(strain, "_", idx, ".csv", sep=""))
+      file <- file.path(DATASETSPATH, paste(dataset_name, "_", idx, ".csv", sep=""))
     }
 
     to_list <- list(file)
-    fasta_path <- file.path(FASTAPATH, paste(strain, "_", idx, sep=""))
-    dir.create(fasta_path)
+    fasta_path <- file.path(strain_path, "fastas")
+    if (!dir.exists(fasta_path)) {
+      dir.create(fasta_path)
+    }
+
     for (s in SEGMENTS) {
       to_list <- append(to_list, file.path(fasta_path, paste(s, ".fasta", sep="")))
     }
     move_files(from_list, to_list)
 
     # select the new submitted dataset
-    all_datasets <- tools::file_path_sans_ext(list.files(DATASETSPATH))
     updateSelectInput(
       session,
       inputId="strain",
-      label="strain",
-      choices=all_datasets,
-      selected=strain
+      choices=list.dirs(DATASETSPATH, full.names=FALSE, recursive=FALSE),
+      selected=input$upload_strain
     )
+    if (update_dataset) {
+      path <- file.path(DATASETSPATH, input$upload_strain)
+      updateSelectInput(
+        session,
+        inputId="dataset",
+        choices=tools::file_path_sans_ext(list.files(path, pattern="csv")),
+        selected=input$upload_dataset
+      )
+    }
   })
 
   output$dataset_table <- renderDataTable(
