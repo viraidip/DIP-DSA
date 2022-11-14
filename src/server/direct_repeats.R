@@ -152,7 +152,9 @@ create_direct_repeats_plot <- function(correction) {
   p <- ggplot(data=plot_df, aes(x=length, y=freq, fill=group)) +
     geom_bar(stat="identity", position=position_dodge()) +
     ylim(0, 1.0) +
-    ggtitle(paste("frequency of different direct repeat lengths (n=", n_samples, ") ", symbol, sep=""))
+    xlab("Length of direct repeat") +
+    ylab("Relative occurrence") +
+    ggtitle(paste("Frequency of different direct repeat lengths (n=", n_samples, ") ", symbol, sep=""))
   ggplotly(p)
 }
 

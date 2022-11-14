@@ -16,7 +16,9 @@ create_locations_plot <- function(df, strain, segment, flattened) {
   }
 
   p <- ggplot(df, aes(x=Position, y=NGS_read_count, fill=Class)) +
-    geom_bar(stat="identity")
+    geom_bar(stat="identity") +
+    xlab("Nucleotide position on segment") +
+    ylab("NGS read count")
   # add info about packaging signal if it exists
   if (packaging_signal_data_exists(strain)) {
     packaging_signal <- load_packaging_signal_data(strain)
@@ -46,7 +48,9 @@ create_lengths_plot <- function(df, segment, strain, flattened, n_bins) {
   }
 
   p <- ggplot(df, aes(x=Length)) +
-    geom_histogram(binwidth=n_bins)
+    geom_histogram(binwidth=n_bins) +
+    xlab("Length of DI candidate") +
+    ylab("Number of occurrences")
   ggplotly(p)
 }
 

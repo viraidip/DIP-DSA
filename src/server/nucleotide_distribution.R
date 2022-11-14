@@ -110,6 +110,8 @@ create_nuc_dist_plot <- function(pos, nuc) {
   p <- ggplot(data=df, aes(x=position, y=rel_occurrence, fill=nucleotide, alpha=group)) +
     geom_bar(stat="identity", fill=COLOR_MAP[[nuc]], color="black", position=position_dodge()) +
     ylim(0, 0.8) +
+    xlab("Position") +
+    ylab("Relative occurrence") +
     scale_x_continuous(breaks=position, labels=labels) +
     annotate("text", x=position, y=y_text, label=symbols) +
     geom_rect(xmin=x_min, xmax=x_max, ymin=-1, ymax=1, alpha=0.5, fill="grey") +

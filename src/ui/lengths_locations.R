@@ -13,7 +13,7 @@ lengths_locations_tab <- tabItem(tabName="lengths_locations",
       plotlyOutput("locations_plot")
     ),
     box(
-      title="Lengths of remaining sequence (without deleted part)",
+      title="Lengths of DI RNAs)",
       width=12,
       radioButtons(
         inputId="lengths_flattened",
