@@ -79,11 +79,19 @@ source("server/about.R", local=TRUE)
 
 server <- function(input, output, session) {
 ### load/select dataset ###
+  observe({
+    path <- file.path(DATASETSPATH, input$strain)
+    choices <- tools::file_path_sans_ext(list.files(path, pattern="csv"))
+    updateSelectInput(session, "dataset", choices=choices)
+  })
+
   load_dataset <- reactive({
-    path <- file.path(DATASETSPATH, paste(input$strain, ".csv", sep=""))
+    path <- file.path(DATASETSPATH, input$strain, paste(input$dataset, ".csv", sep=""))
     col_names <- c("Segment", "Start", "End", "NGS_read_count")
     col_classes <- c("character", "integer", "integer", "integer")
-    read.csv(path, na.strings=c("NaN"), col.names=col_names, colClasses=col_classes)
+    if (file.exists(path)) {
+      read.csv(path, na.strings=c("NaN"), col.names=col_names, colClasses=col_classes)
+    }
   })
 
   observeEvent(input$link_to_about_tab, {
@@ -139,7 +147,6 @@ server <- function(input, output, session) {
 
   output$dataset_table <- renderDataTable(
     datatable(load_dataset(),
-      options=list(pageLength=100),
       selection="single"
     )
   )
@@ -202,7 +209,7 @@ server <- function(input, output, session) {
 
 
 ### nucleotide distribution ###
-  observeEvent(input$strain, {
+  observeEvent(input$dataset, {
     create_nuc_dist_data(load_dataset(),
       input$strain,
       input$selected_segment,
@@ -258,7 +265,7 @@ server <- function(input, output, session) {
 
 
 ### direct repeats ###
-  observeEvent(input$strain, {
+  observeEvent(input$dataset, {
     create_direct_repeats_data(load_dataset(),
       input$strain,
       input$selected_segment,

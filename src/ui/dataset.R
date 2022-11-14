@@ -2,15 +2,21 @@ dataset_tab <- tabItem(tabName="dataset",
   h1("Select an existing dataset or load a custom one"),
   fluidRow(
     box(
-      title="Select dataset",
-      selectInput(
-        inputId="strain",
-        label="select an existing dataset:",
-        choices=tools::file_path_sans_ext(list.files(DATASETSPATH))
-      ),
+      width=12,
+      title="Select existing data set",
       "More info about the predefined datasets can be found in the",
       actionLink("link_to_about_tab", "About"),
-      "tab."
+      "tab.",
+      selectInput(
+        inputId="strain",
+        label="select a strain:",
+        choices=list.dirs(DATASETSPATH, full.names=FALSE, recursive=FALSE)
+      ),
+      selectInput(
+        inputId="dataset",
+        label="select an existing dataset:",
+        choices="Alnaji2019"
+      )
     ),
     box(
       width=12,
