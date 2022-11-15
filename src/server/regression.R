@@ -41,7 +41,7 @@ create_regression_plot <- function(df, strain, segments) {
     annotate(geom="text", x=intersection, y=0, label=intersection_label, hjust=0) +
     xlim(0, max(data$segment_length)) +
     ylim(0, max(data$relative_count)) +
-    xlab("Lenght of segment") +
+    xlab("Length of segment") +
     ylab("Relative occurrence")
 }
 

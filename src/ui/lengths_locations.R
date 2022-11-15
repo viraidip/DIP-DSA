@@ -10,10 +10,12 @@ lengths_locations_tab <- tabItem(tabName="lengths_locations",
         choices=c("flattened", "unflattened"),
         inline=TRUE
       ),
+      "Locations of all start and end positions of the deletion sites are",
+      "plotted in reference to the full sequence.",
       plotlyOutput("locations_plot")
     ),
     box(
-      title="Lengths of DI RNAs)",
+      title="Lengths of DI RNAs",
       width=12,
       radioButtons(
         inputId="lengths_flattened",
@@ -26,6 +28,8 @@ lengths_locations_tab <- tabItem(tabName="lengths_locations",
         label="Set size of bins for histogram",
         1, 100, 20
       ),
+      "The length of the single DI RNAs is plotted as a histogram, showing the",
+      "number of occurrences for each length.",
       plotlyOutput("lengths_plot")
     )
   )

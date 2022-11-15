@@ -11,6 +11,10 @@ regression_tab <- tabItem(tabName="regression",
         selected=SEGMENTS,
         multiple=TRUE
       ),
+      "The relative occurrence of each segment in the full dataset is",
+      "calculated and plotted against the length of the segment. The expected",
+      "values are the length of a single segment divided by the sum of all",
+      "segment lengths.",
       plotOutput("regression_plot")
     )
   )

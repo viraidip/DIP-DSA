@@ -20,7 +20,7 @@ dataset_tab <- tabItem(tabName="dataset",
     ),
     box(
       width=12,
-      title="Upload dataset",
+      title="Upload new dataset",
       selectizeInput(
         inputId="upload_strain",
         label="Select the name of the strain of the custom dataset or write a new one:",

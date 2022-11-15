@@ -9,19 +9,24 @@ single_datapoint_tab <- tabItem(tabName="single_datapoint",
       " to select a data point there at the bottom of the page.",
       br(),
       br(),
+      tags$b("General info about the selected data point:"),
       verbatimTextOutput("single_datapoint_info"),
       br(),
-      "packaging signal",
+      tags$b("Information about the packaging signal (if available):"),
       verbatimTextOutput("single_datapoint_packaging_signal_info")
     ),
     box(
-      title="Start site",
+      title="Nucleotides at start of deletion site",
       width=6,
+      "Overview of the nucleotides directly at the start of the deletion site.",
+      "The white area is in the DI RNA sequence, the grey area is deleted.",
       plotOutput("single_datapoint_start_window")
     ),
     box(
-      title="End site",
+      title="Nucleotides at end of deletion site",
       width=6,
+      "Overview of the nucleotides directly at the end of the deletion site.",
+      "The white area is in the DI RNA sequence, the grey area is deleted.",
       plotOutput("single_datapoint_end_window")
     )
   )
