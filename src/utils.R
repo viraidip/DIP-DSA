@@ -57,3 +57,11 @@ load_packaging_signal_data <- function(strain) {
   return(data)
 }
 
+# reformat name of strain folder
+# needs to be called everytime the strain folder is accessed
+# folder is e.g. A_California_07_2009
+# but it is displayed and can be selected as A/California/07/2009
+format_strain_name <- function(strain) {
+  return(gsub(pattern="/", replacement="_", x=strain))
+}
+

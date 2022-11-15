@@ -10,7 +10,7 @@ dataset_tab <- tabItem(tabName="dataset",
       selectInput(
         inputId="strain",
         label="select a strain:",
-        choices=list.dirs(DATASETSPATH, full.names=FALSE, recursive=FALSE)
+        choices=gsub("_", "/", list.dirs(DATASETSPATH, full.names=FALSE, recursive=FALSE))
       ),
       selectInput(
         inputId="dataset",
@@ -24,7 +24,7 @@ dataset_tab <- tabItem(tabName="dataset",
       selectizeInput(
         inputId="upload_strain",
         label="Select the name of the strain of the custom dataset or write a new one:",
-        choices=list.dirs(DATASETSPATH, full.names=FALSE, recursive=FALSE),
+        choices=gsub("_", "/", list.dirs(DATASETSPATH, full.names=FALSE, recursive=FALSE)),
         options=list(create=TRUE)
       ),
       textInput(

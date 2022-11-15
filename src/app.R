@@ -80,13 +80,13 @@ source("server/about.R", local=TRUE)
 server <- function(input, output, session) {
 ### load/select dataset ###
   observe({
-    path <- file.path(DATASETSPATH, input$strain)
-    choices <- tools::file_path_sans_ext(list.files(path, pattern="csv"))
-    updateSelectInput(session, "dataset", choices=choices)
+    path <- file.path(DATASETSPATH, format_strain_name(input$strain))
+    dataset_names <- tools::file_path_sans_ext(list.files(path, pattern="csv"))
+    updateSelectInput(session, "dataset", choices=dataset_names)
   })
 
   load_dataset <- reactive({
-    path <- file.path(DATASETSPATH, input$strain, paste(input$dataset, ".csv", sep=""))
+    path <- file.path(DATASETSPATH, format_strain_name(input$strain), paste(input$dataset, ".csv", sep=""))
     col_names <- c("Segment", "Start", "End", "NGS_read_count")
     col_classes <- c("character", "integer", "integer", "integer")
     if (file.exists(path)) {
@@ -118,7 +118,9 @@ server <- function(input, output, session) {
       input$upload_M_file$datapath, input$upload_NS_file$datapath
     )
 
-    strain_path <- file.path(DATASETSPATH, input$upload_strain)
+    upload_strain <- format_strain_name(input$upload_strain)
+    
+    strain_path <- file.path(DATASETSPATH, upload_strain)
     # check if strain exists create a folder if not
     if (!dir.exists(strain_path)) {
       dir.create(strain_path)
@@ -134,7 +136,7 @@ server <- function(input, output, session) {
     idx <- 0
     while (file.exists(file)) {
       idx <- idx + 1
-      file <- file.path(DATASETSPATH, paste(dataset_name, "_", idx, ".csv", sep=""))
+      file <- file.path(strain_path, paste(dataset_name, "_", idx, ".csv", sep=""))
     }
 
     to_list <- list(file)
@@ -156,12 +158,11 @@ server <- function(input, output, session) {
       selected=input$upload_strain
     )
     if (update_dataset) {
-      path <- file.path(DATASETSPATH, input$upload_strain)
       updateSelectInput(
         session,
         inputId="dataset",
-        choices=tools::file_path_sans_ext(list.files(path, pattern="csv")),
-        selected=input$upload_dataset
+        choices=tools::file_path_sans_ext(list.files(strain_path, pattern="csv")),
+        selected=dataset_name
       )
     }
   })
@@ -213,7 +214,7 @@ server <- function(input, output, session) {
 ### lenghts and locations ###
   output$locations_plot <- renderPlotly({
     create_locations_plot(load_dataset(),
-      input$strain,
+      format_strain_name(input$strain),
       input$selected_segment,
       input$locations_flattened
     )
@@ -222,7 +223,7 @@ server <- function(input, output, session) {
   output$lengths_plot <- renderPlotly({
     create_lengths_plot(load_dataset(),
       input$selected_segment,
-      input$strain,
+      format_strain_name(input$strain),
       input$lengths_flattened,
       input$lengths_bins
     )
@@ -232,31 +233,31 @@ server <- function(input, output, session) {
 ### nucleotide distribution ###
   observeEvent(input$dataset, {
     create_nuc_dist_data(load_dataset(),
-      input$strain,
+      format_strain_name(input$strain),
       input$selected_segment,
       input$nuc_dist_flattened
     )
-    update_plots()
+    update_nuc_dist_plots()
   })
   observeEvent(input$selected_segment, {
     create_nuc_dist_data(load_dataset(),
-      input$strain,
+      format_strain_name(input$strain),
       input$selected_segment,
       input$nuc_dist_flattened
     )
-    update_plots()
+    update_nuc_dist_plots()
   })
   observeEvent(input$nuc_dist_flattened, {
     create_nuc_dist_data(load_dataset(),
-      input$strain,
+      format_strain_name(input$strain),
       input$selected_segment,
       input$nuc_dist_flattened
     )
-    update_plots()
+    update_nuc_dist_plots()
   })
 
   # function is called, when one of the three inputs is changed (lines above)
-  update_plots <- function() {
+  update_nuc_dist_plots <- function() {
     output$nuc_dist_start_A <- renderPlotly({
       create_nuc_dist_plot("Start", "A")
     })
@@ -288,7 +289,7 @@ server <- function(input, output, session) {
 ### direct repeats ###
   observeEvent(input$dataset, {
     create_direct_repeats_data(load_dataset(),
-      input$strain,
+      format_strain_name(input$strain),
       input$selected_segment,
       input$direct_repeats_flattened
     )
@@ -298,7 +299,7 @@ server <- function(input, output, session) {
   })
   observeEvent(input$selected_segment, {
     create_direct_repeats_data(load_dataset(),
-      input$strain,
+      format_strain_name(input$strain),
       input$selected_segment,
       input$direct_repeats_flattened
     )
@@ -308,7 +309,7 @@ server <- function(input, output, session) {
   })
   observeEvent(input$direct_repeats_flattened, {
     create_direct_repeats_data(load_dataset(),
-      input$strain,
+      format_strain_name(input$strain),
       input$selected_segment,
       input$direct_repeats_flattened
     )
@@ -326,7 +327,7 @@ server <- function(input, output, session) {
   output$regression_plot <- renderPlot({
     create_regression_plot(
       load_dataset(),
-      input$strain,
+      format_strain_name(input$strain),
       input$regression_segments
     )
   })
