@@ -1,8 +1,8 @@
-Name,Strain,Timepoint,Start MOI,DOI
-California2007,A/California/07/2009 (A/Cal07; seasonal H1N1),24 hpi,“high-MOI”,10.1128/JVI.00354-19
-NewCaledonia,A/New Caledonia/1999 (A/NC99; seasonal H1N1,24 hpi,“high-MOI”,10.1128/JVI.00354-19
-Lee,B/Lee/1940 (B/Lee; lab-adapted IBV),24 hpi,“high-MOI”,10.1128/JVI.00354-19
-Perth,A/Perth/16/2009 (A/Perth; seasonal H3N2),24 hpi,“high-MOI”,10.1128/JVI.00354-19
-PR8_Alnaji,A/Puerto Rico/8/1934 (PR8),"3 hpi, 6 hpi, 24 hpi",10,10.1128/mBio.02959-21
-PR8_Pelz,A/PR/8/34,Over 21 days,0.1,10.1128/JVI.01174-21
-PR8_Kupke,A/PR/8/34 (PR8),"0 hpi, 12 hpi",10,10.3390/v12010071
+Strain,Name,Timepoint,Start MOI,DOI
+A/California/07/2009,Alnaji2019,24 hpi,“high-MOI”,10.1128/JVI.00354-19
+A/New Caledonia/1999,Alnaji2019,24 hpi,“high-MOI”,10.1128/JVI.00354-19
+B/Lee/1940,Alnaji2019,24 hpi,“high-MOI”,10.1128/JVI.00354-19
+A/Perth/16/2009,Alnaji2019,24 hpi,“high-MOI”,10.1128/JVI.00354-19
+A/Puerto Rico/8/1934,Alnaji2021,"3 hpi, 6 hpi, 24 hpi",10,10.1128/mBio.02959-21
+A/Puerto Rico/8/1934,Pelz2021,Over 21 days,0.1,10.1128/JVI.01174-21
+A/Puerto Rico/8/1934,Kupke2020,"0 hpi, 12 hpi",10,10.3390/v12010071
