@@ -34,22 +34,46 @@ ui <- bootstrapPage(
     dashboardSidebar(
       sidebarMenu(
         id="sidebarmenu",
-        menuItem("(Up-)load Dataset", tabName="load_dataset", icon=icon("database")),
-        menuItem("Data set overview", tabName="dataset", icon=icon("database")),
-        menuItem("Inspect single datapoint", tabName="single_datapoint", icon=icon("magnifying-glass")),
+        menuItem("(Up-)load Dataset",
+          tabName="load_dataset",
+          icon=icon("database")
+        ),
+        menuItem("Data set overview",
+          tabName="dataset",
+          icon=icon("table")
+        ),
+        menuItem("Inspect single datapoint",
+          tabName="single_datapoint",
+          icon=icon("magnifying-glass")
+        ),
         hr(),
         selectInput(
           inputId="selected_segment",
           label="Select segment",
           choices=SEGMENTS
         ),
-        menuItem("Lengths and Locations", tabName="lengths_locations", icon=icon("ruler-horizontal")),
-        menuItem("Nucleotide Distribution", tabName="nucleotide_distribution", icon=icon("magnifying-glass-chart")),
-        menuItem("Direct Repeats", tabName="direct_repeats", icon=icon("repeat")),
+        menuItem("Lengths and Locations",
+          tabName="lengths_locations",
+          icon=icon("ruler-horizontal")
+        ),
+        menuItem("Nucleotide Distribution",
+          tabName="nucleotide_distribution",
+          icon=icon("magnifying-glass-chart")
+        ),
+        menuItem("Direct Repeats",
+          tabName="direct_repeats",
+          icon=icon("repeat")
+        ),
         hr(),
-        menuItem("Linear Regression", tabName="regression", icon=icon("chart-line")),
+        menuItem("Linear Regression",
+          tabName="regression",
+          icon=icon("chart-line")
+        ),
         hr(),
-        menuItem("About", tabName="about", icon=icon("info"))
+        menuItem("About",
+          tabName="about",
+          icon=icon("info")
+        )
       )
     ),
     dashboardBody(
@@ -90,7 +114,10 @@ server <- function(input, output, session) {
   })
 
   load_dataset <- reactive({
-    path <- file.path(DATASETSPATH, format_strain_name(input$strain), paste(input$dataset, ".csv", sep=""))
+    path <- file.path(DATASETSPATH,
+      format_strain_name(input$strain),
+      paste(input$dataset, ".csv", sep="")
+    )
     col_names <- c("Segment", "Start", "End", "NGS_read_count")
     col_classes <- c("character", "integer", "integer", "integer")
     if (file.exists(path)) {

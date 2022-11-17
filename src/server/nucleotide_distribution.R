@@ -94,7 +94,11 @@ create_nuc_dist_plot <- function(pos, nuc) {
   # statistical testing with binom test
   x_df <- df[df$group == "observed",]
   p_df <- df[df$group == "expected",]
-  p_values <- to_list(for (i in position) binom.test(x_df[i, "rel_occurrence"] * n, n, p_df[i, "rel_occurrence"])$p.value)
+  p_values <- list()
+  for (i in position) {
+    p <- binom.test(x_df[i, "rel_occurrence"] * n, n, p_df[i, "rel_occurrence"])$p.value
+    p_values[[i]] <- p
+  }
   symbols <- lapply(p_values, get_stat_symbol)
 
   # assign x coordinates for grey shadow that marks deletion site
@@ -108,7 +112,11 @@ create_nuc_dist_plot <- function(pos, nuc) {
 
   # create a barplot
   p <- ggplot(data=df, aes(x=position, y=rel_occurrence, fill=nucleotide, alpha=group)) +
-    geom_bar(stat="identity", fill=COLOR_MAP[[nuc]], color="black", position=position_dodge()) +
+    geom_bar(stat="identity",
+      fill=COLOR_MAP[[nuc]],
+      color="black",
+      position=position_dodge()
+    ) +
     ylim(0, 0.8) +
     xlab("Position") +
     ylab("Relative occurrence") +

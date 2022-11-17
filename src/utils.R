@@ -1,4 +1,4 @@
-
+### DEFINING STATIC VALUES ###
 SEGMENTS <- c("PB2", "PB1", "PA", "HA", "NP", "NA", "M", "NS")
 
 DATAPATH <- file.path("..", "data")
@@ -9,6 +9,7 @@ TEMPPATH <- file.path(DATAPATH, "temp")
 COLOR_MAP <- hash(A="blue", C="yellow", G="green", U="red")
 NUC_MAP <- hash(A="Adenin", C="Cytosin", G="Guanin", U="Uracil")
 
+### DEFINING FUNCTIONS ###
 run_prechecks <- function() {
   if (!file.exists(TEMPPATH)) {
     dir.create(TEMPPATH)

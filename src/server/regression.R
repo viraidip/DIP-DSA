@@ -6,7 +6,10 @@ create_regression_plot <- function(df, strain, segments) {
   }
 
   # reformat df, segment length x NGS_read_count
-  data <- aggregate(list(relative_count=df$NGS_read_count), by=list(Segment=df$Segment), FUN=sum)
+  data <- aggregate(list(relative_count=df$NGS_read_count),
+    by=list(Segment=df$Segment),
+    FUN=sum
+  )
   data$relative_count <- data$relative_count / sum(data$relative_count)
 
   segment_lengths <- to_vec(for (seg in data$Segment) get_seq_len(strain, seg))
@@ -15,7 +18,7 @@ create_regression_plot <- function(df, strain, segments) {
 
   # do linear regression
   regression <- lm(relative_count ~ segment_length, data=regression_data)
-  r_squared <- summary(regression)$r.squared
+  r_squared <- format(summary(regression)$r.squared, digits=2)
   slope <- regression$coefficients["segment_length"]
   intercept <- regression$coefficients["(Intercept)"]
 
@@ -26,7 +29,8 @@ create_regression_plot <- function(df, strain, segments) {
   expected_data$group <- rep("expected", nrow(expected_data))
   data <- rbind(data, expected_data)
 
-  func_label <- paste("y =", format(intercept, digits=2), "+ x *", format(slope, digits=2), "\nR²:", format(r_squared, digits=2))
+  func <- paste("f(x) =", format(intercept, digits=2), "+ x *", format(slope, digits=2))
+  func_label <- paste(func, "\nR²:", r_squared)
 
   intersection <- -intercept/slope
   intersection_label <- paste("(", format(intersection, digits=0), ", 0)", sep="")

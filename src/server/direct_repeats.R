@@ -61,30 +61,34 @@ create_direct_repeats_data <- function(df, strain, segment, flattened) {
   sampling_df["group"] <- rep("expected", nrow(sampling_df))
 
   final_df <- rbind(count_df, sampling_df)
-  final_df["direct_repeats"] <- apply(final_df, 1, direct_repeats_counting_routine, sequence)
+  final_df["direct_repeats"] <- apply(final_df,
+    1,
+    direct_repeats_counting_routine,
+    sequence
+  )
 
   # save as .csv file
   path <- file.path(TEMPPATH, "direct_repeats_temp.csv")
   write.csv(final_df, path)
-  
-  cat(sum(df$NGS_read_count), file=file.path(TEMPPATH, "direct_repeats_temp.txt"), sep="\n")
+  path <- file.path(TEMPPATH, "direct_repeats_temp.txt")
+  cat(sum(df$NGS_read_count), file=path, sep="\n")
 }
 
 add_correction <- function(df) {
-  df["freq_corrected"] <- rep(0.0, nrow(df))
+  df["freq_cor"] <- rep(0.0, nrow(df))
   for (i in df$length) {
     orig_value <- df[df$length == i, "freq"]
     if (orig_value != 0) {
-      divided_value <- orig_value/(i+1)
-      df[df$length == i, "freq_corrected"] <- divided_value
+      div_value <- orig_value/(i+1)
+      df[df$length == i, "freq_cor"] <- div_value
       for (j in 0:i-1) {
-        df[df$length == j, "freq_corrected"] <- df[df$length == j, "freq_corrected"] + divided_value
+        df[df$length == j, "freq_cor"] <- df[df$length == j, "freq_cor"] + div_value
       }
     }
   }
 
-  df$freq <- df$freq_corrected
-  df <- subset(df, select=-c(freq_corrected))
+  df$freq <- df$freq_cor
+  df <- subset(df, select=-c(freq_cor))
   return(df)
 }
 
@@ -147,6 +151,10 @@ create_direct_repeats_plot <- function(correction) {
   }
   res <- wilcox.test(obs_data, exp_data)
   symbol <- get_stat_symbol(res$p.value)
+    
+  t1 <- "Frequency of different direct repeat lengths "
+  t2 <- paste("(n=", n_samples, ") ", symbol, sep="")
+  title <- paste(t1, t2, sep="")
 
   # create a barplot
   p <- ggplot(data=plot_df, aes(x=length, y=freq, fill=group)) +
@@ -154,7 +162,7 @@ create_direct_repeats_plot <- function(correction) {
     ylim(0, 1.0) +
     xlab("Length of direct repeat") +
     ylab("Relative occurrence") +
-    ggtitle(paste("Frequency of different direct repeat lengths (n=", n_samples, ") ", symbol, sep=""))
+    ggtitle(title)
   ggplotly(p)
 }
 
