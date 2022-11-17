@@ -18,6 +18,7 @@ source("utils.R")
 ##########
 # Loads the sources for the UI of each tab.
 # Each tab is saved in an individual file.
+source('ui/load_dataset.R', local=TRUE)
 source('ui/dataset.R', local=TRUE)
 source('ui/lengths_locations.R', local=TRUE)
 source('ui/nucleotide_distribution.R', local=TRUE)
@@ -33,7 +34,8 @@ ui <- bootstrapPage(
     dashboardSidebar(
       sidebarMenu(
         id="sidebarmenu",
-        menuItem("Select/Load Dataset", tabName="dataset", icon=icon("database")),
+        menuItem("(Up-)load Dataset", tabName="load_dataset", icon=icon("database")),
+        menuItem("Data set overview", tabName="dataset", icon=icon("database")),
         menuItem("Inspect single datapoint", tabName="single_datapoint", icon=icon("magnifying-glass")),
         hr(),
         selectInput(
@@ -52,6 +54,7 @@ ui <- bootstrapPage(
     ),
     dashboardBody(
       tabItems(
+        load_dataset_tab,
         dataset_tab,
         single_datapoint_tab,
         lengths_locations_tab,
@@ -69,6 +72,7 @@ ui <- bootstrapPage(
 ##############
 # Load the sources for the server logic.
 # Each tab has an own file for its server functions.
+source("server/load_dataset.R", local=TRUE)
 source("server/dataset.R", local=TRUE)
 source("server/single_datapoint.R", local=TRUE)
 source("server/lengths_locations.R", local=TRUE)
@@ -118,10 +122,9 @@ server <- function(input, output, session) {
       input$upload_M_file$datapath, input$upload_NS_file$datapath
     )
 
-    upload_strain <- format_strain_name(input$upload_strain)
-    
-    strain_path <- file.path(DATASETSPATH, upload_strain)
     # check if strain exists create a folder if not
+    upload_strain <- format_strain_name(input$upload_strain)
+    strain_path <- file.path(DATASETSPATH, upload_strain)
     if (!dir.exists(strain_path)) {
       dir.create(strain_path)
       update_dataset <- FALSE
@@ -129,22 +132,23 @@ server <- function(input, output, session) {
       update_dataset <- TRUE
     }
 
+    # check if .csv file already exists and rename if so
     dataset_name <- input$upload_dataset
     file <- file.path(strain_path, paste(dataset_name, ".csv", sep=""))
-
-    # check if file already exists and rename if so
     idx <- 0
     while (file.exists(file)) {
       idx <- idx + 1
       file <- file.path(strain_path, paste(dataset_name, "_", idx, ".csv", sep=""))
     }
-
     to_list <- list(file)
+
+    # check if fastas already exists and create folder if not
     fasta_path <- file.path(strain_path, "fastas")
     if (!dir.exists(fasta_path)) {
       dir.create(fasta_path)
     }
 
+    # create list with paths on where to save the files and then move them
     for (s in SEGMENTS) {
       to_list <- append(to_list, file.path(fasta_path, paste(s, ".fasta", sep="")))
     }
@@ -166,6 +170,13 @@ server <- function(input, output, session) {
       )
     }
   })
+
+
+### data set overview ###
+  output$dataset_stats_info <- renderText(
+    generate_stats_info(load_dataset()
+    )
+  )
 
   output$dataset_table <- renderDataTable(
     datatable(load_dataset(),

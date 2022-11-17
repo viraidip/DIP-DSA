@@ -1,10 +1,12 @@
 
-move_files <- function(from_list, to_list) {
-  for (i in 1:length(from_list)) {
-    file.copy(
-      from=from_list[[i]],
-      to=to_list[[i]]
+generate_stats_info <- function(df) {
+  return(
+    paste(
+      paste("Mean:", mean(df$NGS_read_count)),
+      paste("Median:", median(df$NGS_read_count)),
+      paste("Max:", max(df$NGS_read_count)),
+      paste("Min:", min(df$NGS_read_count)),
+      sep="\n"
     )
-  }
+  )
 }
-
