@@ -47,10 +47,21 @@ create_lengths_plot <- function(df, segment, strain, flattened, n_bins) {
     df <- data.frame(lapply(df, rep, df$NGS_read_count))
   }
 
-  p <- ggplot(df, aes(x=Length)) +
+  pl <- ggplot(df, aes(x=Length)) +
     geom_histogram(binwidth=n_bins) +
     xlab("Length of DI candidate") +
     ylab("Number of occurrences")
-  ggplotly(p)
+  # add mean and median to plot
+  mean <- mean(df$Length)
+  median <- median(df$Length)
+  mean_l <- paste("Mean =", format(mean, digits=5))
+  median_l <- paste("Median =", format(median, digits=5))
+  y <- max(ggplot_build(pl)$data[[1]]$count)
+  pl <- pl +
+    geom_vline(xintercept=mean, col="#0072B2") +
+    annotate("text", x=mean*1.5, y=y, label=mean_l, col="#0072B2") +
+    geom_vline(xintercept=median, col="#009E73") +
+    annotate("text", x=median*1.5, y=y*0.9, label=median_l, col="#009E73")
+  ggplotly(pl)
 }
 
