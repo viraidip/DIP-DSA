@@ -1,5 +1,5 @@
 
-create_locations_plot <- function(df, strain, segment, flattened) {
+format_dataframe <- function(df, segment, flattened) {
   # slice df by segment, reformat and bind on position and NGS count
   df <- df[df$Segment == segment, ]
   start_df <- df[, c("Start", "NGS_read_count")]
@@ -13,6 +13,16 @@ create_locations_plot <- function(df, strain, segment, flattened) {
   # reformat if data should be displayed flattened
   if (flattened == "flattened") {
     df["NGS_read_count"] <- 1
+  }
+  return(df)
+}
+
+create_locations_plot <- function(df, df2, strain, segment, flattened) {
+  df <- format_dataframe(df, segment, flattened)
+  if (nrow(df2) > 0) {
+    df2 <- format_dataframe(df2, segment, flattened)
+    df2$Class <- paste(df2$Class, "2")
+    df <- rbind(df, df2)
   }
 
   p <- ggplot(df, aes(x=Position, y=NGS_read_count, fill=Class)) +

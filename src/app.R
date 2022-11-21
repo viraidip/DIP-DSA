@@ -118,10 +118,22 @@ server <- function(input, output, session) {
       format_strain_name(input$strain),
       paste(input$dataset, ".csv", sep="")
     )
-    col_names <- c("Segment", "Start", "End", "NGS_read_count")
-    col_classes <- c("character", "integer", "integer", "integer")
+    names <- c("Segment", "Start", "End", "NGS_read_count")
+    classes <- c("character", "integer", "integer", "integer")
     if (file.exists(path)) {
-      read.csv(path, na.strings=c("NaN"), col.names=col_names, colClasses=col_classes)
+      read.csv(path, na.strings=c("NaN"), col.names=names, colClasses=classes)
+    }
+  })
+
+  load_dataset2 <- reactive({
+    path <- file.path(DATASETSPATH,
+      format_strain_name(input$strain2),
+      paste(input$dataset2, ".csv", sep="")
+    )
+    names <- c("Segment", "Start", "End", "NGS_read_count")
+    classes <- c("character", "integer", "integer", "integer")
+    if (file.exists(path)) {
+      read.csv(path, na.strings=c("NaN"), col.names=names, colClasses=classes)
     }
   })
 
@@ -251,7 +263,13 @@ server <- function(input, output, session) {
 
 ### lenghts and locations ###
   output$locations_plot <- renderPlotly({
+    if (input$two_datasets == "Yes") {
+      df2 <- load_dataset2()
+    } else {
+      df2 <- data.frame()
+    }
     create_locations_plot(load_dataset(),
+      df2,
       format_strain_name(input$strain),
       input$selected_segment,
       input$locations_flattened

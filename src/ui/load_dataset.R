@@ -20,6 +20,27 @@ load_dataset_tab <- tabItem(tabName="load_dataset",
     ),
     box(
       width=12,
+      title="Select second data set",
+      "Here a second data set can be chosen to compare them to each other.",
+      radioButtons(
+        inputId="two_datasets",
+        label="Use second data set:",
+        choices=c("No", "Yes"),
+        inline=TRUE
+      ),
+      selectInput(
+        inputId="strain2",
+        label="select a strain:",
+        choices=gsub("_", "/", list.dirs(DATASETSPATH, full.names=FALSE, recursive=FALSE))
+      ),
+      selectInput(
+        inputId="dataset2",
+        label="select an existing dataset:",
+        choices="Alnaji2019",
+      )
+    ),
+    box(
+      width=12,
       title="Upload new dataset",
       selectizeInput(
         inputId="upload_strain",
