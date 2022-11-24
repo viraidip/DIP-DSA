@@ -1,5 +1,5 @@
 
-format_dataframe <- function(df, segment, flattened) {
+format_dataframe_locations <- function(df, segment, flattened) {
   # slice df by segment, reformat and bind on position and NGS count
   df <- df[df$Segment == segment, ]
   start_df <- df[, c("Start", "NGS_read_count")]
@@ -18,9 +18,9 @@ format_dataframe <- function(df, segment, flattened) {
 }
 
 create_locations_plot <- function(df, df2, strain, segment, flattened) {
-  df <- format_dataframe(df, segment, flattened)
+  df <- format_dataframe_locations(df, segment, flattened)
   if (nrow(df2) > 0) {
-    df2 <- format_dataframe(df2, segment, flattened)
+    df2 <- format_dataframe_locations(df2, segment, flattened)
     df2$Class <- paste(df2$Class, "2")
     df <- rbind(df, df2)
   }
@@ -46,8 +46,9 @@ create_locations_plot <- function(df, df2, strain, segment, flattened) {
   ggplotly(p)
 }
 
-create_lengths_plot <- function(df, segment, strain, flattened, n_bins) {
-  # slice df by segment, reformat and bind on position and NGS count
+###############################################################################
+
+format_dataframe_lengths <- function(df, segment, strain, flattened) {
   df <- df[df$Segment == segment, ]
 
   seq_len <- get_seq_len(strain, segment)
@@ -56,22 +57,51 @@ create_lengths_plot <- function(df, segment, strain, flattened, n_bins) {
   if (flattened != "flattened") {
     df <- data.frame(lapply(df, rep, df$NGS_read_count))
   }
+  return(df)
+}
 
-  pl <- ggplot(df, aes(x=Length)) +
-    geom_histogram(binwidth=n_bins) +
+add_stats <- function(df, pl, class) {
+  # select parameters by class
+  if (class == "1") {
+    col = "#FF642A"
+    y_f = 1.0
+  } else {
+    col = "#0072B2"
+    y_f = 0.8
+  }
+  # calculate stats and add them to plot
+  mean <- mean(df$Length)
+  median <- median(df$Length)
+  mean_l <- paste("Mean", class,"=", format(mean, digits=5))
+  median_l <- paste("Median", class, "=", format(median, digits=5))
+  y <- max(ggplot_build(pl)$data[[1]]$count)
+  pl <- pl +
+    geom_vline(xintercept=mean, col=col) +
+    annotate("text", x=mean*1.5, y=y*y_f, label=mean_l, col=col) +
+    geom_vline(xintercept=median, col=col) +
+    annotate("text", x=median*1.5, y=y*(y_f-0.1), label=median_l, col=col)
+  return(pl)
+}
+
+create_lengths_plot <- function(df, strain, df2, strain2, segment, flattened, n_bins) {
+  # slice df by segment, reformat and bind on position and NGS count
+  df <- format_dataframe_lengths(df, segment, strain, flattened)
+  df$Class <- "1"
+  if (nrow(df2) > 0) {
+    df2 <- format_dataframe_lengths(df2, segment, strain, flattened)
+    df2$Class <- "2"
+    df <- rbind(df, df2)
+  }
+
+  pl <- ggplot(df, aes(x=Length, fill=Class)) +
+    geom_histogram(alpha=0.3, binwidth=n_bins, position="identity") +
     xlab("Length of DI candidate") +
     ylab("Number of occurrences")
   # add mean and median to plot
-  mean <- mean(df$Length)
-  median <- median(df$Length)
-  mean_l <- paste("Mean =", format(mean, digits=5))
-  median_l <- paste("Median =", format(median, digits=5))
-  y <- max(ggplot_build(pl)$data[[1]]$count)
-  pl <- pl +
-    geom_vline(xintercept=mean, col="#0072B2") +
-    annotate("text", x=mean*1.5, y=y, label=mean_l, col="#0072B2") +
-    geom_vline(xintercept=median, col="#009E73") +
-    annotate("text", x=median*1.5, y=y*0.9, label=median_l, col="#009E73")
+  pl <- add_stats(df[df$Class == "1", ], pl, "1")
+  if (nrow(df2) > 0) {
+    pl <- add_stats(df[df$Class == "2", ], pl, "2")
+  }
   ggplotly(pl)
 }
 

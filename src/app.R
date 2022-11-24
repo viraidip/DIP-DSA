@@ -277,9 +277,16 @@ server <- function(input, output, session) {
   })
 
   output$lengths_plot <- renderPlotly({
+    if (input$two_datasets == "Yes") {
+      df2 <- load_dataset2()
+    } else {
+      df2 <- data.frame()
+    }
     create_lengths_plot(load_dataset(),
-      input$selected_segment,
       format_strain_name(input$strain),
+      df2,
+      input$strain2,
+      input$selected_segment,
       input$lengths_flattened,
       input$lengths_bins
     )
