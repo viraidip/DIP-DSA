@@ -66,3 +66,17 @@ format_strain_name <- function(strain) {
   return(gsub(pattern="/", replacement="_", x=strain))
 }
 
+check_second_dataset <- function(include, strain, dataset) {
+  if (include == "Yes") {
+    path <- file.path(DATASETSPATH, strain, paste(dataset, ".csv", sep=""))
+    names <- c("Segment", "Start", "End", "NGS_read_count")
+    classes <- c("character", "integer", "integer", "integer")
+    if (file.exists(path)) {
+      df <- read.csv(path, na.strings=c("NaN"), col.names=names, colClasses=classes)
+    }
+  } else {
+    df <- data.frame()
+  }
+  return (df)
+}
+
