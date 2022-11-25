@@ -35,7 +35,7 @@ create_direct_repeat_sampling_data <- function(df, n_samples, sequence) {
   return(data.frame(Start, End, NGS_read_count))
 }
 
-create_direct_repeats_data <- function(df, strain, segment, flattened) {
+prepare_data <- function(df, strain, segment, flattened) {
   # load observed data
   df <- df[df$Segment == segment,]
   df <- subset(df, select=-c(Segment))
@@ -55,17 +55,42 @@ create_direct_repeats_data <- function(df, strain, segment, flattened) {
   }
   count_df["group"] <- rep("observed", nrow(count_df))
 
-  # create sampling data
-  n_samples <- nrow(df) * 5
-  sampling_df <- create_direct_repeat_sampling_data(df, n_samples, sequence)
-  sampling_df["group"] <- rep("expected", nrow(sampling_df))
+  return(count_df)
+}
 
-  final_df <- rbind(count_df, sampling_df)
-  final_df["direct_repeats"] <- apply(final_df,
-    1,
-    direct_repeats_counting_routine,
-    sequence
-  )
+create_direct_repeats_data <- function(df, strain, df2, strain2, segment, flattened) {
+  df <- prepare_data(df, strain, segment, flattened)
+  sequence <- get_seq(strain, segment)
+
+  # check if a second data set is given to compare
+  if (nrow(df2) > 0) {
+    # count for data set 1
+    df["direct_repeats"] <- apply(df, 1, direct_repeats_counting_routine, sequence)
+    df["group"] <- rep("d1", nrow(df))
+
+    # prepare and count for data set 2
+    df2 <- prepare_data(df2, strain2, segment, flattened)
+    sequence2 <- get_seq(strain2, segment)
+    df2["direct_repeats"] <- apply(df2, 1, direct_repeats_counting_routine, sequence2)
+    df2["group"] <- rep("d2", nrow(df2))
+
+    final_df <- rbind(df, df2)
+
+  # create sampling data if no second data set is given
+  } else {
+    df["group"] <- rep("observed", nrow(df))
+    # create sampling data
+    n_samples <- nrow(df) * 5
+    sampling_df <- create_direct_repeat_sampling_data(df, n_samples, sequence)
+    sampling_df["group"] <- rep("expected", nrow(sampling_df))
+
+    final_df <- rbind(df, sampling_df)
+    final_df["direct_repeats"] <- apply(final_df,
+      1,
+      direct_repeats_counting_routine,
+      sequence
+    )
+  }
 
   # save as .csv file
   path <- file.path(TEMPPATH, "direct_repeats_temp.csv")
@@ -92,6 +117,21 @@ add_correction <- function(df) {
   return(df)
 }
 
+prepare_plot_data <- function(df, label, correction) {
+  # get data set labels
+  df <- df[df$group == label, ]
+
+  # calculate direct repeat lengths as ratio
+  table <- table(df$direct_repeats)
+  table <- table/sum(table)
+
+  df <- data.frame(table, rep(label, length(table)))
+  colnames(df) <- c("length", "freq", "group")
+  df$length <- as.numeric(as.character(df$length))
+
+  return (df)
+}
+
 create_direct_repeats_plot <- function(correction) {
   # load df and data set length from temp files
   path <- file.path(TEMPPATH, "direct_repeats_temp.csv")
@@ -99,57 +139,55 @@ create_direct_repeats_plot <- function(correction) {
   path <- file.path(TEMPPATH, "direct_repeats_temp.txt")
   n_samples <- strtoi(readLines(path))
 
-  obs_df <- df[df$group == "observed", ]
-  exp_df <- df[df$group == "expected", ]
+  g1 <- unique(df[c("group")])[[1]][1]
+  g2 <- unique(df[c("group")])[[1]][2]
 
-  n_obs <- nrow(obs_df)
-  n_exp <- nrow(exp_df)
+  df_1 <- prepare_plot_data(df, g1, correction)
+  # df_2 is either expected data or second data set if one is selected
+  df_2 <- prepare_plot_data(df, g2, correction)
+  n_1 <- nrow(df_1)
+  n_2 <- nrow(df_2)
 
-  obs_table <- table(obs_df$direct_repeats)
-  obs_table <- obs_table/sum(obs_table)
-  exp_table <- table(exp_df$direct_repeats)
-  exp_table <- exp_table/sum(exp_table)
-
-  obs_df <- data.frame(obs_table, rep("observed", length(obs_table)))
-  colnames(obs_df) <- c("length", "freq", "group")
-  obs_df$length <- as.numeric(as.character(obs_df$length))
-  exp_df <- data.frame(exp_table, rep("expected", length(exp_table)))
-  colnames(exp_df) <- c("length", "freq", "group")
-  exp_df$length <- as.numeric(as.character(exp_df$length))
-
-  max_length <- max(max(obs_df$length), max(exp_df$length))
+  # fill NA values with 0.0 to have a good representation in the final plot
+  max_length <- max(max(df_1$length), max(df_2$length))
   for (i in 0:max_length) {
-    if (!any(i==obs_df[,1])) {
-      obs_df <- rbind(obs_df, list(i, 0.0, "observed"))
+    if (!any(i==df_1[,1])) {
+      df_1 <- rbind(df_1, list(i, 0.0, g1))
     }
-    if (!any(i==exp_df[,1])) {
-      exp_df <- rbind(exp_df, list(i, 0.0, "expected"))
+    if (!any(i==df_2[,1])) {
+      df_2 <- rbind(df_2, list(i, 0.0, g2))
     }
   }
 
+  # add correction factor if wanted
   if (correction == "Yes") {
-    obs_df <- add_correction(obs_df)
+    df_1 <- add_correction(df_1)
+
+    # also add two second set, if not expected values
+    if (g2 == "d2") {
+      df_2 <- add_correction(df_2)
+    }
   }
 
-  plot_df <- merge(obs_df, exp_df, all=TRUE)
+  plot_df <- merge(df_1, df_2, all=TRUE)
   plot_df$freq <- as.numeric(plot_df$freq)
 
   # statistical testing with Wilcoxon/Mann-Witney test
   if (correction == "Yes") {
-    obs_data <- c()
-    exp_data <- c()
+    data_1 <- c()
+    data_2 <- c()
     for (i in 0:max_length) {
-      n <- plot_df[plot_df$length == i & plot_df$group == "observed", "freq"]
-      obs_data <- c(obs_data, rep(i, round(n*n_obs)))
-      n <- plot_df[plot_df$length == i & plot_df$group == "expected", "freq"]
-      exp_data <- c(exp_data, rep(i, round(n*n_exp)))
+      n <- plot_df[plot_df$length == i & plot_df$group == g1, "freq"]
+      data_1 <- c(data_1, rep(i, round(n*n_1)))
+      n <- plot_df[plot_df$length == i & plot_df$group == g2, "freq"]
+      data_2 <- c(data_2, rep(i, round(n*n_2)))
     }
   }
   else {
-    obs_data <- df[df$group == "observed", ]$direct_repeats
-    exp_data <- df[df$group == "expected", ]$direct_repeats
+    data_1 <- df[df$group == g1, ]$direct_repeats
+    data_2 <- df[df$group == g2, ]$direct_repeats
   }
-  res <- wilcox.test(obs_data, exp_data)
+  res <- wilcox.test(data_1, data_2)
   symbol <- get_stat_symbol(res$p.value)
     
   t1 <- "Frequency of different direct repeat lengths "

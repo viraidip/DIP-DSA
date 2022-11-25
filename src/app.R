@@ -125,18 +125,6 @@ server <- function(input, output, session) {
     }
   })
 
-  load_dataset2 <- reactive({
-    path <- file.path(DATASETSPATH,
-      format_strain_name(input$strain2),
-      paste(input$dataset2, ".csv", sep="")
-    )
-    names <- c("Segment", "Start", "End", "NGS_read_count")
-    classes <- c("character", "integer", "integer", "integer")
-    if (file.exists(path)) {
-      read.csv(path, na.strings=c("NaN"), col.names=names, colClasses=classes)
-    }
-  })
-
   observeEvent(input$link_to_about_tab, {
     updateTabItems(session, "sidebarmenu", "about")
   })
@@ -263,11 +251,9 @@ server <- function(input, output, session) {
 
 ### lenghts and locations ###
   output$locations_plot <- renderPlotly({
-    if (input$two_datasets == "Yes") {
-      df2 <- load_dataset2()
-    } else {
-      df2 <- data.frame()
-    }
+    df2 <- check_second_dataset(input$two_datasets,
+      format_strain_name(input$strain2),
+      input$dataset2)
     create_locations_plot(load_dataset(),
       df2,
       format_strain_name(input$strain),
@@ -277,11 +263,9 @@ server <- function(input, output, session) {
   })
 
   output$lengths_plot <- renderPlotly({
-    if (input$two_datasets == "Yes") {
-      df2 <- load_dataset2()
-    } else {
-      df2 <- data.frame()
-    }
+    df2 <- check_second_dataset(input$two_datasets,
+      format_strain_name(input$strain2),
+      input$dataset2)
     create_lengths_plot(load_dataset(),
       format_strain_name(input$strain),
       df2,
@@ -351,8 +335,28 @@ server <- function(input, output, session) {
 
 ### direct repeats ###
   observeEvent(input$dataset, {
+    df2 <- check_second_dataset(input$two_datasets,
+      format_strain_name(input$strain2),
+      input$dataset2)
     create_direct_repeats_data(load_dataset(),
       format_strain_name(input$strain),
+      df2,
+      format_strain_name(input$strain2),
+      input$selected_segment,
+      input$direct_repeats_flattened
+    )
+    output$direct_repeats_plot <- renderPlotly({
+      create_direct_repeats_plot(input$direct_repeats_correction)
+    })
+  })
+  observeEvent(input$dataset2, {
+    df2 <- check_second_dataset(input$two_datasets,
+      format_strain_name(input$strain2),
+      input$dataset2)
+    create_direct_repeats_data(load_dataset(),
+      format_strain_name(input$strain),
+      df2,
+      format_strain_name(input$strain2),
       input$selected_segment,
       input$direct_repeats_flattened
     )
@@ -361,8 +365,13 @@ server <- function(input, output, session) {
     })
   })
   observeEvent(input$selected_segment, {
+    df2 <- check_second_dataset(input$two_datasets,
+      format_strain_name(input$strain2),
+      input$dataset2)
     create_direct_repeats_data(load_dataset(),
       format_strain_name(input$strain),
+      df2,
+      format_strain_name(input$strain2),
       input$selected_segment,
       input$direct_repeats_flattened
     )
@@ -371,8 +380,13 @@ server <- function(input, output, session) {
     })
   })
   observeEvent(input$direct_repeats_flattened, {
+    df2 <- check_second_dataset(input$two_datasets,
+      format_strain_name(input$strain2),
+      input$dataset2)
     create_direct_repeats_data(load_dataset(),
       format_strain_name(input$strain),
+      df2,
+      format_strain_name(input$strain2),
       input$selected_segment,
       input$direct_repeats_flattened
     )
