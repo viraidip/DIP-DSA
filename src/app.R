@@ -112,6 +112,11 @@ server <- function(input, output, session) {
     dataset_names <- tools::file_path_sans_ext(list.files(path, pattern="csv"))
     updateSelectInput(session, "dataset", choices=dataset_names)
   })
+  observe({
+    path <- file.path(DATASETSPATH, format_strain_name(input$strain2))
+    dataset_names <- tools::file_path_sans_ext(list.files(path, pattern="csv"))
+    updateSelectInput(session, "dataset2", choices=dataset_names)
+  })
 
   load_dataset <- reactive({
     path <- file.path(DATASETSPATH,
@@ -335,6 +340,21 @@ server <- function(input, output, session) {
 
 ### direct repeats ###
   observeEvent(input$dataset, {
+    df2 <- check_second_dataset(input$two_datasets,
+      format_strain_name(input$strain2),
+      input$dataset2)
+    create_direct_repeats_data(load_dataset(),
+      format_strain_name(input$strain),
+      df2,
+      format_strain_name(input$strain2),
+      input$selected_segment,
+      input$direct_repeats_flattened
+    )
+    output$direct_repeats_plot <- renderPlotly({
+      create_direct_repeats_plot(input$direct_repeats_correction)
+    })
+  })
+  observeEvent(input$two_datasets, {
     df2 <- check_second_dataset(input$two_datasets,
       format_strain_name(input$strain2),
       input$dataset2)
