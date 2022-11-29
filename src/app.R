@@ -283,30 +283,21 @@ server <- function(input, output, session) {
 
 
 ### nucleotide distribution ###
-  observeEvent(input$dataset, {
-    create_nuc_dist_data(load_dataset(),
-      format_strain_name(input$strain),
-      input$selected_segment,
+  observeEvent(
+    eventExpr = {
+      input$dataset
+      input$selected_segment
       input$nuc_dist_flattened
-    )
-    update_nuc_dist_plots()
-  })
-  observeEvent(input$selected_segment, {
-    create_nuc_dist_data(load_dataset(),
-      format_strain_name(input$strain),
-      input$selected_segment,
-      input$nuc_dist_flattened
-    )
-    update_nuc_dist_plots()
-  })
-  observeEvent(input$nuc_dist_flattened, {
-    create_nuc_dist_data(load_dataset(),
-      format_strain_name(input$strain),
-      input$selected_segment,
-      input$nuc_dist_flattened
-    )
-    update_nuc_dist_plots()
-  })
+    },
+    handlerExpr = {
+      create_nuc_dist_data(load_dataset(),
+        format_strain_name(input$strain),
+        input$selected_segment,
+        input$nuc_dist_flattened
+      )
+      update_nuc_dist_plots()
+    }
+  )
 
   # function is called, when one of the three inputs is changed (lines above)
   update_nuc_dist_plots <- function() {
@@ -339,81 +330,31 @@ server <- function(input, output, session) {
 
 
 ### direct repeats ###
-  observeEvent(input$dataset, {
-    df2 <- check_second_dataset(input$two_datasets,
-      format_strain_name(input$strain2),
-      input$dataset2)
-    create_direct_repeats_data(load_dataset(),
-      format_strain_name(input$strain),
-      df2,
-      format_strain_name(input$strain2),
-      input$selected_segment,
+  observeEvent(
+    eventExpr = {
+      input$dataset
+      input$dataset2
+      input$two_datasets
+      input$selected_segment
       input$direct_repeats_flattened
-    )
-    output$direct_repeats_plot <- renderPlotly({
-      create_direct_repeats_plot(input$direct_repeats_correction)
-    })
-  })
-  observeEvent(input$two_datasets, {
-    df2 <- check_second_dataset(input$two_datasets,
-      format_strain_name(input$strain2),
-      input$dataset2)
-    create_direct_repeats_data(load_dataset(),
-      format_strain_name(input$strain),
-      df2,
-      format_strain_name(input$strain2),
-      input$selected_segment,
-      input$direct_repeats_flattened
-    )
-    output$direct_repeats_plot <- renderPlotly({
-      create_direct_repeats_plot(input$direct_repeats_correction)
-    })
-  })
-  observeEvent(input$dataset2, {
-    df2 <- check_second_dataset(input$two_datasets,
-      format_strain_name(input$strain2),
-      input$dataset2)
-    create_direct_repeats_data(load_dataset(),
-      format_strain_name(input$strain),
-      df2,
-      format_strain_name(input$strain2),
-      input$selected_segment,
-      input$direct_repeats_flattened
-    )
-    output$direct_repeats_plot <- renderPlotly({
-      create_direct_repeats_plot(input$direct_repeats_correction)
-    })
-  })
-  observeEvent(input$selected_segment, {
-    df2 <- check_second_dataset(input$two_datasets,
-      format_strain_name(input$strain2),
-      input$dataset2)
-    create_direct_repeats_data(load_dataset(),
-      format_strain_name(input$strain),
-      df2,
-      format_strain_name(input$strain2),
-      input$selected_segment,
-      input$direct_repeats_flattened
-    )
-    output$direct_repeats_plot <- renderPlotly({
-      create_direct_repeats_plot(input$direct_repeats_correction)
-    })
-  })
-  observeEvent(input$direct_repeats_flattened, {
-    df2 <- check_second_dataset(input$two_datasets,
-      format_strain_name(input$strain2),
-      input$dataset2)
-    create_direct_repeats_data(load_dataset(),
-      format_strain_name(input$strain),
-      df2,
-      format_strain_name(input$strain2),
-      input$selected_segment,
-      input$direct_repeats_flattened
-    )
-    output$direct_repeats_plot <- renderPlotly({
-      create_direct_repeats_plot(input$direct_repeats_correction)
-    })
-  })
+    },
+    handlerExpr = {
+      df2 <- check_second_dataset(input$two_datasets,
+        format_strain_name(input$strain2),
+        input$dataset2
+      )
+      create_direct_repeats_data(load_dataset(),
+        format_strain_name(input$strain),
+        df2,
+        format_strain_name(input$strain2),
+        input$selected_segment,
+        input$direct_repeats_flattened
+      )
+      output$direct_repeats_plot <- renderPlotly({
+        create_direct_repeats_plot(input$direct_repeats_correction)
+      })
+    }
+  )
 
   output$direct_repeats_plot <- renderPlotly({
     create_direct_repeats_plot(input$direct_repeats_correction)
