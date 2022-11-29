@@ -286,12 +286,20 @@ server <- function(input, output, session) {
   observeEvent(
     eventExpr = {
       input$dataset
+      input$dataset2
+      input$two_datasets
       input$selected_segment
       input$nuc_dist_flattened
     },
     handlerExpr = {
+      df2 <- check_second_dataset(input$two_datasets,
+        format_strain_name(input$strain2),
+        input$dataset2
+      )
       create_nuc_dist_data(load_dataset(),
         format_strain_name(input$strain),
+        df2,
+        format_strain_name(input$strain2),
         input$selected_segment,
         input$nuc_dist_flattened
       )
