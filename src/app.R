@@ -119,7 +119,8 @@ server <- function(input, output, session) {
   })
 
   load_dataset <- reactive({
-    path <- file.path(DATASETSPATH,
+    path <- file.path(
+      DATASETSPATH,
       format_strain_name(input$strain),
       paste(input$dataset, ".csv", sep="")
     )
@@ -166,13 +167,14 @@ server <- function(input, output, session) {
 
     # check if .csv file already exists and rename if so
     dataset_name <- input$upload_dataset
-    file <- file.path(strain_path, paste(dataset_name, ".csv", sep=""))
+    file_path <- file.path(strain_path, paste(dataset_name, ".csv", sep=""))
     idx <- 0
-    while (file.exists(file)) {
+    while (file.exists(file_path)) {
       idx <- idx + 1
-      file <- file.path(strain_path, paste(dataset_name, "_", idx, ".csv", sep=""))
+      f_name <- paste(dataset_name, "_", idx, ".csv", sep="")
+      file_path <- file.path(strain_path, f_name)
     }
-    to_list <- list(file)
+    to_list <- list(file_path)
 
     # check if fastas already exists and create folder if not
     fasta_path <- file.path(strain_path, "fastas")
@@ -182,7 +184,8 @@ server <- function(input, output, session) {
 
     # create list with paths on where to save the files and then move them
     for (s in SEGMENTS) {
-      to_list <- append(to_list, file.path(fasta_path, paste(s, ".fasta", sep="")))
+      f_name <- paste(s, ".fasta", sep="")
+      to_list <- append(to_list, file.path(fasta_path, f_name))
     }
     move_files(from_list, to_list)
 
@@ -194,10 +197,11 @@ server <- function(input, output, session) {
       selected=input$upload_strain
     )
     if (update_dataset) {
+      c <- tools::file_path_sans_ext(list.files(strain_path, pattern="csv"))
       updateSelectInput(
         session,
         inputId="dataset",
-        choices=tools::file_path_sans_ext(list.files(strain_path, pattern="csv")),
+        choices=c,
         selected=dataset_name
       )
     }
@@ -211,9 +215,7 @@ server <- function(input, output, session) {
   )
 
   output$dataset_table <- renderDataTable(
-    datatable(load_dataset(),
-      selection="single"
-    )
+    datatable(load_dataset(), selection="single")
   )
 
 
@@ -223,14 +225,16 @@ server <- function(input, output, session) {
   })
 
   output$single_datapoint_info <- renderText({
-    create_single_datapoint_info(load_dataset(),
+    create_single_datapoint_info(
+      load_dataset(),
       input$dataset_table_rows_selected,
       format_strain_name(input$strain)
     )
   })
 
   output$single_datapoint_packaging_signal_info <- renderText({
-    create_single_datapoint_packaging_signal_info(load_dataset(),
+    create_single_datapoint_packaging_signal_info(
+      load_dataset(),
       input$dataset_table_rows_selected,
       format_strain_name(input$strain),
       input$selected_segment
@@ -238,7 +242,8 @@ server <- function(input, output, session) {
   })
 
   output$single_datapoint_start_window <- renderPlot({
-    plot_deletion_site_window(load_dataset(),
+    plot_deletion_site_window(
+      load_dataset(),
       input$dataset_table_rows_selected,
       format_strain_name(input$strain),
       "Start"
@@ -246,7 +251,8 @@ server <- function(input, output, session) {
   })
 
   output$single_datapoint_end_window <- renderPlot({
-    plot_deletion_site_window(load_dataset(),
+    plot_deletion_site_window(
+      load_dataset(),
       input$dataset_table_rows_selected,
       format_strain_name(input$strain),
       "End"
@@ -256,10 +262,13 @@ server <- function(input, output, session) {
 
 ### lenghts and locations ###
   output$locations_plot <- renderPlotly({
-    df2 <- check_second_dataset(input$two_datasets,
+    df2 <- check_second_dataset(
+      input$two_datasets,
       format_strain_name(input$strain2),
-      input$dataset2)
-    create_locations_plot(load_dataset(),
+      input$dataset2
+    )
+    create_locations_plot(
+      load_dataset(),
       df2,
       format_strain_name(input$strain),
       input$selected_segment,
@@ -268,10 +277,13 @@ server <- function(input, output, session) {
   })
 
   output$lengths_plot <- renderPlotly({
-    df2 <- check_second_dataset(input$two_datasets,
+    df2 <- check_second_dataset(
+      input$two_datasets,
       format_strain_name(input$strain2),
-      input$dataset2)
-    create_lengths_plot(load_dataset(),
+      input$dataset2
+    )
+    create_lengths_plot(
+      load_dataset(),
       format_strain_name(input$strain),
       df2,
       input$strain2,
@@ -292,11 +304,13 @@ server <- function(input, output, session) {
       input$nuc_dist_flattened
     },
     handlerExpr = {
-      df2 <- check_second_dataset(input$two_datasets,
+      df2 <- check_second_dataset(
+        input$two_datasets,
         format_strain_name(input$strain2),
         input$dataset2
       )
-      create_nuc_dist_data(load_dataset(),
+      create_nuc_dist_data(
+        load_dataset(),
         format_strain_name(input$strain),
         df2,
         format_strain_name(input$strain2),
@@ -307,7 +321,7 @@ server <- function(input, output, session) {
     }
   )
 
-  # function is called, when one of the three inputs is changed (lines above)
+  # function is called, when one of the inputs is changed (lines above)
   update_nuc_dist_plots <- function() {
     output$nuc_dist_start_A <- renderPlotly({
       create_nuc_dist_plot("Start", "A")
@@ -347,11 +361,13 @@ server <- function(input, output, session) {
       input$direct_repeats_flattened
     },
     handlerExpr = {
-      df2 <- check_second_dataset(input$two_datasets,
+      df2 <- check_second_dataset(
+        input$two_datasets,
         format_strain_name(input$strain2),
         input$dataset2
       )
-      create_direct_repeats_data(load_dataset(),
+      create_direct_repeats_data(
+        load_dataset(),
         format_strain_name(input$strain),
         df2,
         format_strain_name(input$strain2),

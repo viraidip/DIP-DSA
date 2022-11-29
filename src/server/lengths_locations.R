@@ -38,10 +38,10 @@ create_locations_plot <- function(df, df2, strain, segment, flattened) {
     color <- c("blue", "blue", "red", "red")
     fill <- c("incorporation signal", "bundling signal")
     p <- p + geom_vline(xintercept=x, color=color, linetype="dotted") +
-      geom_rect(aes(xmin=0   , xmax=x[1], ymin=0, ymax=y, fill=fill[1]), alpha=0.3) +
-      geom_rect(aes(xmin=x[2], xmax=slen, ymin=0, ymax=y, fill=fill[1]), alpha=0.3) +
-      geom_rect(aes(xmin=x[3], xmax=x[1], ymin=0, ymax=y, fill=fill[2]), alpha=0.3) +
-      geom_rect(aes(xmin=x[4], xmax=x[2], ymin=0, ymax=y, fill=fill[2]), alpha=0.3)
+      geom_rect(aes(xmin=0   ,xmax=x[1],ymin=0,ymax=y,fill=fill[1]),alpha=0.3)+
+      geom_rect(aes(xmin=x[2],xmax=slen,ymin=0,ymax=y,fill=fill[1]),alpha=0.3)+
+      geom_rect(aes(xmin=x[3],xmax=x[1],ymin=0,ymax=y,fill=fill[2]),alpha=0.3)+
+      geom_rect(aes(xmin=x[4],xmax=x[2],ymin=0,ymax=y,fill=fill[2]),alpha=0.3)
   }
   ggplotly(p)
 }
@@ -50,7 +50,6 @@ create_locations_plot <- function(df, df2, strain, segment, flattened) {
 
 format_dataframe_lengths <- function(df, segment, strain, flattened) {
   df <- df[df$Segment == segment, ]
-
   seq_len <- get_seq_len(strain, segment)
   df["Length"] <- df["Start"] + (seq_len - df["End"] + 1)
   # multiply each column by NGS count if data is unflattened
@@ -83,7 +82,7 @@ add_stats <- function(df, pl, class) {
   return(pl)
 }
 
-create_lengths_plot <- function(df, strain, df2, strain2, segment, flattened, n_bins) {
+create_lengths_plot<-function(df,strain,df2,strain2,segment,flattened,n_bins) {
   # slice df by segment, reformat and bind on position and NGS count
   df <- format_dataframe_lengths(df, segment, strain, flattened)
   df$Class <- "1"

@@ -40,9 +40,6 @@ prepare_data <- function(df, strain, segment, flattened) {
   df <- df[df$Segment == segment,]
   df <- subset(df, select=-c(Segment))
 
-  # load sequence
-  sequence <- get_seq(strain, segment)
-
   # include NGS count or not
   if (flattened == "flattened") {
     df$NGS_read_count[df$NGS_read_count != 1] <- 1
@@ -53,25 +50,24 @@ prepare_data <- function(df, strain, segment, flattened) {
       count_df <- rbind(count_df, df[rep(i, df[i,3]),])
     }
   }
-  count_df["group"] <- rep("observed", nrow(count_df))
 
   return(count_df)
 }
 
 create_direct_repeats_data <- function(df, strain, df2, strain2, segment, flattened) {
   df <- prepare_data(df, strain, segment, flattened)
-  sequence <- get_seq(strain, segment)
+  s <- get_seq(strain, segment)
 
   # check if a second data set is given to compare
   if (nrow(df2) > 0) {
     # count for data set 1
-    df["direct_repeats"] <- apply(df, 1, direct_repeats_counting_routine, sequence)
+    df["direct_repeats"] <- apply(df, 1, direct_repeats_counting_routine, s)
     df["group"] <- rep("d1", nrow(df))
 
     # prepare and count for data set 2
     df2 <- prepare_data(df2, strain2, segment, flattened)
-    sequence2 <- get_seq(strain2, segment)
-    df2["direct_repeats"] <- apply(df2, 1, direct_repeats_counting_routine, sequence2)
+    s2 <- get_seq(strain2, segment)
+    df2["direct_repeats"] <- apply(df2, 1, direct_repeats_counting_routine, s2)
     df2["group"] <- rep("d2", nrow(df2))
 
     final_df <- rbind(df, df2)
@@ -81,14 +77,14 @@ create_direct_repeats_data <- function(df, strain, df2, strain2, segment, flatte
     df["group"] <- rep("observed", nrow(df))
     # create sampling data
     n_samples <- nrow(df) * 5
-    sampling_df <- create_direct_repeat_sampling_data(df, n_samples, sequence)
+    sampling_df <- create_direct_repeat_sampling_data(df, n_samples, s)
     sampling_df["group"] <- rep("expected", nrow(sampling_df))
 
     final_df <- rbind(df, sampling_df)
     final_df["direct_repeats"] <- apply(final_df,
       1,
       direct_repeats_counting_routine,
-      sequence
+      s
     )
   }
 
@@ -100,25 +96,25 @@ create_direct_repeats_data <- function(df, strain, df2, strain2, segment, flatte
 }
 
 add_correction <- function(df) {
-  df["freq_cor"] <- rep(0.0, nrow(df))
+  df["freq_c"] <- rep(0.0, nrow(df))
   for (i in df$length) {
     orig_value <- df[df$length == i, "freq"]
     if (orig_value != 0) {
-      div_value <- orig_value/(i+1)
-      df[df$length == i, "freq_cor"] <- div_value
+      divisor <- orig_value/(i+1)
+      df[df$length == i, "freq_c"] <- divisor
       for (j in 0:i-1) {
-        df[df$length == j, "freq_cor"] <- df[df$length == j, "freq_cor"] + div_value
+        df[df$length == j, "freq_c"] <- df[df$length == j, "freq_c"] + divisor
       }
     }
   }
 
-  df$freq <- df$freq_cor
-  df <- subset(df, select=-c(freq_cor))
+  df$freq <- df$freq_c
+  df <- subset(df, select=-c(freq_c))
   return(df)
 }
 
 prepare_plot_data <- function(df, label, correction) {
-  # get data set labels
+  # get data set by label
   df <- df[df$group == label, ]
 
   # calculate direct repeat lengths as ratio
