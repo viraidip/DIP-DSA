@@ -56,6 +56,13 @@ prepare_data <- function(df, strain, segment, flattened) {
 
 create_direct_repeats_data <- function(df, strain, df2, strain2, segment, flattened) {
   df <- prepare_data(df, strain, segment, flattened)
+  if (nrow(df) == 0) {
+    path <- file.path(TEMPPATH, "direct_repeats_temp.csv")
+    write.csv(df, path)
+    path <- file.path(TEMPPATH, "direct_repeats_temp.txt")
+    cat(0, file=path, sep="\n")
+    return()
+  }
   s <- get_seq(strain, segment)
 
   # check if a second data set is given to compare
@@ -125,7 +132,7 @@ prepare_plot_data <- function(df, label, correction) {
   colnames(df) <- c("length", "freq", "group")
   df$length <- as.numeric(as.character(df$length))
 
-  return (df)
+  return(df)
 }
 
 create_direct_repeats_plot <- function(correction) {
@@ -134,6 +141,10 @@ create_direct_repeats_plot <- function(correction) {
   df <- read.csv(path)
   path <- file.path(TEMPPATH, "direct_repeats_temp.txt")
   n_samples <- strtoi(readLines(path))
+
+  if (nrow(df) == 0) {
+    return()
+  }
 
   g1 <- unique(df[c("group")])[[1]][1]
   g2 <- unique(df[c("group")])[[1]][2]
@@ -158,7 +169,6 @@ create_direct_repeats_plot <- function(correction) {
   # add correction factor if wanted
   if (correction == "Yes") {
     df_1 <- add_correction(df_1)
-
     # also add two second set, if not expected values
     if (g2 == "d2") {
       df_2 <- add_correction(df_2)

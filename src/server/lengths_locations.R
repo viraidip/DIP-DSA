@@ -2,6 +2,9 @@
 format_dataframe_locations <- function(df, segment, flattened) {
   # slice df by segment, reformat and bind on position and NGS count
   df <- df[df$Segment == segment, ]
+  if (nrow(df) == 0) {
+    return(df)
+  }
   start_df <- df[, c("Start", "NGS_read_count")]
   start_df["Class"] <- "Start"
   colnames(start_df)[colnames(start_df) == "Start"] <- "Position"
@@ -19,6 +22,9 @@ format_dataframe_locations <- function(df, segment, flattened) {
 
 create_locations_plot <- function(df, df2, strain, segment, flattened) {
   df <- format_dataframe_locations(df, segment, flattened)
+  if (nrow(df) == 0) {
+    return()
+  }
   if (nrow(df2) > 0) {
     df2 <- format_dataframe_locations(df2, segment, flattened)
     df2$Class <- paste(df2$Class, "2")
@@ -85,6 +91,9 @@ add_stats <- function(df, pl, class) {
 create_lengths_plot<-function(df,strain,df2,strain2,segment,flattened,n_bins) {
   # slice df by segment, reformat and bind on position and NGS count
   df <- format_dataframe_lengths(df, segment, strain, flattened)
+  if (nrow(df) == 0) {
+    return()
+  }
   df$Class <- "1"
   if (nrow(df2) > 0) {
     df2 <- format_dataframe_lengths(df2, segment, strain, flattened)

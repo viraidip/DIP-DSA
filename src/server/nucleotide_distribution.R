@@ -6,7 +6,7 @@ counting_routine <- function(l, window, letter, ngs_read_count) {
       l[[i]] <- l[[i]] + ngs_read_count
     }
   }
-  return (l)
+  return(l)
 }
 
 count_nuc_dist <- function(seq, positions, ngs_read_counts) {
@@ -37,9 +37,11 @@ create_sampling_data <- function(pos, n_samples, sequence) {
   return(count_nuc_dist(sequence, random_positions, random_counts))
 }
 
-create_nuc_dist_data <- function(df, strain, df2, strain2, segment, flattened){
-  # load observed data
-  df <- df[df$Segment == segment,]
+prepare_nuc_dist_data <- function(df, segment, flattened, strain, sampling) {
+  df <- df[df$Segment == segment, ]
+  if (nrow(df) == 0) {
+    return(df)
+  }
   ngs_read_counts <- df[, "NGS_read_count"]
   if (flattened == "flattened") {
     ngs_read_counts[ngs_read_counts != 1] <- 1
@@ -49,53 +51,48 @@ create_nuc_dist_data <- function(df, strain, df2, strain2, segment, flattened){
   sequence <- get_seq(strain, segment)
 
   # count nuc dist around deletion site
-  start_df <- count_nuc_dist(sequence, df[, "Start"], ngs_read_counts)
+  if (sampling) {
+    n_samples <- nrow(df) * 5
+    start_df <- create_sampling_data(df[, "Start"], n_samples, sequence)
+    end_df <- create_sampling_data(df[, "End"]-1, n_samples, sequence)
+  } else {
+    start_df <- count_nuc_dist(sequence, df[, "Start"], ngs_read_counts)
+    end_df <- count_nuc_dist(sequence, df[, "End"]-1, ngs_read_counts)
+  }
   start_df["location"] <- rep("Start", nrow(start_df))
-  end_df <- count_nuc_dist(sequence, df[, "End"]-1, ngs_read_counts)
   end_df["location"] <- rep("End", nrow(end_df))
   count_df <- rbind(start_df, end_df)
- 
+
+  return(count_df)
+}
+
+create_nuc_dist_data <- function(df, strain, df2, strain2, segment, flattened){
+  # get number of entries or sum of ngs count
+  if (flattened == "flattened") {
+    ngs_read_count <- nrow(df[df$Segment == segment, ])
+  } else {
+    ngs_read_count <- sum(df[df$Segment == segment, ]$ngs_read_count)
+  }
+
+  count_df1 <- prepare_nuc_dist_data(df, segment, flattened, strain, FALSE)
+  # use second data set if availabe
   if (nrow(df2) > 0) {
-    count_df["group"] <- rep("d1", nrow(count_df))
-    
-    df2 <- df2[df2$Segment == segment,]
-    ngs_read_counts2 <- df2[, "NGS_read_count"]
-    if (flattened == "flattened") {
-      ngs_read_counts2[ngs_read_counts2 != 1] <- 1
-    }
- 
-    # load sequence
-    sequence <- get_seq(strain2, segment)
-
-    # count nuc dist around deletion site
-    start_df2 <- count_nuc_dist(sequence, df2[, "Start"], ngs_read_counts2)
-    start_df2["location"] <- rep("Start", nrow(start_df))
-    end_df2 <- count_nuc_dist(sequence, df2[, "End"]-1, ngs_read_counts2)
-    end_df2["location"] <- rep("End", nrow(end_df))
-    count_df2 <- rbind(start_df2, end_df2)
+    count_df1["group"] <- rep("d1", nrow(count_df1))
+    count_df2 <- prepare_nuc_dist_data(df2, segment, flattened, strain2, FALSE)
     count_df2["group"] <- rep("d2", nrow(count_df2))
-
-    final_df <- rbind(count_df, count_df2)
-
+    final_df <- rbind(count_df1, count_df2)
   # create sampling data if no second data set is given
   } else {
-    count_df["group"] <- rep("observed", nrow(count_df))
-
-    n_samples <- nrow(df) * 5
-    sampling_start_df <- create_sampling_data(df[, "Start"], n_samples, sequence)
-    sampling_end_df <- create_sampling_data(df[, "End"]-1, n_samples, sequence)
-    sampling_start_df["location"] <- rep("Start", nrow(sampling_start_df))
-    sampling_end_df["location"] <- rep("End", nrow(sampling_end_df))
-    sampling_df <- rbind(sampling_start_df, sampling_end_df)
+    count_df1["group"] <- rep("observed", nrow(count_df1))
+    sampling_df <- prepare_nuc_dist_data(df, segment, flattened, strain, TRUE)
     sampling_df["group"] <- rep("expected", nrow(sampling_df))
-  
-    final_df <- rbind(count_df, sampling_df)
+    final_df <- rbind(count_df1, sampling_df)
   }
- 
+
   # save as .csv file
   path <- file.path(TEMPPATH, "temp.csv")
   write.csv(final_df, path)
-  cat(sum(ngs_read_counts), file=file.path(TEMPPATH, "temp.txt"), sep="\n")
+  cat(ngs_read_count, file=file.path(TEMPPATH, "temp.txt"), sep="\n")
 }
 
 create_nuc_dist_plot <- function(pos, nuc) {
@@ -104,6 +101,10 @@ create_nuc_dist_plot <- function(pos, nuc) {
   df <- read.csv(path)
   path <- file.path(TEMPPATH, "temp.txt")
   n <- strtoi(readLines(path))
+
+  if (nrow(df) == 0) {
+    return()
+  }
 
   # slice dataset by Start/End and nucleotide
   df <- df[df$location == pos,]
