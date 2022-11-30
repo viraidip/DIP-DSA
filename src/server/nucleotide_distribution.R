@@ -105,19 +105,14 @@ create_nuc_dist_plot <- function(pos, nuc) {
   if (nrow(df) == 0) {
     return()
   }
-
   # slice dataset by Start/End and nucleotide
   df <- df[df$location == pos,]
   df <- df[df$nucleotide == nuc,]
 
-  position <- c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
-  # max of expected and observed -> is y location of text
-  y_text <- tapply(df$rel_occurrence, df$position, max) + 0.02
-
   # statistical testing with binom test
+  position <- c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
   g1 <- unique(df[c("group")])[[1]][1]
   g2 <- unique(df[c("group")])[[1]][2]
-
   x_df <- df[df$group == g1,]
   p_df <- df[df$group == g2,]
   p_values <- list()
@@ -128,19 +123,20 @@ create_nuc_dist_plot <- function(pos, nuc) {
   }
   symbols <- lapply(p_values, get_stat_symbol)
 
+  # max of expected and observed -> is y location of text of stat test
+  y_text <- tapply(df$rel_occurrence, df$position, max)
+  y_max <- max(0.8, max(y_text)) + 0.05
+  # get x coordinates for annotation
+  x1 <- ifelse(pos == "Start", 8, 3)
+  x2 <- ifelse(pos == "Start", 3, 8)
   # assign x coordinates for grey shadow that marks deletion site
   x_min <- ifelse(pos == "Start", 5.5, 0)
   x_max <- ifelse(pos == "Start", 11, 5.5)
-
   # create position labels
   labels <- c("5", "4", "3", "2", "1", "-1", "-2", "-3", "-4", "-5")
   if (pos == "End") {
     labels <- rev(labels)
   }
-
-  # get x coordinates for annotation
-  x1 <- ifelse(pos == "Start", 8, 3)
-  x2 <- ifelse(pos == "Start", 3, 8)
 
   # create a barplot
   p <- ggplot(
@@ -152,14 +148,14 @@ create_nuc_dist_plot <- function(pos, nuc) {
       color="black",
       position=position_dodge()
     ) +
-    ylim(0, 0.8) +
+    ylim(0, y_max) +
     xlab("Position") +
     ylab("Relative occurrence") +
     scale_x_continuous(breaks=position, labels=labels) +
     annotate("text", x=position, y=y_text, label=symbols) +
-    geom_rect(xmin=x_min, xmax=x_max, ymin=-1, ymax=1, alpha=0.5, fill="grey")+
-    annotate("text", x=x1, y=0.8, label="deleted sequence") +
-    annotate("text", x=x2, y=0.8, label="remaining sequence") +
+    geom_rect(xmin=x_min, xmax=x_max, ymin=-1, ymax=2, alpha=0.5, fill="grey")+
+    annotate("text", x=x1, y=y_max, label="deleted sequence") +
+    annotate("text", x=x2, y=y_max, label="remaining sequence") +
     labs(title=NUC_MAP[[nuc]])
 
   ggplotly(p)

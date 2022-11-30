@@ -30,19 +30,17 @@ get_seq_len <- function(strain, segment) {
 }
 
 get_stat_symbol <- function(p) {
-  if (p < 0.0001) {
+  if (is.nan(p)) {
+    return("")
+  } else if (p < 0.0001) {
     return("****")
-  }
-  else if (p < 0.001) {
+  } else if (p < 0.001) {
     return("***")
-  }
-  else if (p < 0.01) {
+  } else if (p < 0.01) {
     return("**")
-  }
-  else if (p < 0.05) {
+  } else if (p < 0.05) {
     return("*")
-  }
-  else {
+  } else {
     return("")
   }
 }
