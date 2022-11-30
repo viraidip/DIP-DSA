@@ -71,7 +71,7 @@ plot_deletion_site_window <- function(df, row, strain, pos) {
   position_int <- ifelse(pos == "End", df[row, pos]-1, df[row, pos])
   sequence <- get_seq(strain, segment)
   if (is.null(sequence)) {
-    return(0)
+    return()
   }
   
   window <- subseq(sequence, start=position_int-4, end=position_int+5)

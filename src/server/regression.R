@@ -2,7 +2,7 @@
 create_regression_plot <- function(df, strain, segments) {
   df <- df[df$Segment %in% segments,]
   if (nrow(df) == 0) {
-    return(0)
+    return()
   }
 
   # reformat df, segment length x NGS_read_count
