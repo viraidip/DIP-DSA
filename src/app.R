@@ -324,29 +324,29 @@ server <- function(input, output, session) {
   # function is called, when one of the inputs is changed (lines above)
   update_nuc_dist_plots <- function() {
     output$nuc_dist_start_A <- renderPlotly({
-      create_nuc_dist_plot("Start", "A")
+      create_nuc_dist_plot("Start", "A", input$selected_segment)
     })
     output$nuc_dist_start_C <- renderPlotly({
-      create_nuc_dist_plot("Start", "C")
+      create_nuc_dist_plot("Start", "C", input$selected_segment)
     })
     output$nuc_dist_start_G <- renderPlotly({
-      create_nuc_dist_plot("Start", "G")
+      create_nuc_dist_plot("Start", "G", input$selected_segment)
     })
     output$nuc_dist_start_U <- renderPlotly({
-      create_nuc_dist_plot("Start", "U")
+      create_nuc_dist_plot("Start", "U", input$selected_segment)
     })
   
     output$nuc_dist_end_A <- renderPlotly({
-      create_nuc_dist_plot("End", "A")
+      create_nuc_dist_plot("End", "A", input$selected_segment)
     })
     output$nuc_dist_end_C <- renderPlotly({
-      create_nuc_dist_plot("End", "C")
+      create_nuc_dist_plot("End", "C", input$selected_segment)
     })
     output$nuc_dist_end_G <- renderPlotly({
-      create_nuc_dist_plot("End", "G")
+      create_nuc_dist_plot("End", "G", input$selected_segment)
     })
     output$nuc_dist_end_U <- renderPlotly({
-      create_nuc_dist_plot("End", "U")
+      create_nuc_dist_plot("End", "U", input$selected_segment)
     })
   }
 
@@ -375,7 +375,10 @@ server <- function(input, output, session) {
         input$direct_repeats_flattened
       )
       output$direct_repeats_plot <- renderPlotly({
-        create_direct_repeats_plot(input$direct_repeats_correction)
+        create_direct_repeats_plot(
+          input$direct_repeats_correction,
+          input$selected_segment
+        )
       })
     }
   )

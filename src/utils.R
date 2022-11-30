@@ -78,3 +78,12 @@ check_second_dataset <- function(include, strain, dataset) {
   return (df)
 }
 
+validate_plotting <- function(df, segment) {
+  
+  validation_text <- paste(
+    "No plot could be created. Segment",
+    segment,
+    "does not include any data points.",
+    "Please select another one on the sidebar.")
+  shiny::validate(need((nrow(df) != 0), validation_text))
+}

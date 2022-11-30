@@ -95,16 +95,14 @@ create_nuc_dist_data <- function(df, strain, df2, strain2, segment, flattened){
   cat(ngs_read_count, file=file.path(TEMPPATH, "temp.txt"), sep="\n")
 }
 
-create_nuc_dist_plot <- function(pos, nuc) {
+create_nuc_dist_plot <- function(pos, nuc, segment) {
   # load df and data set length from temp files
   path <- file.path(TEMPPATH, "temp.csv")
   df <- read.csv(path)
   path <- file.path(TEMPPATH, "temp.txt")
   n <- strtoi(readLines(path))
+  validate_plotting(df, segment)
 
-  if (nrow(df) == 0) {
-    return()
-  }
   # slice dataset by Start/End and nucleotide
   df <- df[df$location == pos,]
   df <- df[df$nucleotide == nuc,]

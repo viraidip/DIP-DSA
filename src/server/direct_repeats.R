@@ -135,16 +135,13 @@ prepare_plot_data <- function(df, label, correction) {
   return(df)
 }
 
-create_direct_repeats_plot <- function(correction) {
+create_direct_repeats_plot <- function(correction, segment) {
   # load df and data set length from temp files
   path <- file.path(TEMPPATH, "direct_repeats_temp.csv")
   df <- read.csv(path)
   path <- file.path(TEMPPATH, "direct_repeats_temp.txt")
   n_samples <- strtoi(readLines(path))
-
-  if (nrow(df) == 0) {
-    return()
-  }
+  validate_plotting(df, segment)
 
   g1 <- unique(df[c("group")])[[1]][1]
   g2 <- unique(df[c("group")])[[1]][2]
