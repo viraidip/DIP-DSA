@@ -261,21 +261,6 @@ server <- function(input, output, session) {
 
 
 ### lenghts and locations ###
-  output$locations_plot <- renderPlotly({
-    df2 <- check_second_dataset(
-      input$two_datasets,
-      format_strain_name(input$strain2),
-      input$dataset2
-    )
-    create_locations_plot(
-      load_dataset(),
-      df2,
-      format_strain_name(input$strain),
-      input$selected_segment,
-      input$locations_flattened
-    )
-  })
-
   output$lengths_plot <- renderPlotly({
     df2 <- check_second_dataset(
       input$two_datasets,
@@ -290,6 +275,21 @@ server <- function(input, output, session) {
       input$selected_segment,
       input$lengths_flattened,
       input$lengths_bins
+    )
+  })
+
+  output$locations_plot <- renderPlotly({
+    df2 <- check_second_dataset(
+      input$two_datasets,
+      format_strain_name(input$strain2),
+      input$dataset2
+    )
+    create_locations_plot(
+      load_dataset(),
+      df2,
+      format_strain_name(input$strain),
+      input$selected_segment,
+      input$locations_flattened
     )
   })
 
