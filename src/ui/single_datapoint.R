@@ -18,15 +18,17 @@ single_datapoint_tab <- tabItem(tabName="single_datapoint",
     box(
       title="Nucleotides at start of deletion site",
       width=6,
-      "Overview of the nucleotides directly at the start of the deletion site.",
-      "The white area is in the DI RNA sequence, the grey area is deleted.",
+      "Overview of the nucleotides directly at the start of the deletion",
+      "site. The white area remains in the DI RNA sequence, the grey area is",
+      "deleted.",
       plotOutput("single_datapoint_start_window")
     ),
     box(
       title="Nucleotides at end of deletion site",
       width=6,
       "Overview of the nucleotides directly at the end of the deletion site.",
-      "The white area is in the DI RNA sequence, the grey area is deleted.",
+      "The white area remains in the DI RNA sequence, the grey area is",
+      "deleted.",
       plotOutput("single_datapoint_end_window")
     )
   )

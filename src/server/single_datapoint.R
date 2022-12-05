@@ -15,7 +15,7 @@ create_single_datapoint_info <- function(df, row, strain) {
         paste("Start position is", start),
         paste("End position is", end),
         paste("Deletion length is" , end-start),
-        paste("DIP sequence is of length", start+(full_length-end+1)),
+        paste("DI RNA sequence is of length", start+(full_length-end+1)),
         paste("Number of reads in sample (NGS read count) is", ngs_read_count)
         ,sep="\n"
       )
