@@ -2,7 +2,7 @@ dataset_tab <- tabItem(tabName="dataset",
   h1("Select an existing dataset or load a custom one"),
   fluidRow(
     box(
-      title="Statistical parameters",
+      title="Statistical parameters of the data set",
       width=12,
       verbatimTextOutput("dataset_stats_info")
     ),
