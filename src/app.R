@@ -189,11 +189,12 @@ server <- function(input, output, session) {
     }
     move_files(from_list, to_list)
 
+    c <- gsub("_","/",list.dirs(DATASETSPATH,full.names=FALSE,recursive=FALSE))
     # select the new submitted dataset
     updateSelectInput(
       session,
       inputId="strain",
-      choices=list.dirs(DATASETSPATH, full.names=FALSE, recursive=FALSE),
+      choices=c,
       selected=input$upload_strain
     )
     if (update_dataset) {
