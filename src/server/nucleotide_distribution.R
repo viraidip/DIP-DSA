@@ -71,7 +71,7 @@ create_nuc_dist_data <- function(df, strain, df2, strain2, segment, flattened){
   if (flattened == "flattened") {
     ngs_read_count <- nrow(df[df$Segment == segment, ])
   } else {
-    ngs_read_count <- sum(df[df$Segment == segment, ]$ngs_read_count)
+    ngs_read_count <- sum(df[df$Segment == segment, ]$NGS_read_count)
   }
 
   count_df1 <- prepare_nuc_dist_data(df, segment, flattened, strain, FALSE)
