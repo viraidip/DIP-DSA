@@ -20,11 +20,12 @@ source("utils.R")
 # Each tab is saved in an individual file.
 source('ui/load_dataset.R', local=TRUE)
 source('ui/dataset.R', local=TRUE)
+source('ui/single_datapoint.R', local=TRUE)
 source('ui/lengths_locations.R', local=TRUE)
 source('ui/nucleotide_distribution.R', local=TRUE)
 source('ui/direct_repeats.R', local=TRUE)
 source('ui/regression.R', local=TRUE)
-source('ui/single_datapoint.R', local=TRUE)
+source('ui/motif_search.R', local=TRUE)
 source('ui/about.R', local=TRUE)
 
 ui <- bootstrapPage(
@@ -44,7 +45,7 @@ ui <- bootstrapPage(
         ),
         menuItem("Inspect single datapoint",
           tabName="single_datapoint",
-          icon=icon("magnifying-glass")
+          icon=icon("check")
         ),
         hr(),
         selectInput(
@@ -68,6 +69,10 @@ ui <- bootstrapPage(
         menuItem("Linear Regression",
           tabName="regression",
           icon=icon("chart-line")
+        ),
+        menuItem("Motif Search",
+          tabName="motif_search",
+          icon=icon("magnifying-glass")
         ),
         hr(),
         menuItem("About",
