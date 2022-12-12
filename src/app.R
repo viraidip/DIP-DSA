@@ -24,8 +24,8 @@ source('ui/single_datapoint.R', local=TRUE)
 source('ui/lengths_locations.R', local=TRUE)
 source('ui/nucleotide_distribution.R', local=TRUE)
 source('ui/direct_repeats.R', local=TRUE)
-source('ui/regression.R', local=TRUE)
 source('ui/motif_search.R', local=TRUE)
+source('ui/regression.R', local=TRUE)
 source('ui/about.R', local=TRUE)
 
 ui <- bootstrapPage(
@@ -65,14 +65,14 @@ ui <- bootstrapPage(
           tabName="direct_repeats",
           icon=icon("repeat")
         ),
+        menuItem("Motif Search",
+          tabName="motif_search",
+          icon=icon("magnifying-glass")
+        ),
         hr(),
         menuItem("Linear Regression",
           tabName="regression",
           icon=icon("chart-line")
-        ),
-        menuItem("Motif Search",
-          tabName="motif_search",
-          icon=icon("magnifying-glass")
         ),
         hr(),
         menuItem("About",
@@ -89,6 +89,7 @@ ui <- bootstrapPage(
         lengths_locations_tab,
         nucleotide_distribution_tab,
         direct_repeats_tab,
+        motif_search_tab,
         regression_tab,
         about_tab
       )
@@ -107,6 +108,7 @@ source("server/single_datapoint.R", local=TRUE)
 source("server/lengths_locations.R", local=TRUE)
 source("server/nucleotide_distribution.R", local=TRUE)
 source("server/direct_repeats.R", local=TRUE)
+source("server/motif_search.R", local=TRUE)
 source("server/regression.R", local=TRUE)
 source("server/about.R", local=TRUE)
 
@@ -392,6 +394,36 @@ server <- function(input, output, session) {
   output$direct_repeats_plot <- renderPlotly({
     create_direct_repeats_plot(input$direct_repeats_correction)
   })
+
+
+### motif search ###
+  output$motif_on_sequence <- renderPlotly({
+    create_motif_on_sequence_plot(
+      load_dataset(),
+      format_strain_name(input$strain),
+      input$selected_segment,
+      input$motif
+    )
+  })
+
+  observeEvent(
+    eventExpr = {
+      input$dataset
+      input$strain
+      input$selected_segment
+      input$motif
+    },
+    handlerExpr = {
+      output$motif_table <- renderDataTable(
+        create_motif_table(
+          load_dataset(),
+          format_strain_name(input$strain),
+          input$selected_segment,
+          input$motif
+        )
+      )
+    }
+  )
 
 
 ### regression ###

@@ -1,21 +1,25 @@
-regression_tab <- tabItem(tabName="motif_search",
-  h1("Linear regression of segment length and NGS count"),
+motif_search_tab <- tabItem(tabName="motif_search",
+  h1("Motif search"),
   fluidRow(
     box(
-      title="Regression plot",
+      title="Input motif",
       width=12,
-      selectInput(
-        inputId="regression_segments",
-        label="Select segments to include in linear regression",
-        choices=SEGMENTS,
-        selected=SEGMENTS,
-        multiple=TRUE
+      textInput(
+        inputId="motif",
+        label="Type a motif to search for"
       ),
-      "The relative occurrence of each segment in the full dataset is",
-      "calculated and plotted against the length of the segment. The expected",
-      "values are the length of a single segment divided by the sum of all",
-      "segment lengths.",
-      plotOutput("regression_plot")
-    )
+    ),
+    box(
+      title="Motif matches on sequence",
+      width=12,
+      "Showing the matches to the motif on the full length sequence",
+      plotlyOutput("motif_on_sequence")
+    ),
+    box(
+      title="Table of matches",
+      width=12,
+      "Showing the matches to the motif as a table",
+      dataTableOutput("motif_table")
+    ),
   )
 )
