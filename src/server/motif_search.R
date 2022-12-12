@@ -26,7 +26,7 @@ create_motif_on_sequence_plot <- function(df, strain, segment, motif) {
       m <- as(matches[i], "IRanges")
       xmin <- start(m)
       xmax <- end(m)
-      p <- p + geom_rect(xmin=xmin, xmax=xmax, ymin=0, ymax=1, col=c, fill=c)
+      p <- p + geom_rect(xmin=xmin, xmax=xmax, ymin=0, ymax=1, fill=c)
     }
   }
 
