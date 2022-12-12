@@ -7,6 +7,7 @@ library(jsonlite)
 library(plotly)
 library(shiny)
 library(shinydashboard)
+library(stringr)
 library(tools)
 
 library("Biostrings")
@@ -116,6 +117,7 @@ source("server/nucleotide_distribution.R", local=TRUE)
 source("server/direct_repeats.R", local=TRUE)
 source("server/motif_search.R", local=TRUE)
 source("server/regression.R", local=TRUE)
+source("server/np_density.R", local=TRUE)
 source("server/about.R", local=TRUE)
 
 server <- function(input, output, session) {
@@ -443,8 +445,33 @@ server <- function(input, output, session) {
 
 
 ### NP density ###
+  observeEvent(
+    eventExpr = {
+      input$dataset
+      input$strain
+      input$np_areas
+    },
+    handlerExpr = {
+  output$np_plot <- renderPlotly({
+    create_np_plot(
+      load_dataset(),
+      format_strain_name(input$strain),
+      input$selected_segment,
+      input$np_areas
+    )
+  })
 
+    }
+  )
 
+  output$np_bar_plot <- renderPlotly({
+    create_np_bar_plot(
+      load_dataset(),
+      format_strain_name(input$strain),
+      input$selected_segment,
+      input$np_areas
+    )
+  })
 
 ### about ###
   output$dataset_info_table <- renderTable({

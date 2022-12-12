@@ -78,8 +78,7 @@ check_second_dataset <- function(include, strain, dataset) {
   return (df)
 }
 
-validate_plotting <- function(df, segment) {
-  
+validate_plotting <- function(df, segment) {  
   validation_text <- paste(
     "No plot could be created. Segment",
     segment,
@@ -87,3 +86,14 @@ validate_plotting <- function(df, segment) {
     "Please select another one on the sidebar.")
   shiny::validate(need((nrow(df) != 0), validation_text))
 }
+
+reformat_np_areas <- function(areas) {
+  areas <- gsub("[^0-9,-]", "", areas)
+  a <- strsplit(areas, split=",")
+  df <- data.frame(a)
+  colnames(df) <- c("areas")
+  df[c("start", "end")] <- str_split_fixed(df$areas, "-", 2)
+  df <- type.convert(df, as.is=TRUE)
+  return(df[c("start", "end")])
+}
+

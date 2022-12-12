@@ -1,17 +1,31 @@
 
-create_motif_on_sequence_plot <- function(df, strain, segment, motif) {
+create_np_plot <- function(df, strain, segment, areas) {
+  # reformat data set
   df <- format_dataframe_locations(df, segment, "flattened")
-  if (nrow(df) == 0) {
-    return()
+
+  # reformat np areas
+  a_df <- reformat_np_areas(areas)
+
+  p <- ggplot(df, aes(x=Position, y=NGS_read_count, fill=Class)) +
+    geom_bar(stat="identity") +
+    xlab("Nucleotide position on segment") +
+    ylab("NGS read count")
+
+  if (nrow(a_df) > 0) {
+    c <- "black"
+    for (i in 1:nrow(a_df)) {
+      xmin <- a_df[i, ]$start
+      xmax <- a_df[i, ]$end
+      p <- p + geom_rect(xmin=xmin, xmax=xmax, ymin=0, ymax=1, fill=c, alpha=0.3)
+    }
   }
 
-  # search for motif on sequence
-  if (nchar(motif) > 0) {
-    sequence <- get_seq(strain, segment)
-    matches <- matchPattern(motif, sequence)
-  } else {
-    matches <- c()
-  }
+  ggplotly(p)
+}
+
+create_np_bar_plot <- function(df, strain, areas) {
+  # reformat np areas
+
 
   # create plot
   p <- ggplot(df, aes(x=Position, y=NGS_read_count, fill=Class)) +
@@ -26,22 +40,10 @@ create_motif_on_sequence_plot <- function(df, strain, segment, motif) {
       m <- as(matches[i], "IRanges")
       xmin <- start(m)
       xmax <- end(m)
-      p <- p + geom_rect(xmin=xmin, xmax=xmax, ymin=0, ymax=1, col=c, fill=c)
+      p <- p + geom_rect(xmin=xmin, xmax=xmax, ymin=0, ymax=1, fill=c)
     }
   }
 
   ggplotly(p)
-}
-
-create_motif_table <- function(df, strain, segment, motif) {
-  df <- format_dataframe_locations(df, segment, "flattened")
-  if (nrow(df) > 0 && nchar(motif) > 0) {
-    sequence <- get_seq(strain, segment)
-    matches <- matchPattern(motif, sequence)
-    m <- data.frame(as(matches, "IRanges"))
-  } else {
-    m <- data.frame()
-  }
-  return(m)
 }
 
