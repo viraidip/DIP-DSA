@@ -26,6 +26,7 @@ source('ui/nucleotide_distribution.R', local=TRUE)
 source('ui/direct_repeats.R', local=TRUE)
 source('ui/motif_search.R', local=TRUE)
 source('ui/regression.R', local=TRUE)
+source('ui/np_density.R', local=TRUE)
 source('ui/about.R', local=TRUE)
 
 ui <- bootstrapPage(
@@ -74,6 +75,10 @@ ui <- bootstrapPage(
           tabName="regression",
           icon=icon("chart-line")
         ),
+        menuItem("NP density",
+          tabName="np_density",
+          icon=icon("cubes-stacked")
+        ),
         hr(),
         menuItem("About",
           tabName="about",
@@ -91,6 +96,7 @@ ui <- bootstrapPage(
         direct_repeats_tab,
         motif_search_tab,
         regression_tab,
+        np_density_tab,
         about_tab
       )
     )
@@ -434,6 +440,10 @@ server <- function(input, output, session) {
       input$regression_segments
     )
   })
+
+
+### NP density ###
+
 
 
 ### about ###
