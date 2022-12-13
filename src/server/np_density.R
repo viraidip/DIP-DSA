@@ -1,9 +1,7 @@
 
 create_np_plot <- function(df, strain, segment, areas) {
-  # reformat data set
+  # reformat data
   df <- format_dataframe_locations(df, segment, "flattened")
-
-  # reformat np areas
   a_df <- reformat_np_areas(areas)
 
   p <- ggplot(df, aes(x=Position, y=NGS_read_count, fill=Class)) +

@@ -89,6 +89,9 @@ validate_plotting <- function(df, segment) {
 
 reformat_np_areas <- function(areas) {
   areas <- gsub("[^0-9,-]", "", areas)
+  if (nchar(areas) == 0) {
+    return(data.frame())
+  }
   a <- strsplit(areas, split=",")
   df <- data.frame(a)
   colnames(df) <- c("areas")
