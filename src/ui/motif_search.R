@@ -12,7 +12,9 @@ motif_search_tab <- tabItem(tabName="motif_search",
     box(
       title="Motif matches on sequence",
       width=12,
-      "Showing the matches to the motif on the full length sequence",
+      "Showing the matches to the motif on the full length sequence. The",
+      "matches are only shown if there are less than 100. Otherwise the plot",
+      "takes too long is too crowded.",
       plotlyOutput("motif_on_sequence")
     ),
     box(
