@@ -36,8 +36,13 @@ in_high_np_area <- function(row, a_df) {
 count_area_occurrence <- function(df, a_df, label) {
   df["NP_area"] <- apply(df, 1, in_high_np_area, a_df=a_df)
   table_df <- data.frame(table(df$NP_area))
-  # dividing high/low
-  final_df <- data.frame(Var1="Ratio", Freq=table_df[1, 2]/table_df[2, 2])
+  # dividing low/all
+  final_df <- data.frame(
+    Label="Ratio",
+    Freq=table_df[2, 2]/nrow(df),
+    High=table_df[1, 2],
+    Low=table_df[2, 2]
+  )
   final_df["Class"] <- label
   return(final_df)
 }
@@ -55,7 +60,8 @@ create_np_bar_plot <- function(df, strain, segment, areas) {
 
   # reformat np areas, if they are valid areas provided create a plot
   a_df <- reformat_np_areas(areas)
-  if (nrow(a_df) == 0) {
+  
+  if (nrow(a_df) == 0 || sum(is.na(a_df)) > 0) {
     p <- ggplot()
   } else {
     # count occurrences inside and outside of NP areas
@@ -63,13 +69,23 @@ create_np_bar_plot <- function(df, strain, segment, areas) {
     s_df <- count_area_occurrence(sam_df, a_df, "expected")
     plot_df <- rbind(o_df, s_df)
 
-    # TODO: add statistical comparision
+    # statistical test (binom test)
+    n <- nrow(obs_df)
+    x <- plot_df[1, "Low"]
+    p <- plot_df[2, "Freq"]
+    if (!is.na(x) && !is.na(p)) {
+      p <- binom.test(x, n, p)$p.value
+      symbol <- get_stat_symbol(p)
+    } else {
+      symbol <- ""
+    }
 
     # create plot
-    p <- ggplot(data=plot_df, aes(x=Var1, y=Freq, fill=Class)) +
+    p <- ggplot(data=plot_df, aes(x=Label, y=Freq, fill=Class)) +
       geom_bar(stat="identity", position=position_dodge()) +
-      xlab("Nucleotide position on segment") +
-      ylab("NGS read count")
+      xlab("source") +
+      ylab("ratio") +
+      annotate("text", x=1, y=max(plot_df[,"Freq"]), label=symbol)
   }
 
   ggplotly(p)
