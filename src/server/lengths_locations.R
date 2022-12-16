@@ -13,23 +13,25 @@ format_dataframe_lengths <- function(df, segment, strain, flattened) {
 add_stats <- function(df, pl, class) {
   # select parameters by class
   if (class == "1") {
-    col = "#FF642A"
+    col1 = "#8B2323"
+    col2 = "#FF4040"
     y_f = 1.0
   } else {
-    col = "#0072B2"
+    col1 = "#27408B"
+    col2 = "#4876FF"
     y_f = 0.8
   }
   # calculate stats and add them to plot
   mean <- mean(df$Length)
   median <- median(df$Length)
-  mean_l <- paste("Mean", class,"=", format(mean, digits=5))
-  median_l <- paste("Median", class, "=", format(median, digits=5))
+  mean_l <- paste("Mean", class,"=", format(mean, digits=5), sep="")
+  median_l <- paste("Median", class, "=", format(median, digits=5), sep="")
   y <- max(ggplot_build(pl)$data[[1]]$count)
   pl <- pl +
-    geom_vline(xintercept=mean, col=col) +
-    annotate("text", x=mean*1.5, y=y*y_f, label=mean_l, col=col) +
-    geom_vline(xintercept=median, col=col) +
-    annotate("text", x=median*1.5, y=y*(y_f-0.1), label=median_l, col=col)
+    geom_vline(xintercept=mean, col=col1) +
+    annotate("text", x=mean, y=y*y_f, label=mean_l, col=col1) +
+    geom_vline(xintercept=median, col=col2) +
+    annotate("text", x=median, y=y*(y_f-0.1), label=median_l, col=col2)
   return(pl)
 }
 
