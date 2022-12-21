@@ -6,7 +6,7 @@ regression_tab <- tabItem(tabName="regression",
       width=12,
       selectInput(
         inputId="regression_segments",
-        label="Select segments to include in linear regression",
+        label="Select segments to include in linear regression:",
         choices=SEGMENTS,
         selected=SEGMENTS,
         multiple=TRUE

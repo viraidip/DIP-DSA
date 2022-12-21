@@ -6,7 +6,7 @@ nucleotide_distribution_tab <- tabItem(tabName="nucleotide_distribution",
       width=12,
       radioButtons(
         inputId="nuc_dist_flattened",
-        label="Show data flattened or unflattened (including NGS count)",
+        label="Show data flattened or unflattened (including NGS count):",
         choices=c("flattened", "unflattened"),
         inline=TRUE
       ),

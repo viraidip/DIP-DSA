@@ -6,21 +6,21 @@ motif_search_tab <- tabItem(tabName="motif_search",
       width=12,
       textInput(
         inputId="motif",
-        label="Type a motif to search for"
+        label="Type a motif to search for:"
       ),
     ),
     box(
       title="Motif matches on sequence",
       width=12,
       "Showing the matches to the motif on the full length sequence. The",
-      "matches are only shown if there are less than 100. Otherwise the plot",
-      "takes too long is too crowded.",
+      "matches are only shown if there are less than 100. Otherwise the",
+      "rendering of the plot takes too long and is too crowded.",
       plotlyOutput("motif_on_sequence")
     ),
     box(
-      title="Table of matches",
+      title="Details of all matches",
       width=12,
-      "Showing the matches to the motif as a table",
+      "Listing all matches of the motif on the sequence as a table",
       dataTableOutput("motif_table")
     ),
   )

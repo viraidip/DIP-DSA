@@ -7,7 +7,7 @@ FASTAPATH <- file.path(DATAPATH, "strain_segment_fastas")
 TEMPPATH <- file.path(DATAPATH, "temp")
 
 COLOR_MAP <- hash(A="blue", C="yellow", G="green", U="red")
-NUC_MAP <- hash(A="Adenin", C="Cytosin", G="Guanin", U="Uracil")
+NUC_MAP <- hash(A="Adenine", C="Cytosine", G="Guanine", U="Uracil")
 
 ### DEFINING FUNCTIONS ###
 run_prechecks <- function() {

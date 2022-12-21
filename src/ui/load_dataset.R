@@ -5,7 +5,7 @@ load_dataset_tab <- tabItem(tabName="load_dataset",
       width=12,
       title="Select existing data set",
       "More info about the predefined datasets can be found in the",
-      actionLink("link_to_about_tab", "About"),
+      actionLink("link_to_about_tab", "'About'"),
       "tab.",
       selectInput(
         inputId="strain",
@@ -24,11 +24,11 @@ load_dataset_tab <- tabItem(tabName="load_dataset",
     ),
     box(
       width=12,
-      title="Select second data set",
-      "Here a second data set can be chosen to compare them to each other.",
+      title="Select second dataset",
+      "Here a second dataset can be chosen to compare them to each other.",
       radioButtons(
         inputId="two_datasets",
-        label="Use second data set:",
+        label="Use second dataset:",
         choices=c("No", "Yes"),
         inline=TRUE
       ),
@@ -52,7 +52,7 @@ load_dataset_tab <- tabItem(tabName="load_dataset",
       title="Upload new dataset",
       selectizeInput(
         inputId="upload_strain",
-        label="Select the name of the strain of the custom dataset or write a new one:",
+        label="Select the name or write a new one:",
         choices=gsub(
           "_",
           "/",
@@ -62,7 +62,7 @@ load_dataset_tab <- tabItem(tabName="load_dataset",
       ),
       textInput(
         inputId="upload_dataset",
-        label="Write the name of the strain of the custom dataset:"
+        label="Give the dataset a unique name:"
       ),
       fileInput(
         inputId="upload_dataset_file",
