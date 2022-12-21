@@ -87,6 +87,12 @@ validate_plotting <- function(df, segment) {
   shiny::validate(need((nrow(df) != 0), validation_text))
 }
 
+reformat_motif <- function(motif) {
+  motif <- toupper(motif)
+  motif <- gsub("[^ACGU]", "", motif)
+  return(motif)
+}
+
 reformat_np_areas <- function(areas) {
   areas <- gsub("[^0-9,-]", "", areas)
   if (nchar(areas) == 0) {

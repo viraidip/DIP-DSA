@@ -6,6 +6,7 @@ create_motif_on_sequence_plot <- function(df, strain, segment, motif) {
   }
 
   # search for motif on sequence
+  motif <- reformat_motif(motif)
   if (nchar(motif) > 0) {
     sequence <- get_seq(strain, segment)
     matches <- matchPattern(motif, sequence)
@@ -35,6 +36,7 @@ create_motif_on_sequence_plot <- function(df, strain, segment, motif) {
 
 create_motif_table <- function(df, strain, segment, motif) {
   df <- format_dataframe_locations(df, segment, "flattened")
+  motif <- reformat_motif(motif)
   if (nrow(df) > 0 && nchar(motif) > 0) {
     sequence <- get_seq(strain, segment)
     matches <- matchPattern(motif, sequence)
