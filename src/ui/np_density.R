@@ -16,11 +16,16 @@ np_density_tab <- tabItem(tabName="np_density",
     box(
       title="Mapping of high NP areas to deletion sites",
       width=12,
+      "The plot shows the high NP areas in correspondence to the start and",
+      "end positions of the deletion sites of the data set",
       plotlyOutput("np_plot")
     ),
     box(
       title="Comparision of distribution",
       width=12,
+      "The number of deletion sites in high NP areas is divided by the",
+      "overall count of deletion sites. The ratio of the observed samples is",
+      "compared to randomly sampled data.",
       plotlyOutput("np_bar_plot")
     )
   )
