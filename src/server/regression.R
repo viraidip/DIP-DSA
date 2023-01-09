@@ -31,7 +31,7 @@ create_regression_plot <- function(df, strain, segments) {
 
   m <- format(slope, digits=2)
   c <- format(intercept, digits=2)
-  func <- paste("f(x) =", m, "* x +", c)
+  func <- paste("f(x) =", m, "* x", c)
   func_label <- paste(func, "\nR²:", r_squared)
 
   intersection <- -intercept/slope
@@ -45,12 +45,13 @@ create_regression_plot <- function(df, strain, segments) {
     geom_point() +
     geom_text(hjust=0, vjust=0, check_overlap=TRUE) +
     geom_abline(intercept=intercept, slope=slope, show.legend=TRUE) +
-    annotate(geom="text", x=500, y=0.2, label=func_label) +
+    annotate(geom="text", x=500, y=0.2, label=func_label, size=5) +
     geom_point(aes(x=intersection, y=0)) +
     annotate(geom="text", x=intersection, y=0, label=inter_label, hjust=0) +
     xlim(0, max(data$segment_length)) +
     ylim(0, max(data$relative_count)) +
     xlab("Length of segment") +
-    ylab("Relative occurrence")
+    ylab("Relative occurrence") +
+    theme(text=element_text(size=14))
 }
 
