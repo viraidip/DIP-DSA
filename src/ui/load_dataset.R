@@ -5,7 +5,7 @@ load_dataset_tab <- tabItem(tabName="load_dataset",
       width=12,
       title="Select existing data set",
       "More info about the predefined datasets can be found in the",
-      actionLink("link_to_about_tab", "'About'"),
+      actionLink("link_to_about_tab", "About"),
       "tab.",
       selectInput(
         inputId="strain",
