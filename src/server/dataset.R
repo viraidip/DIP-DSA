@@ -6,12 +6,10 @@ generate_stats_info <- function(df) {
   min <- min(df$NGS_read_count)
   return(
     paste(
-      "NGS count:",
-      "##########",
-      paste("Mean:", mean),
-      paste("Median:", median),
-      paste("Max:", max),
-      paste("Min:", min),
+      paste("Mean:\t", mean),
+      paste("Median:\t", median),
+      paste("Min:\t", min),
+      paste("Max:\t", max),
       sep="\n"
     )
   )

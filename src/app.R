@@ -225,6 +225,10 @@ server <- function(input, output, session) {
 
 
 ### data set overview ###
+  observeEvent(input$link_to_single_datapoint_tab, {
+    updateTabItems(session, "sidebarmenu", "single_datapoint")
+  })
+
   output$dataset_stats_info <- renderText(
     generate_stats_info(load_dataset()
     )
