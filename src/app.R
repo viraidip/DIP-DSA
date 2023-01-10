@@ -37,7 +37,7 @@ ui <- bootstrapPage(
     dashboardSidebar(
       sidebarMenu(
         id="sidebarmenu",
-        menuItem("(Up-)load Dataset",
+        menuItem("(Up-)load dataset",
           tabName="load_dataset",
           icon=icon("database")
         ),
@@ -55,28 +55,28 @@ ui <- bootstrapPage(
           label="Select segment",
           choices=SEGMENTS
         ),
-        menuItem("Lengths and Locations",
+        menuItem("Lengths and locations",
           tabName="lengths_locations",
           icon=icon("ruler-horizontal")
         ),
-        menuItem("Nucleotide Distribution",
+        menuItem("Nucleotide distribution",
           tabName="nucleotide_distribution",
           icon=icon("magnifying-glass-chart")
         ),
-        menuItem("Direct Repeats",
+        menuItem("Direct repeats",
           tabName="direct_repeats",
           icon=icon("repeat")
         ),
-        menuItem("Motif Search",
+        menuItem("Motif search",
           tabName="motif_search",
           icon=icon("magnifying-glass")
         ),
         hr(),
-        menuItem("Linear Regression",
+        menuItem("Linear regression",
           tabName="regression",
           icon=icon("chart-line")
         ),
-        menuItem("NP density",
+        menuItem("Nucleoprotein density",
           tabName="np_density",
           icon=icon("cubes-stacked")
         ),
