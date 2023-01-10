@@ -9,7 +9,7 @@ load_dataset_tab <- tabItem(tabName="load_dataset",
       "tab.",
       selectInput(
         inputId="strain",
-        label="select a strain:",
+        label="Select a strain:",
         choices=gsub(
           "_",
           "/",
@@ -18,7 +18,7 @@ load_dataset_tab <- tabItem(tabName="load_dataset",
       ),
       selectInput(
         inputId="dataset",
-        label="select an existing dataset:",
+        label="Select an existing dataset:",
         choices="Alnaji2019"
       )
     ),
@@ -34,7 +34,7 @@ load_dataset_tab <- tabItem(tabName="load_dataset",
       ),
       selectInput(
         inputId="strain2",
-        label="select a strain:",
+        label="Select a strain:",
         choices=gsub(
           "_",
           "/",
@@ -43,7 +43,7 @@ load_dataset_tab <- tabItem(tabName="load_dataset",
       ),
       selectInput(
         inputId="dataset2",
-        label="select an existing dataset:",
+        label="Select an existing dataset:",
         choices="Alnaji2019",
       )
     ),
@@ -52,7 +52,7 @@ load_dataset_tab <- tabItem(tabName="load_dataset",
       title="Upload new dataset",
       selectizeInput(
         inputId="upload_strain",
-        label="Select the name or write a new one:",
+        label="Select a strain or write a new one:",
         choices=gsub(
           "_",
           "/",

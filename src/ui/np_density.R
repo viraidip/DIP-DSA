@@ -4,9 +4,9 @@ np_density_tab <- tabItem(tabName="np_density",
     box(
       title="Input areas",
       width=12,
-      "NP areas need to be defined as a string. The start and end point of an",
-      "area is split by a hyphen. To define multiple NP high areas seperate","
-      them by a comma (e.g. '10-40,60-85').",
+      "Areas of high nucleoprotein density need to be defined as a string.",
+      "The start and end point of an area is split by a hyphen. To define",
+      "multiple NP high areas seperate them by a comma (e.g. '10-40,60-85').",
       textInput(
         inputId="np_areas",
         label="Write areas of high NP density:",
