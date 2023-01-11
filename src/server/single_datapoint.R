@@ -8,16 +8,16 @@ create_single_datapoint_info <- function(df, row, strain) {
     start <- df[row, "Start"]
     end <- df[row, "End"]
     ngs_read_count <- df[row, "NGS_read_count"]
-    full_length <- get_seq_len(strain, segment)
+    full <- get_seq_len(strain, segment)
     return(
       paste(
         paste("Selected datapoint belongs to segment", segment),
-        paste("Start position is", start),
-        paste("End position is", end),
-        paste("Deletion length is" , end-start),
-        paste("DI RNA sequence is of length", start+(full_length-end+1)),
-        paste("Number of reads in sample (NGS read count) is", ngs_read_count)
-        ,sep="\n"
+        paste(".\nDeletion starts at nucleotide", start),
+        paste(" and ends at nucleotide", end),
+        paste(".\nThe length of the deletion site is" , end-start),
+        paste(".\nDI RNA sequence is", start+(full-end+1),"nucleotides long."),
+        paste("\nNumber of reads in sample (NGS read count) is",ngs_read_count)
+        ,sep=""
       )
     )
   }
@@ -31,29 +31,33 @@ create_single_datapoint_packaging_signal_info<-function(df,row,strain,segment){
       return("No packaging signal data available.")
     }
     else {
-      start <- df[row, "Start"]
-      end <- df[row, "End"]
-      packaging_signal <- unlist(load_packaging_signal_data(strain)[segment])
-      if (start > packaging_signal[1]) {
-        l1 <- "Start is outside of incorporation signal."
+      s <- df[row, "Start"]
+      e <- df[row, "End"]
+      pck_signal <- unlist(load_packaging_signal_data(strain)[segment])
+      if (s > pck_signal[1]) {
+        loc <- "outside"
       } else {
-        l1 <- "Start is inside of incorporation signal."
+        loc <- "inside"
       }
-      if (end < packaging_signal[2]) {
-        l2 <- "End is outside of incorporation signal."
+      l1 <- paste("Start",s,"is",loc,"of incorporation signal",pck_signal[1])
+      if (e < pck_signal[2]) {
+        loc <- "outside"
       } else {
-        l2 <- "End is inside of incorporation signal."
+        loc <- "inside"
       }
-      if (start > packaging_signal[3]) {
-        l3 <- "Start is outside of bundling signal."
+      l2 <- paste("End",e,"is",loc,"of incorporation signal",pck_signal[2])
+      if (s > pck_signal[3]) {
+        loc <- "outside"
       } else {
-        l3 <- "Start is inside of bundling signal."
+        loc <- "inside"
       }
-      if (end < packaging_signal[4]) {
-        l4 <- "End is outside of bundling signal."
+      l3 <- paste("Start",s,"is",loc,"of bundling signal",pck_signal[3])
+      if (e < pck_signal[4]) {
+        loc <- "outside"
       } else {
-        l4 <- "End is inside of bundling signal."
+        loc <- "inside"
       }
+      l4 <- paste("End",e,"is",loc,"of bundling signal",pck_signal[4])
       return(paste(l1, l2, l3, l4, sep="\n")
       )
     }
