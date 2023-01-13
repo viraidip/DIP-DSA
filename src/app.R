@@ -449,6 +449,14 @@ server <- function(input, output, session) {
 
 
 ### NP density ###
+  observeEvent(input$selected_segment, {
+    updateTextInput(
+      session,
+      inputId="np_areas",
+      value=NP_MAP[[input$selected_segment]]
+    )
+  })
+
   observeEvent(
     eventExpr = {
       input$dataset

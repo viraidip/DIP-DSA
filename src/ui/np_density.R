@@ -10,7 +10,8 @@ np_density_tab <- tabItem(tabName="np_density",
       textInput(
         inputId="np_areas",
         label="Write areas of high NP density:",
-        placeholder="45-178,406-524,1676-1894"
+        placeholder="45-178,406-524,1676-1894",
+        value="36-86,204-268,496-581,974-1108,1282-1352,1435-1502,1608-1677,1986-2044,2221-2285"
       )
     ),
     box(
