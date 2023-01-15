@@ -16,11 +16,6 @@ create_regression_plot <- function(df, strain, segments) {
   data$segment_length <- segment_lengths
   regression_data <- data
 
-  # do linear regression
-  regression <- lm(relative_count ~ segment_length, data=regression_data)
-  r_squared <- format(summary(regression)$r.squared, digits=2)
-  slope <- regression$coefficients["segment_length"]
-  intercept <- regression$coefficients["(Intercept)"]
 
   # get expected value by segment length
   expected_data <- data.frame(data)
@@ -29,6 +24,17 @@ create_regression_plot <- function(df, strain, segments) {
   expected_data$group <- rep("expected", nrow(expected_data))
   data <- rbind(data, expected_data)
 
+  # do linear regression
+  regression <- lm(relative_count ~ segment_length, data=regression_data)
+  r_squared <- format(summary(regression)$r.squared, digits=2)
+  slope <- regression$coefficients["segment_length"]
+  intercept <- regression$coefficients["(Intercept)"]
+  exp_slope <- tail(data, n=1)$relative_count / tail(data, n=1)$segment_length
+  lines_df <- data.frame(sl = c(slope, exp_slope),
+                         int = c(intercept, 0),
+                         label = c("observed", "expected"))
+
+  # format function
   m <- format(slope, digits=2)
   c <- format(intercept, digits=2)
   func <- paste("f(x) =", m, "* x", c)
@@ -44,7 +50,7 @@ create_regression_plot <- function(df, strain, segments) {
   ) +
     geom_point() +
     geom_text(hjust=0, vjust=0, check_overlap=TRUE) +
-    geom_abline(intercept=intercept, slope=slope, show.legend=TRUE) +
+    geom_abline(data=lines_df, aes(intercept=int, slope=sl, color=label)) +
     annotate(geom="text", x=500, y=0.2, label=func_label, size=5) +
     geom_point(aes(x=intersection, y=0)) +
     annotate(geom="text", x=intersection, y=0, label=inter_label, hjust=0) +
