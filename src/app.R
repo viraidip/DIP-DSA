@@ -41,7 +41,7 @@ ui <- bootstrapPage(
           tabName="load_dataset",
           icon=icon("database")
         ),
-        menuItem("Data set overview",
+        menuItem("Dataset overview",
           tabName="dataset",
           icon=icon("table")
         ),
@@ -224,7 +224,7 @@ server <- function(input, output, session) {
   })
 
 
-### data set overview ###
+### dataset overview ###
   observeEvent(input$link_to_single_datapoint_tab, {
     updateTabItems(session, "sidebarmenu", "single_datapoint")
   })
