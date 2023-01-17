@@ -313,6 +313,14 @@ server <- function(input, output, session) {
     )
   })
 
+  output$end_3_5_plot <- renderPlotly({
+    create_end_3_5_plot(
+      load_dataset(),
+      format_strain_name(input$strain),
+      input$selected_segment
+    )
+  })
+
 
 ### nucleotide distribution ###
   observeEvent(

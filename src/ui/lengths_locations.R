@@ -33,6 +33,12 @@ lengths_locations_tab <- tabItem(tabName="lengths_locations",
       "Locations of all start and end positions of the deletion sites are",
       "plotted in reference to the full sequence.",
       plotlyOutput("locations_plot")
+    ),
+    box(
+      title="3' vs 5' end lengths",
+      width=12,
+      "Comparision of the lengths of the 3' and 5' ends.",
+      plotlyOutput("end_3_5_plot")
     )
   )
 )

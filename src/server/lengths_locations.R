@@ -111,3 +111,36 @@ create_locations_plot <- function(df, df2, strain, segment, flattened) {
   ggplotly(p)
 }
 
+###############################################################################
+
+format_dataframe_end_3_5 <- function(df, strain, segment) {
+  df <- df[df$Segment == segment, ]
+  validate_plotting(df, segment)
+  seq_len <- get_seq_len(strain, segment)
+  df["End_5"] <- seq_len - df["End"]
+  return(df)
+}
+
+create_end_3_5_plot <- function(df, strain, segment) {
+  df <- format_dataframe_end_3_5(df, strain, segment)
+
+  p <- ggplot(df, aes(x=Start, y=End_5)) +
+    geom_point() +
+    xlim(0, 700) +
+    ylim(0, 700) +
+    xlab("5' length") +
+    ylab("3' length")
+  # add info about packaging signal if it exists
+  if (packaging_signal_data_exists(strain)) {
+    packaging_signal <- load_packaging_signal_data(strain)
+    slen <- get_seq_len(strain, segment)
+    x <- unlist(packaging_signal[segment])
+    y <- layer_scales(p)$y$get_limits()[2]
+    color <- c("blue", "blue", "red", "red")
+    fill <- c("incorporation signal", "bundling signal")
+
+    p <- p# +
+  }
+  ggplotly(p)
+}
+
