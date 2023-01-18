@@ -133,13 +133,16 @@ create_end_3_5_plot <- function(df, strain, segment) {
   # add info about packaging signal if it exists
   if (packaging_signal_data_exists(strain)) {
     packaging_signal <- load_packaging_signal_data(strain)
-    slen <- get_seq_len(strain, segment)
+    seq_len <- get_seq_len(strain, segment)
     x <- unlist(packaging_signal[segment])
-    y <- layer_scales(p)$y$get_limits()[2]
-    color <- c("blue", "blue", "red", "red")
-    fill <- c("incorporation signal", "bundling signal")
+    l <- c("incorporation signal", "bundling signal")
 
-    p <- p# +
+    xv <- c(x[1], x[3])
+    xh <- c(seq_len-x[2], seq_len-x[4])
+    color <- c("blue", "red")
+
+    p <- p + geom_vline(xintercept=xv, color=color, linetype="dotted") +
+     geom_hline(yintercept=xh, color=color, linetype="dotted")
   }
   ggplotly(p)
 }
