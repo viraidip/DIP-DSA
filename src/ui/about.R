@@ -37,6 +37,8 @@ about_tab <- tabItem(tabName="about",
           "Includes a mapping of the locations of the start and end onto",
           "the full length segment. Also includes a histogram with the length",
           "of the deleted sequence. The bin size can be adjusted by the user.",
+          "A third plot includes a comparision of the length of the 3' and 5'",
+          "ends."
         ),
         tags$li(tags$b("Nucleotide distribution:"),
           "Shows the relative occurrence of the four nucleotides (Adenine,",
