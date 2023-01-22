@@ -37,7 +37,9 @@ lengths_locations_tab <- tabItem(tabName="lengths_locations",
     box(
       title="3' vs 5' end lengths",
       width=12,
-      "Comparision of the lengths of the 3' and 5' ends.",
+      "Comparision of the lengths of the 3' and 5' ends. If data about the",
+      "packaging signal is available, incorporation signal is included in",
+      "blue and bundling signal is included in red",
       plotlyOutput("end_3_5_plot")
     )
   )
