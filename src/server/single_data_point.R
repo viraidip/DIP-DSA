@@ -1,5 +1,5 @@
 
-create_single_datapoint_info <- function(df, row, strain) {
+create_single_data_point_info <- function(df, row, strain) {
   if (is.null(row)) {
     return("No data point selected.")
   }
@@ -11,7 +11,7 @@ create_single_datapoint_info <- function(df, row, strain) {
     full <- get_seq_len(strain, segment)
     return(
       paste(
-        paste("Selected datapoint belongs to segment", segment),
+        paste("Selected data point belongs to segment", segment),
         paste(".\nDeletion starts at nucleotide", start),
         paste(" and ends at nucleotide", end),
         paste(".\nThe length of the deletion site is" , end-start),
@@ -23,7 +23,7 @@ create_single_datapoint_info <- function(df, row, strain) {
   }
 }
 
-create_single_datapoint_packaging_signal_info<-function(df,row,strain,segment){
+create_single_data_point_packaging_signal_info<-function(df,row,strain,segment){
   if (is.null(row)) {
     return("No data point selected.")
   } else {

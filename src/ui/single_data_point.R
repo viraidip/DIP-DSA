@@ -1,4 +1,4 @@
-single_datapoint_tab <- tabItem(tabName="single_datapoint",
+single_data_point_tab <- tabItem(tabName="single_data_point",
   h1("Inspect a single data point"),
   fluidRow(
     box(
@@ -10,10 +10,10 @@ single_datapoint_tab <- tabItem(tabName="single_datapoint",
       br(),
       br(),
       tags$b("General info about the selected data point:"),
-      verbatimTextOutput("single_datapoint_info"),
+      verbatimTextOutput("single_data_point_info"),
       br(),
       tags$b("Information about the packaging signal (if available):"),
-      verbatimTextOutput("single_datapoint_packaging_signal_info")
+      verbatimTextOutput("single_data_point_packaging_signal_info")
     ),
     box(
       title="Nucleotides at start of deletion site",
@@ -21,7 +21,7 @@ single_datapoint_tab <- tabItem(tabName="single_datapoint",
       "Overview of the nucleotides directly at the start of the deletion",
       "site. The white area remains in the DI RNA sequence, the grey area is",
       "deleted.",
-      plotOutput("single_datapoint_start_window")
+      plotOutput("single_data_point_start_window")
     ),
     box(
       title="Nucleotides at end of deletion site",
@@ -29,7 +29,7 @@ single_datapoint_tab <- tabItem(tabName="single_datapoint",
       "Overview of the nucleotides directly at the end of the deletion site.",
       "The white area remains in the DI RNA sequence, the grey area is",
       "deleted.",
-      plotOutput("single_datapoint_end_window")
+      plotOutput("single_data_point_end_window")
     )
   )
 )

@@ -22,7 +22,7 @@ source("utils.R")
 # Each tab is saved in an individual file.
 source('ui/load_dataset.R', local=TRUE)
 source('ui/dataset.R', local=TRUE)
-source('ui/single_datapoint.R', local=TRUE)
+source('ui/single_data_point.R', local=TRUE)
 source('ui/lengths_locations.R', local=TRUE)
 source('ui/nucleotide_distribution.R', local=TRUE)
 source('ui/direct_repeats.R', local=TRUE)
@@ -46,8 +46,8 @@ ui <- bootstrapPage(
           tabName="dataset",
           icon=icon("table")
         ),
-        menuItem("Inspect single datapoint",
-          tabName="single_datapoint",
+        menuItem("Inspect single data point",
+          tabName="single_data_point",
           icon=icon("check")
         ),
         hr(),
@@ -92,7 +92,7 @@ ui <- bootstrapPage(
       tabItems(
         load_dataset_tab,
         dataset_tab,
-        single_datapoint_tab,
+        single_data_point_tab,
         lengths_locations_tab,
         nucleotide_distribution_tab,
         direct_repeats_tab,
@@ -112,7 +112,7 @@ ui <- bootstrapPage(
 # Each tab has an own file for its server functions.
 source("server/load_dataset.R", local=TRUE)
 source("server/dataset.R", local=TRUE)
-source("server/single_datapoint.R", local=TRUE)
+source("server/single_data_point.R", local=TRUE)
 source("server/lengths_locations.R", local=TRUE)
 source("server/nucleotide_distribution.R", local=TRUE)
 source("server/direct_repeats.R", local=TRUE)
@@ -240,21 +240,21 @@ server <- function(input, output, session) {
   )
 
 
-### single datapoint ###
+### single data point ###
   observeEvent(input$link_to_dataset_tab, {
     updateTabItems(session, "sidebarmenu", "dataset")
   })
 
-  output$single_datapoint_info <- renderText({
-    create_single_datapoint_info(
+  output$single_data_point_info <- renderText({
+    create_single_data_point_info(
       load_dataset(),
       input$dataset_table_rows_selected,
       format_strain_name(input$strain)
     )
   })
 
-  output$single_datapoint_packaging_signal_info <- renderText({
-    create_single_datapoint_packaging_signal_info(
+  output$single_data_point_packaging_signal_info <- renderText({
+    create_single_data_point_packaging_signal_info(
       load_dataset(),
       input$dataset_table_rows_selected,
       format_strain_name(input$strain),
@@ -262,7 +262,7 @@ server <- function(input, output, session) {
     )
   })
 
-  output$single_datapoint_start_window <- renderPlot({
+  output$single_data_point_start_window <- renderPlot({
     plot_deletion_site_window(
       load_dataset(),
       input$dataset_table_rows_selected,
@@ -271,7 +271,7 @@ server <- function(input, output, session) {
     )
   })
 
-  output$single_datapoint_end_window <- renderPlot({
+  output$single_data_point_end_window <- renderPlot({
     plot_deletion_site_window(
       load_dataset(),
       input$dataset_table_rows_selected,
