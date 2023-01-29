@@ -1,1 +1,1 @@
-R check_dependencies.R
+Rscript src/check_dependencies.R

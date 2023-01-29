@@ -1,5 +1,5 @@
 
-packages = list("shiny", "shinydashboard", "ggplot2", "DT", "comprehenr", "hash", "plotly", "jsonlite", "tools")
+packages = list("shiny", "shinydashboard", "ggplot2", "DT", "comprehenr", "hash", "plotly", "plyr", "jsonlite", "tools")
 
 install.packages(setdiff(packages, rownames(installed.packages())))
 
