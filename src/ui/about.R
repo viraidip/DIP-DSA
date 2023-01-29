@@ -24,7 +24,7 @@ about_tab <- tabItem(tabName="about",
           "dataset. Also provides a table where single data points can be",
           "viewed and selected"
         ),
-        tags$li(tags$b("Inspect single datapoint:"),
+        tags$li(tags$b("Inspect single data point:"),
           "Gives detailed information about a single entry of the dataset.",
           "The entry needs to be selected at the bottom of the 'Dataset",
           "overview' tab"
