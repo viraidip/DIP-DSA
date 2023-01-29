@@ -78,7 +78,10 @@ format_dataframe_locations <- function(df, segment, flattened) {
   if (flattened == "flattened") {
     df["NGS_read_count"] <- 1
   }
-  return(df)
+
+  df2 <- ddply(df, c("Position", "Class"), summarise, NGS_read_count=sum(NGS_read_count))
+
+  return(df2)
 }
 
 create_locations_plot <- function(df, df2, strain, segment, flattened) {
@@ -90,7 +93,7 @@ create_locations_plot <- function(df, df2, strain, segment, flattened) {
   }
 
   p <- ggplot(df, aes(x=Position, y=NGS_read_count, fill=Class)) +
-    geom_bar(stat="identity", width=1) +
+    geom_bar(stat="identity", position="dodge", width=1) +
     xlim(0, get_seq_len(strain, segment)) +
     xlab("Nucleotide position on segment") +
     ylab("NGS read count")
