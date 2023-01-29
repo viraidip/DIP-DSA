@@ -16,7 +16,7 @@ create_motif_on_sequence_plot <- function(df, strain, segment, motif) {
 
   # create plot
   p <- ggplot(df, aes(x=Position, y=NGS_read_count, fill=Class)) +
-    geom_bar(stat="identity") +
+    geom_bar(stat="identity", position="dodge", width=1) +
     xlab("Nucleotide position on segment") +
     ylab("NGS read count")
 

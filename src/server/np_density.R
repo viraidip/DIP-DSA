@@ -5,7 +5,7 @@ create_np_plot <- function(df, strain, segment, areas) {
   a_df <- reformat_np_areas(areas)
 
   p <- ggplot(df, aes(x=Position, y=NGS_read_count, fill=Class)) +
-    geom_bar(stat="identity", width=1) +
+    geom_bar(stat="identity", position="dodge", width=1) +
     xlim(0, get_seq_len(strain, segment)) +
     xlab("Nucleotide position on segment") +
     ylab("NGS read count")
