@@ -5,8 +5,8 @@ Interfering Particles.
 
 ## How to set up
 
-As a first step the right R version (3.6.3) and some additional packages need to be 
-installed. These libraries are listed here:
+As a first step the right R version (3.6.3) and some additional packages need
+to be installed. These additional libraries are listed here:
 
 - shiny 1.7.2
 - shinydashboard 0.7.2
@@ -17,16 +17,26 @@ installed. These libraries are listed here:
 - hash 2.2.6.2
 - jsonlite 1.8.2
 - comprehenr 0.6.10
+- plyr 1.8.8
 
-For support on the installation of specific libraries please use the original
-documentation of the corresponding library.
+The libraries can be installed by running the following command from the root
+folder:
+
+```
+bash setup_script.sh
+```
+
+For further support on the installation of specific libraries please use the
+original documentation of the corresponding library.
 
 ### Adding data
 
 To have access to the predefined datasets the user has to download them
-[here](https://ecosia.de "data source").
-After the download has finished move the ```data``` folder to the root folder of the
-repository. The root folder should look like this afterwards:
+[here](https://drive.google.com/drive/folders/1yXGaHMRmjcbf1U8AyigilkMBL2ZDMnWH?usp=sharing "data source").
+They are available as .zip and .tar.gz archive. The user only has to download
+one of them. After the download has finished unpack the ```data``` folder to
+the root folder of the repository. The root folder should look like this
+afterwards:
 
 ```
 +DIP-DSA
