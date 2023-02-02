@@ -43,18 +43,18 @@ prepare_data <- function(df, strain, segment, flattened) {
   # include NGS count or not
   if (flattened == "flattened") {
     df$NGS_read_count[df$NGS_read_count != 1] <- 1
-    count_df <- df
+    r_df <- df
   } else {
-    count_df <- data.frame(Start=integer(), End=integer(), NGS_read_count=integer())
+    r_df <- data.frame(Start=integer(),End=integer(),NGS_read_count=integer())
     for (i in 1:nrow(df)) {
-      count_df <- rbind(count_df, df[rep(i, df[i,3]),])
+      r_df <- rbind(r_df, df[rep(i, df[i,3]),])
     }
   }
 
-  return(count_df)
+  return(r_df)
 }
 
-create_direct_repeats_data <- function(df, strain, df2, strain2, segment, flattened) {
+create_direct_repeats_data<-function(df,strain,df2,strain2,segment,flattened) {
   df <- prepare_data(df, strain, segment, flattened)
   if (nrow(df) == 0) {
     path <- file.path(TEMPPATH, "direct_repeats_temp.csv")
@@ -65,13 +65,13 @@ create_direct_repeats_data <- function(df, strain, df2, strain2, segment, flatte
   }
   s <- get_seq(strain, segment)
 
-  # check if a second data set is given to compare
+  # check if a second dataset is given to compare
   if (nrow(df2) > 0) {
     # count for data set 1
     df["direct_repeats"] <- apply(df, 1, direct_repeats_counting_routine, s)
     df["group"] <- rep("d1", nrow(df))
 
-    # prepare and count for data set 2
+    # prepare and count for dataset 2
     df2 <- prepare_data(df2, strain2, segment, flattened)
     s2 <- get_seq(strain2, segment)
     df2["direct_repeats"] <- apply(df2, 1, direct_repeats_counting_routine, s2)
@@ -79,7 +79,7 @@ create_direct_repeats_data <- function(df, strain, df2, strain2, segment, flatte
 
     final_df <- rbind(df, df2)
 
-  # create sampling data if no second data set is given
+  # create sampling data if no second dataset is given
   } else {
     df["group"] <- rep("observed", nrow(df))
     # create sampling data

@@ -79,7 +79,11 @@ format_dataframe_locations <- function(df, segment, flattened) {
     df["NGS_read_count"] <- 1
   }
 
-  df2 <- ddply(df, c("Position", "Class"), summarise, NGS_read_count=sum(NGS_read_count))
+  df2 <- ddply(df,
+    c("Position", "Class"),
+    summarise,
+    NGS_read_count=sum(NGS_read_count)
+  )
 
   return(df2)
 }

@@ -10,12 +10,13 @@ create_np_plot <- function(df, strain, segment, areas) {
     xlab("Nucleotide position on segment") +
     ylab("NGS read count")
 
+  # if available add high NP areas as black rectangle to plot
   if (nrow(a_df) > 0) {
     c <- "black"
     for (i in 1:nrow(a_df)) {
       xmin <- a_df[i, ]$start
       xmax <- a_df[i, ]$end
-      p <- p + geom_rect(xmin=xmin, xmax=xmax, ymin=0, ymax=1, fill=c, alpha=0.3)
+      p <- p + geom_rect(xmin=xmin,xmax=xmax,ymin=0,ymax=1,fill=c,alpha=0.3)
     }
   }
 

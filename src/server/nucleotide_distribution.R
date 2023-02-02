@@ -75,13 +75,13 @@ create_nuc_dist_data <- function(df, strain, df2, strain2, segment, flattened){
   }
 
   count_df1 <- prepare_nuc_dist_data(df, segment, flattened, strain, FALSE)
-  # use second data set if availabe
+  # use second dataset if availabe
   if (nrow(df2) > 0) {
     count_df1["group"] <- rep("d1", nrow(count_df1))
     count_df2 <- prepare_nuc_dist_data(df2, segment, flattened, strain2, FALSE)
     count_df2["group"] <- rep("d2", nrow(count_df2))
     final_df <- rbind(count_df1, count_df2)
-  # create sampling data if no second data set is given
+  # create sampling data if no second dataset is given
   } else {
     count_df1["group"] <- rep("observed", nrow(count_df1))
     sampling_df <- prepare_nuc_dist_data(df, segment, flattened, strain, TRUE)
@@ -96,7 +96,7 @@ create_nuc_dist_data <- function(df, strain, df2, strain2, segment, flattened){
 }
 
 create_nuc_dist_plot <- function(pos, nuc, segment) {
-  # load df and data set length from temp files
+  # load df and dataset length from temp files
   path <- file.path(TEMPPATH, "temp.csv")
   df <- read.csv(path)
   path <- file.path(TEMPPATH, "temp.txt")
