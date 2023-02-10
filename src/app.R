@@ -29,6 +29,7 @@ source('ui/direct_repeats.R', local=TRUE)
 source('ui/motif_search.R', local=TRUE)
 source('ui/regression.R', local=TRUE)
 source('ui/np_density.R', local=TRUE)
+source('ui/classification.R', local=TRUE)
 source('ui/about.R', local=TRUE)
 
 ui <- bootstrapPage(
@@ -81,6 +82,10 @@ ui <- bootstrapPage(
           tabName="np_density",
           icon=icon("cubes-stacked")
         ),
+        menuItem("Classification",
+          tabName="classification",
+          icon=icon("clipboard-check")
+        ),
         hr(),
         menuItem("About",
           tabName="about",
@@ -99,6 +104,7 @@ ui <- bootstrapPage(
         motif_search_tab,
         regression_tab,
         np_density_tab,
+        classification_tab,
         about_tab
       )
     )
@@ -119,6 +125,7 @@ source("server/direct_repeats.R", local=TRUE)
 source("server/motif_search.R", local=TRUE)
 source("server/regression.R", local=TRUE)
 source("server/np_density.R", local=TRUE)
+source("server/classification.R", local=TRUE)
 source("server/about.R", local=TRUE)
 
 server <- function(input, output, session) {
