@@ -501,6 +501,11 @@ server <- function(input, output, session) {
     )
   })
 
+### classifier ###
+  observeEvent(input$run_clf, {
+  })
+
+
 ### about ###
   output$dataset_info_table <- renderTable({
     create_dataset_info_table()
