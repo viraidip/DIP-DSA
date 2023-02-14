@@ -31,17 +31,26 @@ classification_tab <- tabItem(tabName="classification",
       selectInput(
         inputId="classifier",
         label="Select classifier",
-        choices=c("clf A", "clf B")
+        choices=gsub(
+          ".pkl",
+          "",
+          list.files(
+            file.path(DATAPATH, "classifiers"),
+            full.names=FALSE,
+            recursive=FALSE
+          )
+        )
       ),
       actionButton(
         inputId="run_clf",
-        label="Run classification"
+        label="Run prediction"
       )
     ),
     box(
       title="Classification result",
       width=12,
-      "text"
+      "text",
+      verbatimTextOutput("clf_results")
     )
   )
 )

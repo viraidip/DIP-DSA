@@ -6,6 +6,7 @@ library(hash)
 library(jsonlite)
 library(plotly)
 library(plyr)
+library(reticulate)
 library(shiny)
 library(shinydashboard)
 library(stringr)
@@ -503,8 +504,19 @@ server <- function(input, output, session) {
 
 ### classifier ###
   observeEvent(input$run_clf, {
+    label <- run_prediction(
+      input$clf_start,
+      input$clf_end,
+      input$clf_strain,
+      input$clf_segment,
+      input$classifier
+    )
+    output$clf_results <- renderText({
+      show_clf_results(
+        label
+      )
+    })
   })
-
 
 ### about ###
   output$dataset_info_table <- renderTable({
