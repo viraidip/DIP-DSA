@@ -29,24 +29,26 @@ def run_classification(s, e, strain, segment, sequence, clf)-> str:
 
     # create artificial samples to let segment OHE run correctly
     sgms = ["PB2", "PB1", "PA", "HA", "NP", "NA", "M", "NS"]
-    n_df = [{"Start": 0,"End":1,"Segment":seg,"Strain":strain, "Sequence": sequence} for seg in sgms]
-    df = df.append(n_df, ignore_index=True)
+    n_df = [{"Start": 1,"End":2,"Strain":strain,"Segment":seg,"Sequence": sequence} for seg in sgms]
+    n_df = pd.DataFrame(n_df)
+    
+    df = pd.concat([n_df, df], ignore_index=True)
 
     # create features
     df, feature_cols = generate_features(df, features)
 
     # remove artificial samples
-    df = df[df["Start"] != 0]
+    df = df[df["Start"] != 1]
     X = df[feature_cols]
 
     # load pickle file
     p = os.path.join("..", "data", "classifiers", f"{clf}.pkl")
     clf = joblib.load(p)
+    X = X.reindex(columns=clf.feature_names_in_)
 
     # make prediction
     label = clf.predict(X)
     return label[0]
-
 
 def generate_features(df: pd.DataFrame, features: list)-> (pd.DataFrame, list):
     feature_cols = ["Start", "End"]
@@ -91,7 +93,7 @@ def get_dirna_length(row: pd.Series)-> int:
     return row["Start"] + (seq_len - row["End"] + 1)
 
 def get_direct_repeat_length(row: pd.Series)-> int:
-    n, _ = calculate_direct_repeat(row["Sequence"], row["Start"], row["End"])
+    n = calculate_direct_repeat(row["Sequence"], row["Start"], row["End"])
     return n
 
 def calculate_direct_repeat(seq: str, s: int, e: int)-> (int, str):
