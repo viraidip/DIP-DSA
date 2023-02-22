@@ -15,6 +15,7 @@ library(tools)
 library("Biostrings")
 
 source("utils.R")
+use_condaenv(CONDAENV)
 
 ##########
 ### UI ###
