@@ -43,4 +43,4 @@ vignettes/*.pdf
 *.swp
 
 
-conta_path.txt
+conda_path.txt
