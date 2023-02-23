@@ -40,3 +40,7 @@ vignettes/*.pdf
 
 # Temp files
 /data/temp
+*.swp
+
+
+conta_path.txt
