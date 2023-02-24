@@ -30,6 +30,9 @@ bash setup_script.sh
 For further support on the installation of specific libraries please use the
 original documentation of the corresponding library.
 
+During the setup a conda environment will be loaded, for the classification
+page. So make sure to have anaconda installed on your system.
+
 ### Running the app
 
 To run the application locally type the following command into the commandline.
