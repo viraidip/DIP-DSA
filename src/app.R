@@ -11,6 +11,7 @@ library(shiny)
 library(shinydashboard)
 library(stringr)
 library(tools)
+library(VennDiagram)
 
 library("Biostrings")
 
@@ -247,6 +248,20 @@ server <- function(input, output, session) {
   output$dataset_table <- renderDataTable(
     datatable(load_dataset(), selection="single")
   )
+
+  output$dataset_venn <- renderPlot({
+    df2 <- check_second_dataset(
+      input$two_datasets,
+      format_strain_name(input$strain2),
+      input$dataset2
+    )
+    plot_venn(
+      load_dataset(),
+      df2,
+      input$dataset1,
+      input$dataset2
+    )
+  })
 
 
 ### single data point ###

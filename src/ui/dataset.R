@@ -15,6 +15,13 @@ dataset_tab <- tabItem(tabName="dataset",
       actionLink("link_to_single_datapoint_tab", "Inspect single datapoint"),
       " tab",
       dataTableOutput("dataset_table")
+    ),
+    box(
+      title="Venn diagram",
+      width=12,
+      "Displays a venn diagramm that shows how many DI candidates are in each",
+      "set and how many of them can be found in both",
+      plotOutput("dataset_venn")
     )
   )
 )

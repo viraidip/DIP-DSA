@@ -1,5 +1,5 @@
 
-pcks <- list("shiny", "shinydashboard", "ggplot2", "DT", "comprehenr", "hash", "plotly", "plyr", "jsonlite", "tools", "reticulate")
+pcks <- list("shiny", "shinydashboard", "ggplot2", "DT", "comprehenr", "hash", "plotly", "plyr", "jsonlite", "tools", "reticulate", "VennDiagram")
 
 missing_pcks <- setdiff(pcks, rownames(installed.packages()))
 
