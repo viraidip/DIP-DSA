@@ -32,7 +32,7 @@ source('ui/direct_repeats.R', local=TRUE)
 source('ui/motif_search.R', local=TRUE)
 source('ui/regression.R', local=TRUE)
 source('ui/np_density.R', local=TRUE)
-source('ui/classification.R', local=TRUE)
+source('ui/candidate_prediction.R', local=TRUE)
 source('ui/about.R', local=TRUE)
 
 ui <- bootstrapPage(
@@ -85,8 +85,8 @@ ui <- bootstrapPage(
           tabName="np_density",
           icon=icon("cubes-stacked")
         ),
-        menuItem("Classification",
-          tabName="classification",
+        menuItem("Candidate prediction",
+          tabName="candidate_prediction",
           icon=icon("clipboard-check")
         ),
         hr(),
@@ -107,7 +107,7 @@ ui <- bootstrapPage(
         motif_search_tab,
         regression_tab,
         np_density_tab,
-        classification_tab,
+        candidate_prediction_tab,
         about_tab
       )
     )
@@ -128,7 +128,7 @@ source("server/direct_repeats.R", local=TRUE)
 source("server/motif_search.R", local=TRUE)
 source("server/regression.R", local=TRUE)
 source("server/np_density.R", local=TRUE)
-source("server/classification.R", local=TRUE)
+source("server/candidate_prediction.R", local=TRUE)
 source("server/about.R", local=TRUE)
 
 server <- function(input, output, session) {
@@ -518,17 +518,17 @@ server <- function(input, output, session) {
     )
   })
 
-### classifier ###
-  observeEvent(input$run_clf, {
+### candidate prediction ###
+  observeEvent(input$run_prediction, {
     label <- run_prediction(
-      input$clf_start,
-      input$clf_end,
-      input$clf_strain,
-      input$clf_segment,
+      input$prediction_start,
+      input$prediction_end,
+      input$prediction_strain,
+      input$prediction_segment,
       input$classifier
     )
-    output$clf_results <- renderText({
-      show_clf_results(
+    output$prediction_results <- renderText({
+      show_prediction_results(
         label
       )
     })

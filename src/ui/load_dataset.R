@@ -66,7 +66,7 @@ load_dataset_tab <- tabItem(tabName="load_dataset",
       ),
       fileInput(
         inputId="upload_dataset_file",
-        label="Upload custom dataset here (*.csv):",
+        label="Upload a custom dataset (*.csv):",
         accept=c(".csv")
       ),
       div(style="display:inline-block",

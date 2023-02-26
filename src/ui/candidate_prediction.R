@@ -1,26 +1,26 @@
-classification_tab <- tabItem(tabName="classification",
+candidate_prediction_tab <- tabItem(tabName="candidate_prediction",
   h1("Predicting the competitveness of a DI RNA candidate"),
   fluidRow(
     box(
-      title="Defining DI RNA candidate to classify",
+      title="Defining DI RNA candidate to predict",
       width=12,
       numericInput(
-        inputId="clf_start",
-        label="Define start position:",
+        inputId="prediction_start",
+        label="Type the starting position:",
         value=100
       ),
       numericInput(
-        inputId="clf_end",
-        label="Define end position:",
+        inputId="prediction_end",
+        label="Type the ending position:",
         value=800
       ),
       selectInput(
-        inputId="clf_segment",
-        label="Select segment:",
+        inputId="prediction_segment",
+        label="Select a segment:",
         choices=SEGMENTS
       ),
       selectInput(
-        inputId="clf_strain",
+        inputId="prediction_strain",
         label="Select a strain:",
         choices=gsub(
           "_",
@@ -30,7 +30,7 @@ classification_tab <- tabItem(tabName="classification",
       ),
       selectInput(
         inputId="classifier",
-        label="Select classifier",
+        label="Select a classifier to use:",
         choices=gsub(
           ".pkl",
           "",
@@ -42,15 +42,16 @@ classification_tab <- tabItem(tabName="classification",
         )
       ),
       actionButton(
-        inputId="run_clf",
+        inputId="run_prediction",
         label="Run prediction"
       )
     ),
     box(
-      title="Classification result",
+      title="Prediction result",
       width=12,
-      "text",
-      verbatimTextOutput("clf_results")
+      "Displaying the result of the prediction. If no result is shown press",
+      "'Run prediction'.",
+      verbatimTextOutput("prediction_results")
     )
   )
 )
