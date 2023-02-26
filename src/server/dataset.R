@@ -15,7 +15,7 @@ generate_stats_info <- function(df) {
   )
 }
 
-plot_venn <- function(df1, df2, name1, name2) {
+plot_venn <- function(df1, df2, s1, d1, s2, d2) {
   grid.newpage()
   if (nrow(df2) == 0) {
     grid.draw(x=NULL)
@@ -24,9 +24,16 @@ plot_venn <- function(df1, df2, name1, name2) {
     A=paste(df1$Segment, df1$Start, df1$End, sep="_"),
     B=paste(df2$Segment, df2$Start, df2$End, sep="_")
   )
-  f <- c("#E69F00", "#56B4E9")
-  n <- c(name1, name2)
-  venn_object <- venn.diagram(x, filename=NULL, disable.logging=TRUE, fill=f, category.names=n)
+  venn_object <- venn.diagram(
+    x,
+    filename=NULL,
+    disable.logging=TRUE,
+    fill=c("#E69F00", "#56B4E9"),
+    category.names=c(paste(s1, d1, sep="\n"), paste(s2, d2, sep="\n")),
+    cex=1.5,
+    cat.cex=1.5,
+    cat.dist=c(-0.05,-0.05)
+  )
   grid.draw(venn_object)
   }
 }

@@ -258,7 +258,9 @@ server <- function(input, output, session) {
     plot_venn(
       load_dataset(),
       df2,
-      input$dataset1,
+      input$strain,
+      input$dataset,
+      input$strain2,
       input$dataset2
     )
   })
