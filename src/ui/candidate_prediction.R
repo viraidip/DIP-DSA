@@ -50,7 +50,7 @@ candidate_prediction_tab <- tabItem(tabName="candidate_prediction",
       title="Prediction result",
       width=12,
       "Displaying the result of the prediction. If no result is shown press",
-      "'Run prediction'.",
+      "'Run prediction'. The calculations can take a few minutes.",
       verbatimTextOutput("prediction_results")
     )
   )
