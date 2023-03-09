@@ -19,7 +19,8 @@ def run_classification(s, e, strain, segment, sequence, clf)-> str:
                         "A/NewCaledonia/1999": "NC",
                         "A/Perth/16/2009": "Perth",
                         "A/PuertoRico/8/1934": "PR8",
-                        "B/Lee/1940": "BLEE"
+                        "B/Lee/1940": "BLEE",
+                        "A/WSN/33": "WSN"
                         })
     strain = strain_dict[strain]
 
