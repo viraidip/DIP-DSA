@@ -521,6 +521,13 @@ server <- function(input, output, session) {
   })
 
 ### candidate prediction ###
+  observe({
+    max <- get_seq_len(format_strain_name(input$prediction_strain),
+      input$prediction_segment)
+    updateNumericInput(session, "prediction_start", max=max)
+    updateNumericInput(session, "prediction_end", max=max)
+  })
+
   observeEvent(input$run_prediction, {
     label <- run_prediction(
       input$prediction_start,

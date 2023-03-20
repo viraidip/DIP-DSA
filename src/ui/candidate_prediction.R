@@ -7,12 +7,16 @@ candidate_prediction_tab <- tabItem(tabName="candidate_prediction",
       numericInput(
         inputId="prediction_start",
         label="Type the starting position:",
-        value=100
+        value=100,
+        min=0,
+        max=1000
       ),
       numericInput(
         inputId="prediction_end",
         label="Type the ending position:",
-        value=800
+        value=400,
+        min=0,
+        max=1000
       ),
       selectInput(
         inputId="prediction_segment",
