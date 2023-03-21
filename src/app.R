@@ -9,6 +9,7 @@ library(plyr)
 library(reticulate)
 library(shiny)
 library(shinydashboard)
+library(shinyvalidate)
 library(stringr)
 library(tools)
 library(VennDiagram)
@@ -524,10 +525,11 @@ server <- function(input, output, session) {
   observe({
     max <- get_seq_len(format_strain_name(input$prediction_strain),
       input$prediction_segment)
-    updateNumericInput(session, "prediction_start", max=max)
-    updateNumericInput(session, "prediction_end", max=max)
+    iv <- InputValidator$new()
+    iv$add_rule("prediction_start", sv_between(0, max))
+    iv$add_rule("prediction_end", sv_between(0, max))
+    iv$enable()
   })
-
   observeEvent(input$run_prediction, {
     label <- run_prediction(
       input$prediction_start,
