@@ -136,7 +136,8 @@ create_end_3_5_plot <- function(df, strain, segment) {
     xlim(0, 700) +
     ylim(0, 700) +
     xlab("5' length") +
-    ylab("3' length")
+    ylab("3' length") +
+    geom_abline(slope=1, intercept=0, color="green")
   # add info about packaging signal if it exists
   if (packaging_signal_data_exists(strain)) {
     packaging_signal <- load_packaging_signal_data(strain)
