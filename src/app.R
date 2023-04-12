@@ -93,7 +93,7 @@ ui <- bootstrapPage(
         hr(),
         menuItem("About",
           tabName="about",
-          icon=icon("info")
+          icon=icon("circle-info")
         )
       )
     ),
