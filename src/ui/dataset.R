@@ -19,8 +19,9 @@ dataset_tab <- tabItem(tabName="dataset",
     box(
       title="Venn diagram",
       width=12,
-      "Displays a venn diagramm that shows how many DI candidates are in each",
-      "set and how many of them can be found in both",
+      "Displays a venn diagramm, if two data sets are selected. Shows how",
+      "many DI candidates are in each set and how many of them can be found",
+      "in both.",
       plotOutput("dataset_venn")
     )
   )
