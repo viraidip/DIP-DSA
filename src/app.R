@@ -38,8 +38,9 @@ source('ui/about.R', local=TRUE)
 
 ui <- bootstrapPage(
   dashboardPage(
+    title="DIP-Deletion Site Analyzer",
     skin="green",
-    dashboardHeader(title="DIP DSA"),
+    dashboardHeader(title="DIP-DSA"),
     dashboardSidebar(
       sidebarMenu(
         id="sidebarmenu",
