@@ -108,12 +108,23 @@ create_locations_plot <- function(df, df2, strain, segment, flattened) {
     x <- unlist(packaging_signal[segment])
     y <- layer_scales(p)$y$get_limits()[2]
     color <- c("blue", "blue", "red", "red")
-    fill <- c("incorporation signal", "bundling signal")
     p <- p + geom_vline(xintercept=x, color=color, linetype="dotted") +
-      geom_rect(aes(xmin=0   ,xmax=x[1],ymin=0,ymax=y,fill=fill[1]),alpha=0.3)+
-      geom_rect(aes(xmin=x[2],xmax=slen,ymin=0,ymax=y,fill=fill[1]),alpha=0.3)+
-      geom_rect(aes(xmin=x[3],xmax=x[1],ymin=0,ymax=y,fill=fill[2]),alpha=0.3)+
-      geom_rect(aes(xmin=x[4],xmax=x[2],ymin=0,ymax=y,fill=fill[2]),alpha=0.3)
+      geom_rect(
+        aes(xmin=0, xmax=x[1], ymin=0, ymax=y, fill="incorporation signal"),
+        alpha=0.3
+      ) +
+      geom_rect(
+        aes(xmin=x[2], xmax=slen, ymin=0, ymax=y, fill="incorporation signal"),
+        alpha=0.3
+      ) +
+      geom_rect(
+        aes(xmin=x[3], xmax=x[1], ymin=0, ymax=y, fill="bundling signal"),
+        alpha=0.3
+      ) +
+      geom_rect(
+        aes(xmin=x[4], xmax=x[2], ymin=0, ymax=y, fill="bundling signal"),
+        alpha=0.3
+      )
   }
   ggplotly(p)
 }
@@ -124,20 +135,21 @@ format_dataframe_end_3_5 <- function(df, strain, segment) {
   df <- df[df$Segment == segment, ]
   validate_plotting(df, segment)
   seq_len <- get_seq_len(strain, segment)
-  df["End_5"] <- seq_len - df["End"]
+  df["Length_3"] <- df["Start"]
+  df["Length_5"] <- seq_len - df["End"]
   return(df)
 }
 
 create_end_3_5_plot <- function(df, strain, segment) {
   df <- format_dataframe_end_3_5(df, strain, segment)
 
-  p <- ggplot(df, aes(x=Start, y=End_5)) +
+  p <- ggplot(df, aes(x=Length_3, y=Length_5)) +
     geom_point() +
     xlim(0, 700) +
     ylim(0, 700) +
-    xlab("5' length") +
-    ylab("3' length") +
-    geom_abline(slope=1, intercept=0, color="green")
+    xlab("3' length") +
+    ylab("5' length") +
+    geom_segment(aes(x=0, xend=900, y=0, yend=900), color="wheat4")
   # add info about packaging signal if it exists
   if (packaging_signal_data_exists(strain)) {
     packaging_signal <- load_packaging_signal_data(strain)
