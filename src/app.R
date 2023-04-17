@@ -354,7 +354,9 @@ server <- function(input, output, session) {
 ### nucleotide distribution ###
   observeEvent(
     eventExpr = {
+      input$strain
       input$dataset
+      input$strain2
       input$dataset2
       input$two_datasets
       input$selected_segment
@@ -411,7 +413,9 @@ server <- function(input, output, session) {
 ### direct repeats ###
   observeEvent(
     eventExpr = {
+      input$strain
       input$dataset
+      input$strain2
       input$dataset2
       input$two_datasets
       input$selected_segment
@@ -457,8 +461,8 @@ server <- function(input, output, session) {
 
   observeEvent(
     eventExpr = {
-      input$dataset
       input$strain
+      input$dataset
       input$selected_segment
       input$motif
     },
@@ -496,20 +500,19 @@ server <- function(input, output, session) {
 
   observeEvent(
     eventExpr = {
-      input$dataset
       input$strain
+      input$dataset
       input$np_areas
     },
     handlerExpr = {
-  output$np_plot <- renderPlotly({
-    create_np_plot(
-      load_dataset(),
-      format_strain_name(input$strain),
-      input$selected_segment,
-      input$np_areas
-    )
-  })
-
+      output$np_plot <- renderPlotly({
+        create_np_plot(
+          load_dataset(),
+          format_strain_name(input$strain),
+          input$selected_segment,
+          input$np_areas
+        )
+      })
     }
   )
 
