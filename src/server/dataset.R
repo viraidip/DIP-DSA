@@ -24,6 +24,7 @@ plot_venn <- function(df1, df2, s1, d1, s2, d2) {
     A=paste(df1$Segment, df1$Start, df1$End, sep="_"),
     B=paste(df2$Segment, df2$Start, df2$End, sep="_")
   )
+  flog.threshold(ERROR)
   venn_object <- venn.diagram(
     x,
     filename=NULL,
