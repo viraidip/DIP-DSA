@@ -117,6 +117,7 @@ reformat_np_areas <- function(areas) {
   colnames(df) <- c("areas")
   df[c("start", "end")] <- str_split_fixed(df$areas, "-", 2)
   df <- type.convert(df, as.is=TRUE)
-  return(df[c("start", "end")])
+  df["label"] <- "high NP area"
+  return(df[c("start", "end", "label")])
 }
 
