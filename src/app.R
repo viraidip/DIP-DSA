@@ -153,10 +153,18 @@ server <- function(input, output, session) {
       paste(input$dataset, ".csv", sep="")
     )
     names <- c("Segment", "Start", "End", "NGS_read_count")
-    classes <- c("character", "integer", "integer", "integer")
+    cl <- c("character", "integer", "integer", "integer")
     if (file.exists(path)) {
-      read.csv(path, na.strings=c("NaN"), col.names=names, colClasses=classes)
+      df <- read.csv(path, na.strings=c("NaN"), col.names=names, colClasses=cl)
+    } else {
+      df <- data.frame(
+        "Segment"=character(),
+        "Start"=integer(),
+        "End"=integer(),
+        "NGS_read_count"=integer()
+      )
     }
+    return(df)
   })
 
   observeEvent(input$link_to_about_tab, {
