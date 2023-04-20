@@ -4,25 +4,29 @@ about_tab <- tabItem(tabName="about",
     box(
       title="What this application is meant for",
       width=12,
-      "This application allows to investigate datasets of DI RNAs, which",
-      "contain a big deletion in the middle of the original/wild-type",
-      "sequence. This deletion is described in the corresponding datasets by",
-      "a start and an end point."
+      "This application allows to investigate datasets of Defective",
+      "Interfering RNAs (DI RNAs). They are defined by a big deletion in the",
+      "middle of the original/wild-type sequence. This deletion is described",
+      "in the corresponding datasets by the start and the end point of the",
+      "deletion."
     ),
     box(
       title="Overview about the different tabs",
       width=12,
+      "The application consists of multiple tabs, that provide different",
+      "analyses.",
       tags$ol(
         tags$li(tags$b("(Up-)load dataset:"),
-          "Select a dataset from a list of given influenza strains or",
-          "upload a new custom dataset. When uploading a custom dataset the",
-          "FASTA files of the single segments need to be provided by the user",
-          "for some of the functionalities."
+          "Select one or two datasets from a list of given influenza strains",
+          "or upload a new custom dataset. When uploading a custom dataset",
+          "the FASTA files of the single segments need to be provided.",
+
         ),
         tags$li(tags$b("Dataset overview:"),
           "Shows statistical parameters about the NGS couunt of the selected",
           "dataset. Also provides a table where single data points can be",
-          "viewed and selected"
+          "viewed and selected. If two datasets are selected a Venn diagramm",
+          "is displayed to indicate overlapping data points."
         ),
         tags$li(tags$b("Inspect single data point:"),
           "Gives detailed information about a single entry of the dataset.",
@@ -31,18 +35,18 @@ about_tab <- tabItem(tabName="about",
         ),
         tags$li(tags$b("Select segment:"),
           "This dropdown menu lets the user decide which of the eight",
-          "segments will be used in the following four tabs."
+          "segments will be used in the analyses of the following four tabs."
         ),
         tags$li(tags$b("Lengths and locations:"),
-          "Includes a mapping of the locations of the start and end onto",
-          "the full length segment. Also includes a histogram with the length",
-          "of the deleted sequence. The bin size can be adjusted by the user.",
-          "A third plot includes a comparision of the length of the 3' and 5'",
+          "Provides a histogram with the length of the DI RNA sequences. The",
+          "bin size can be adjusted by the user. Also includes a mapping of",
+          "the locations of the start and end onto the full length segment. A",
+          "third plot includes a comparision of the length of the 3' and 5'",
           "ends."
         ),
         tags$li(tags$b("Nucleotide distribution:"),
-          "Shows the relative occurrence of the four nucleotides (Adenine,",
-          "Cytosine, Guanine and Uracil) directly before and after the",
+          "Shows the relative occurrence of the four nucleotides (adenine,",
+          "cytosine, guanine and uracil) directly before and after the",
           "deletion site. An expected distribution is calculated using a",
           "sampling approach which generates random deletion sites. The",
           "observed and expected values are compared by a binomial test."
@@ -69,14 +73,15 @@ about_tab <- tabItem(tabName="about",
           "Maps the deletion sites to areas of high NP density, that need to",
           "be provided by the user. Shows where those areas are located in",
           "correspondence to the deletion sites and performs an analysis if",
-          "the deletions occur more/less often than compared to randomly",
-          "samplesd data. The default values of high NP areas are for strain",
+          "the deletions occur more or less often than compared to randomly",
+          "sampled data. The default values of high NP areas are given for",
           "A/Californa/07/2009.",
         ),
         tags$li(tags$b("Candidate prediction:"),
-          "Define a DI RNA candidate by its starting and end point, strain,",
-          "and segment. Then run one of six pretrained classifiers to predict",
-          "if it has a low or high competitiveness in a DI RNA population."
+          "Allows the user to define a DI RNA candidate by its start and end",
+          "point, strain, and segment. Then one of six pretrained classifiers",
+          "is run to predict the competitiveness of the user define candidate",
+          "in a DI RNA population."
         ),
         tags$li(tags$b("About:"),
           "Provides more detailed information about DIPs, the usage of the",
@@ -100,7 +105,7 @@ about_tab <- tabItem(tabName="about",
       ),
       strong("Example dataset:"),
       br(),
-      "(Including correct order and naming of the headers)",
+      "Including correct order and naming of the headers",
       tags$table(border=2, width="100%",
         tags$tbody(
           tags$tr(
@@ -130,7 +135,7 @@ about_tab <- tabItem(tabName="about",
             tags$td("Start position of the deletion site"),
             tags$td("End position of the deletion site"),
             tags$td("Number of counts in the NGS data of this specific DI RNA",
-              "sample"
+              "candidate"
             )
           )
         )
