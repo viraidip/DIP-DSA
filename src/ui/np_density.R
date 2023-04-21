@@ -27,7 +27,7 @@ np_density_tab <- tabItem(tabName="np_density",
       "The number of deletion sites in high NP areas is divided by the",
       "overall count of deletion sites. The ratio of the observed samples is",
       "compared to randomly sampled data.",
-      plotlyOutput("np_bar_plot")
+      verbatimTextOutput("np_ratios_info")
     )
   )
 )

@@ -524,8 +524,8 @@ server <- function(input, output, session) {
     }
   )
 
-  output$np_bar_plot <- renderPlotly({
-    create_np_bar_plot(
+  output$np_ratios_info <- renderText({
+    create_np_ratios_info(
       load_dataset(),
       format_strain_name(input$strain),
       input$selected_segment,

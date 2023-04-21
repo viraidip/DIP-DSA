@@ -47,7 +47,7 @@ count_area_occurrence <- function(df, a_df, label) {
   return(final_df)
 }
 
-create_np_bar_plot <- function(df, strain, segment, areas) {
+create_np_ratios_info <- function(df, strain, segment, areas) {
   # reformat data
   obs_df <- format_dataframe_locations(df, segment, "flattened")
 
@@ -62,32 +62,33 @@ create_np_bar_plot <- function(df, strain, segment, areas) {
   a_df <- reformat_np_areas(areas)
   
   if (nrow(a_df) == 0 || sum(is.na(a_df)) > 0) {
-    p <- ggplot()
+    return("")
   } else {
     # count occurrences inside and outside of NP areas
     o_df <- count_area_occurrence(obs_df, a_df, "observed")
     s_df <- count_area_occurrence(sam_df, a_df, "expected")
-    plot_df <- rbind(o_df, s_df)
+    r_df <- rbind(o_df, s_df)
+
+    r1 <- r_df[1, "Freq"]
+    r2 <- r_df[2, "Freq"]
 
     # statistical test (binom test)
-    n <- nrow(obs_df)
-    x <- plot_df[1, "Low"]
-    p <- plot_df[2, "Freq"]
-    if (!is.na(x) && !is.na(p)) {
-      p <- binom.test(x, n, p)$p.value
-      symbol <- get_stat_symbol(p)
+    if (!is.na(r_df[1, "Low"]) && !is.na(r2)) {
+      pv <- binom.test(r_df[1, "Low"], nrow(obs_df), r2)$p.value
+      pv <- round(pv, digits=8)
     } else {
-      symbol <- ""
+      pv <- "NA"
     }
 
-    # create plot
-    p <- ggplot(data=plot_df, aes(x=Label, y=Freq, fill=Class)) +
-      geom_bar(stat="identity", position=position_dodge()) +
-      xlab("source") +
-      ylab("ratio") +
-      annotate("text", x=1, y=max(plot_df[,"Freq"]), label=symbol)
+    return(
+      paste(
+        paste("ratio of observed data: ", round(r1, digits=2)),
+        paste("ratio of expected data: ", round(r2, digits=2)),
+        paste("p-value of binomial test: ", pv),
+        sep="\n"
+      )
+    )
   }
 
-  ggplotly(p)
 }
 
