@@ -463,7 +463,8 @@ server <- function(input, output, session) {
       load_dataset(),
       format_strain_name(input$strain),
       input$selected_segment,
-      input$motif
+      input$motif,
+      input$mismatch
     )
   })
 
@@ -473,6 +474,7 @@ server <- function(input, output, session) {
       input$dataset
       input$selected_segment
       input$motif
+      input$mismatch
     },
     handlerExpr = {
       output$motif_table <- renderDataTable(
@@ -480,7 +482,8 @@ server <- function(input, output, session) {
           load_dataset(),
           format_strain_name(input$strain),
           input$selected_segment,
-          input$motif
+          input$motif,
+          input$mismatch
         )
       )
     }

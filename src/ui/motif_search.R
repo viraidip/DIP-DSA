@@ -8,6 +8,13 @@ motif_search_tab <- tabItem(tabName="motif_search",
         inputId="motif",
         label="Type a motif to search for:"
       ),
+      numericInput(
+        inputId="mismatch",
+        label="Maximal mismatches allowed:",
+        value=0,
+        min=0,
+        max=20
+      ),
     ),
     box(
       title="Motif matches on sequence",

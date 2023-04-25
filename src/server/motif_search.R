@@ -1,9 +1,9 @@
 
-find_matches <- function (strain, segment, motif) {
+find_matches <- function (strain, segment, motif, mismatch) {
   motif <- reformat_motif(motif)
   if (nchar(motif) > 0) {
     sequence <- get_seq(strain, segment)
-    matches <- matchPattern(motif, sequence)
+    matches <- matchPattern(motif, sequence, max.mismatch=mismatch)
   } else {
     matches <- c()
   }
@@ -11,14 +11,14 @@ find_matches <- function (strain, segment, motif) {
   return(matches)
 }
 
-create_motif_on_sequence_plot <- function(df, strain, segment, motif) {
+create_motif_on_sequence_plot <- function(df,strain,segment,motif,mismatch) {
   df <- format_dataframe_locations(df, segment, "flattened")
   if (nrow(df) == 0) {
     return()
   }
 
   # search for motif on sequence
-  matches <- find_matches(strain, segment, motif)
+  matches <- find_matches(strain, segment, motif, mismatch)
 
   # create plot
   p <- ggplot(df, aes(x=Position, y=NGS_read_count, fill=Class)) +
@@ -39,14 +39,20 @@ create_motif_on_sequence_plot <- function(df, strain, segment, motif) {
   ggplotly(p)
 }
 
-create_motif_table <- function(df, strain, segment, motif) {
+create_motif_table <- function(df, strain, segment, motif, mismatch) {
   df <- format_dataframe_locations(df, segment, "flattened")
 
   m <- data.frame()
   if (nrow(df) > 0) {
-    matches <- find_matches(strain, segment, motif)
+    matches <- find_matches(strain, segment, motif, mismatch)
     if (length(matches) != 0) {
-      m <- data.frame(as(matches, "IRanges"))
+      if (mismatch == 0) {
+        m <- data.frame(as(matches, "IRanges"))
+      } else { # include sequence of matches
+        m <- data.frame(matches)
+        colnames(m)[4] <- "sequence"
+      }
+      m <- subset(m, select=-c(width))
     }
   }
   return(m)
