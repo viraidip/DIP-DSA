@@ -4,7 +4,7 @@ pcks <- list("shiny", "shinydashboard", "ggplot2", "DT", "comprehenr", "hash", "
 missing_pcks <- setdiff(pcks, rownames(installed.packages()))
 
 for (m_pck in missing_pcks) {
-  install.packages(m_pck)
+  install.packages(m_pck, repos="https://cloud.r-project.org")
 }
 
 if (!require("Biostrings")) {
