@@ -31,11 +31,11 @@ run_prechecks <- function() {
 }
 
 get_seq <- function(strain, segment) {
-  path <- file.path(DATASETSPATH, strain, "fastas", paste(segment, ".fasta", sep=""))
-  if (!file.exists(path)) {
+  p <- file.path(DATASETSPATH,strain,"fastas", paste(segment,".fasta",sep=""))
+  if (!file.exists(p)) {
     return(NULL)
   }
-  fasta <- readDNAStringSet(path)
+  fasta <- readDNAStringSet(p)
   return(RNAString(fasta[[1]]))
 }
 
@@ -81,10 +81,10 @@ format_strain_name <- function(strain) {
 check_second_dataset <- function(include, strain, dataset) {
   if (include == "Yes") {
     path <- file.path(DATASETSPATH, strain, paste(dataset, ".csv", sep=""))
-    names <- c("Segment", "Start", "End", "NGS_read_count")
-    classes <- c("character", "integer", "integer", "integer")
+    nms <- c("Segment", "Start", "End", "NGS_read_count")
+    cls <- c("character", "integer", "integer", "integer")
     if (file.exists(path)) {
-      df <- read.csv(path, na.strings=c("NaN"), col.names=names, colClasses=classes)
+      df <- read.csv(path, na.strings=c("NaN"), col.names=nms, colClasses=cls)
     } else {
       df <- data.frame(
         "Segment"=character(),
