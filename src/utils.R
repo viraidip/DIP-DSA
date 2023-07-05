@@ -85,6 +85,13 @@ check_second_dataset <- function(include, strain, dataset) {
     classes <- c("character", "integer", "integer", "integer")
     if (file.exists(path)) {
       df <- read.csv(path, na.strings=c("NaN"), col.names=names, colClasses=classes)
+    } else {
+      df <- data.frame(
+        "Segment"=character(),
+        "Start"=integer(),
+        "End"=integer(),
+        "NGS_read_count"=integer()
+      )
     }
   } else {
     df <- data.frame()
