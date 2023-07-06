@@ -541,8 +541,8 @@ server <- function(input, output, session) {
     max <- get_seq_len(format_strain_name(input$prediction_strain),
       input$prediction_segment)
     iv <- InputValidator$new()
-    iv$add_rule("prediction_start", sv_between(0, max))
-    iv$add_rule("prediction_end", sv_between(0, max))
+    iv$add_rule("prediction_start", sv_between(1, max))
+    iv$add_rule("prediction_end", sv_between(1, max))
     iv$enable()
   })
   observeEvent(input$run_prediction, {
