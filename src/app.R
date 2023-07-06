@@ -545,20 +545,28 @@ server <- function(input, output, session) {
     iv$add_rule("prediction_end", sv_between(1, max))
     iv$enable()
   })
-  observeEvent(input$run_prediction, {
-    label <- run_prediction(
-      input$prediction_start,
-      input$prediction_end,
-      input$prediction_strain,
-      input$prediction_segment,
-      input$classifier
-    )
-    output$prediction_results <- renderText({
-      show_prediction_results(
-        label
+  observeEvent(
+    eventExpr = {
+      input$run_prediction
+    },
+    handlerExpr = {
+      label <- run_prediction(
+        input$prediction_start,
+        input$prediction_end,
+        input$prediction_strain,
+        input$prediction_segment,
+        input$classifier
       )
-    })
-  })
+      segment <- input$prediction_segment
+      start <- input$prediction_start
+      end <- input$prediction_end
+      output$prediction_results <- renderText({
+        show_prediction_results(
+          label, segment, start, end
+        )
+      })
+    }
+  )
 
 ### about ###
   output$dataset_info_table <- renderTable({
