@@ -24,7 +24,8 @@ create_motif_on_sequence_plot <- function(df,strain,segment,motif,mismatch) {
   p <- ggplot(df, aes(x=Position, y=NGS_read_count, fill=Class)) +
     geom_bar(stat="identity", position="dodge", width=1) +
     xlab("Nucleotide position on segment") +
-    ylab("NGS read count")
+    ylab("NGS read count") +
+    xlim(0, get_seq_len(strain, segment))
 
   # only draw if there are less than 100 matches
   if (length(matches) > 0 && length(matches) < 100) {
