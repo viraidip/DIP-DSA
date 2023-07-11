@@ -190,8 +190,13 @@ create_direct_repeats_plot <- function(correction, segment) {
     data_1 <- df[df$group == g1, ]$direct_repeats
     data_2 <- df[df$group == g2, ]$direct_repeats
   }
-  res <- wilcox.test(data_1, data_2)
-  symbol <- get_stat_symbol(res$p.value)
+
+  if (length(data_1) == 0) {
+    symbol <- ""
+  } else {
+    res <- wilcox.test(data_1, data_2)
+    symbol <- get_stat_symbol(res$p.value)
+  }
     
   t1 <- "Frequency of different direct repeat lengths "
   t2 <- paste("(n=", n_samples, ") ", symbol, sep="")

@@ -14,14 +14,16 @@ COLOR_MAP <- hash(A="blue", C="yellow", G="green", U="red")
 NUC_MAP <- hash(A="Adenine", C="Cytosine", G="Guanine", U="Uracil")
 
 NP_MAP <- hash(
-  "PB2"="36-86,204-268,496-581,974-1108,1282-1352,1435-1502,1608-1677,1986-2044,2221-2285",
+  "PB2"="36-86,204-268,496-581,974-1108,1282-1352,1435-1502,1608-1677,
+  1986-2044,2221-2285",
   "PB1"="94-161,276-337,902-998,1052-1118,1887-1947,2051-2110,2194-2263",
   "PA"="48-100,151-215,415-472,1515-1575,1719-1779,2152-2191",
   "HA"="80-140,569-643,848-910,1112-1159,1426-1493,1597-1653",
   "NP"="245-338,536-594,655-713,948-1014,1058-1115,1492-1540",
   "NA"="25-80,189-243,737-799,841-902,1011-1075,1153-1213",
   "M"="32-103,199-269,489-549,582-642,906-963",
-  "NS"="321-382,516-586,673-783")
+  "NS"="321-382,516-586,673-783"
+)
 
 ### DEFINING FUNCTIONS ###
 run_prechecks <- function() {
@@ -31,11 +33,11 @@ run_prechecks <- function() {
 }
 
 get_seq <- function(strain, segment) {
-  path <- file.path(DATASETSPATH, strain, "fastas", paste(segment, ".fasta", sep=""))
-  if (!file.exists(path)) {
+  p <- file.path(DATASETSPATH,strain,"fastas", paste(segment,".fasta",sep=""))
+  if (!file.exists(p)) {
     return(NULL)
   }
-  fasta <- readDNAStringSet(path)
+  fasta <- readDNAStringSet(p)
   return(RNAString(fasta[[1]]))
 }
 
@@ -81,10 +83,17 @@ format_strain_name <- function(strain) {
 check_second_dataset <- function(include, strain, dataset) {
   if (include == "Yes") {
     path <- file.path(DATASETSPATH, strain, paste(dataset, ".csv", sep=""))
-    names <- c("Segment", "Start", "End", "NGS_read_count")
-    classes <- c("character", "integer", "integer", "integer")
+    nms <- c("Segment", "Start", "End", "NGS_read_count")
+    cls <- c("character", "integer", "integer", "integer")
     if (file.exists(path)) {
-      df <- read.csv(path, na.strings=c("NaN"), col.names=names, colClasses=classes)
+      df <- read.csv(path, na.strings=c("NaN"), col.names=nms, colClasses=cls)
+    } else {
+      df <- data.frame(
+        "Segment"=character(),
+        "Start"=integer(),
+        "End"=integer(),
+        "NGS_read_count"=integer()
+      )
     }
   } else {
     df <- data.frame()

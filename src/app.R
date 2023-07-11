@@ -293,8 +293,7 @@ server <- function(input, output, session) {
     create_single_data_point_packaging_signal_info(
       load_dataset(),
       input$dataset_table_rows_selected,
-      format_strain_name(input$strain),
-      input$selected_segment
+      format_strain_name(input$strain)
     )
   })
 
@@ -536,29 +535,39 @@ server <- function(input, output, session) {
     )
   })
 
+
 ### candidate prediction ###
   observe({
     max <- get_seq_len(format_strain_name(input$prediction_strain),
       input$prediction_segment)
     iv <- InputValidator$new()
-    iv$add_rule("prediction_start", sv_between(0, max))
-    iv$add_rule("prediction_end", sv_between(0, max))
+    iv$add_rule("prediction_start", sv_between(1, max))
+    iv$add_rule("prediction_end", sv_between(1, max))
     iv$enable()
   })
-  observeEvent(input$run_prediction, {
-    label <- run_prediction(
-      input$prediction_start,
-      input$prediction_end,
-      input$prediction_strain,
-      input$prediction_segment,
-      input$classifier
-    )
-    output$prediction_results <- renderText({
-      show_prediction_results(
-        label
+  observeEvent(
+    eventExpr = {
+      input$run_prediction
+    },
+    handlerExpr = {
+      label <- run_prediction(
+        input$prediction_start,
+        input$prediction_end,
+        input$prediction_strain,
+        input$prediction_segment,
+        input$classifier
       )
-    })
-  })
+      segment <- input$prediction_segment
+      start <- input$prediction_start
+      end <- input$prediction_end
+      output$prediction_results <- renderText({
+        show_prediction_results(
+          label, segment, start, end
+        )
+      })
+    }
+  )
+
 
 ### about ###
   output$dataset_info_table <- renderTable({

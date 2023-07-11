@@ -30,7 +30,7 @@ def run_classification(s, e, strain, segment, sequence, clf)-> str:
 
     # create artificial samples to let segment OHE run correctly
     sgms = ["PB2", "PB1", "PA", "HA", "NP", "NA", "M", "NS"]
-    n_df = [{"Start": 1,"End":2,"Strain":strain,"Segment":seg,"Sequence": sequence} for seg in sgms]
+    n_df = [{"Start": 0,"End":0,"Strain":strain,"Segment":seg,"Sequence": sequence} for seg in sgms]
     n_df = pd.DataFrame(n_df)
     
     df = pd.concat([n_df, df], ignore_index=True)
@@ -39,7 +39,7 @@ def run_classification(s, e, strain, segment, sequence, clf)-> str:
     df, feature_cols = generate_features(df, features)
 
     # remove artificial samples
-    df = df[df["Start"] != 1]
+    df = df[df["Start"] != 0]
     X = df[feature_cols]
 
     # load pickle file
@@ -98,7 +98,7 @@ def get_direct_repeat_length(row: pd.Series)-> int:
     return n
 
 def calculate_direct_repeat(seq: str, s: int, e: int)-> (int, str):
-    w_len = 15
+    w_len = min(s, 15) # avoids crashing for very small start position
     start_window = seq[s-w_len: s]
     end_window = seq[e-1-w_len: e-1]
     # if they are the same return directly to avoid off-by-one error

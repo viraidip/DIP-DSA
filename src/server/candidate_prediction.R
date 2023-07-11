@@ -9,8 +9,8 @@ run_prediction <- function(s, e, strain, segment, clf) {
   return(label)
 }
 
-show_prediction_results <- function(label) {
+show_prediction_results <- function(label, seg, s, e) {
   return(
-    paste("Label:\t", label)
+    paste(seg, s, e, "\n", "Label:\t", label)
   )
 }
