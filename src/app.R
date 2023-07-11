@@ -293,8 +293,7 @@ server <- function(input, output, session) {
     create_single_data_point_packaging_signal_info(
       load_dataset(),
       input$dataset_table_rows_selected,
-      format_strain_name(input$strain),
-      input$selected_segment
+      format_strain_name(input$strain)
     )
   })
 

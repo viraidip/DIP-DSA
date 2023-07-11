@@ -16,14 +16,14 @@ create_single_data_point_info <- function(df, row, strain) {
         paste(" and ends at nucleotide", end),
         paste(".\nThe length of the deletion site is" , end-start),
         paste(".\nDI RNA sequence is", start+(full-end+1),"nucleotides long."),
-        paste("\nNumber of reads in sample (NGS read count) is",ngs_read_count)
+        paste("\nNumber of reads in experiment (NGS read count) is",ngs_read_count)
         ,sep=""
       )
     )
   }
 }
 
-create_single_data_point_packaging_signal_info<-function(df,row,strain,segment){
+create_single_data_point_packaging_signal_info<-function(df, row, strain){
   if (is.null(row)) {
     return("No data point selected.")
   } else {
@@ -33,6 +33,7 @@ create_single_data_point_packaging_signal_info<-function(df,row,strain,segment){
     else {
       s <- df[row, "Start"]
       e <- df[row, "End"]
+      segment <- df[row, "Segment"]
       pck_signal <- unlist(load_packaging_signal_data(strain)[segment])
       if (s > pck_signal[1]) {
         loc <- "outside"
@@ -89,7 +90,7 @@ plot_deletion_site_window <- function(df, row, strain, pos) {
   if (pos == "End") {
     nucleotide_indexing <- c("...", paste("...", get_seq_len(strain, segment)))
   } else {
-    nucleotide_indexing <- c("0 ...", "...")
+    nucleotide_indexing <- c("1 ...", "...")
   }
 
   plot(NULL, axes=FALSE, xlab="", ylab="", xlim=c(-1, 12), ylim=c(0, 2))
