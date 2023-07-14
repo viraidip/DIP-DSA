@@ -246,8 +246,8 @@ server <- function(input, output, session) {
 
 
 ### dataset overview ###
-  observeEvent(input$link_to_single_datapoint_tab, {
-    updateTabItems(session, "sidebarmenu", "single_datapoint")
+  observeEvent(input$link_to_single_data_point_tab, {
+    updateTabItems(session, "sidebarmenu", "single_data_point")
   })
 
   output$dataset_stats_info <- renderText(
