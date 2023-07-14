@@ -12,7 +12,7 @@ dataset_tab <- tabItem(tabName="dataset",
       width=12,
       "Entries can be selected by clicking on them. Further information can.",
       "then be seen in the",
-      actionLink("link_to_single_data_point_tab", "Inspect single datapoint"),
+      actionLink("link_to_single_data_point_tab", "inspect single datapoint"),
       " tab",
       dataTableOutput("dataset_table")
     ),
