@@ -12,7 +12,7 @@ library(shinydashboard)
 library(shinyvalidate)
 library(stringr)
 library(tools)
-library(VennDiagram)
+library(ggvenn)
 
 library("Biostrings")
 

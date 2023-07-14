@@ -16,26 +16,19 @@ generate_stats_info <- function(df) {
 }
 
 plot_venn <- function(df1, df2, s1, d1, s2, d2) {
-  grid.newpage()
-  if (nrow(df2) == 0) {
-    grid.draw(x=NULL)
-  } else {
+  error_text <- "Select a second dataset to show plot."
+  shiny::validate(need((nrow(df1 != 0) & (nrow(df2 != 0))), error_text))
+
   x <- list(
     A=paste(df1$Segment, df1$Start, df1$End, sep="_"),
     B=paste(df2$Segment, df2$Start, df2$End, sep="_")
   )
-  flog.threshold(ERROR)
-  venn_object <- venn.diagram(
-    x,
-    filename=NULL,
-    disable.logging=TRUE,
-    fill=c("#E69F00", "#56B4E9"),
-    category.names=c(paste(s1, d1, sep="\n"), paste(s2, d2, sep="\n")),
-    cex=1.5,
-    cat.cex=1.5,
-    cat.dist=c(-0.05,-0.05)
-  )
-  grid.draw(venn_object)
-  }
-}
+  names <- c(paste(s1, d1, sep=", "), paste(s2, d2, sep=", "))
+  names(x) <- names
 
+  p <- ggvenn(x, names, text_size=8) +
+    ggtitle("Overlap of two selected datasets") + 
+    theme(plot.title = element_text(size=20))
+
+  p
+}
