@@ -73,9 +73,13 @@ create_np_ratios_info <- function(df, strain, segment, areas) {
     r2 <- r_df[2, "Freq"]
 
     # statistical test (binom test)
+    fill <- " not "
     if (!is.na(r_df[1, "Low"]) && !is.na(r2)) {
       pv <- binom.test(r_df[1, "Low"], nrow(obs_df), r2)$p.value
       pv <- round(pv, digits=8)
+      if (pv < 0.05) {
+        fill <- " "
+      }
     } else {
       pv <- "NA"
     }
@@ -85,6 +89,8 @@ create_np_ratios_info <- function(df, strain, segment, areas) {
         paste("ratio of observed data: ", round(r1, digits=2)),
         paste("ratio of expected data: ", round(r2, digits=2)),
         paste("p-value of binomial test: ", pv),
+        paste("This means that there are", fill, "less deletion sites in low",
+          " NP areas than expected.", sep=""),
         sep="\n"
       )
     )
