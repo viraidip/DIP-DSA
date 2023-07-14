@@ -50,7 +50,13 @@ create_lengths_plot<-function(df,strain,df2,strain2,segment,flattened,n_bins) {
   pl <- ggplot(df, aes(x=Length, fill=Class)) +
     geom_histogram(alpha=0.3, binwidth=n_bins, position="identity") +
     xlab("Length of DI candidate") +
-    ylab("Number of occurrences")
+    ylab("Number of occurrences") +
+    ggtitle(paste("Histogram of DI RNA candidate lengths for segment",
+      segment
+      )
+    ) + 
+    theme(plot.title = element_text(size=20))
+
   # add mean and median to plot
   pl <- add_stats(df[df$Class == "1", ], pl, "1")
   if (nrow(df2) > 0) {
@@ -100,7 +106,12 @@ create_locations_plot <- function(df, df2, strain, segment, flattened) {
     geom_bar(stat="identity", position="dodge", width=1) +
     xlim(0, get_seq_len(strain, segment)) +
     xlab("Nucleotide position on segment") +
-    ylab("NGS read count")
+    ylab("NGS read count") +
+    ggtitle(paste("Start and end position of deletion sites for segment",
+      segment
+      )
+    ) + 
+    theme(plot.title = element_text(size=20))
   # add info about packaging signal if it exists
   if (packaging_signal_data_exists(strain)) {
     packaging_signal <- load_packaging_signal_data(strain)
@@ -149,7 +160,13 @@ create_end_3_5_plot <- function(df, strain, segment) {
     ylim(0, 700) +
     xlab("3' length") +
     ylab("5' length") +
-    geom_segment(aes(x=0, xend=900, y=0, yend=900), color="wheat4")
+    geom_segment(aes(x=0, xend=900, y=0, yend=900), color="wheat4") +
+    
+    ggtitle(paste("Relation of 3' and 5' sequence lengths for segment",
+      segment
+      )
+    ) + 
+    theme(plot.title = element_text(size=20))
   # add info about packaging signal if it exists
   if (packaging_signal_data_exists(strain)) {
     packaging_signal <- load_packaging_signal_data(strain)

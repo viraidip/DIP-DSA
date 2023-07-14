@@ -149,12 +149,20 @@ create_nuc_dist_plot <- function(pos, nuc, segment) {
     ylim(0, y_max) +
     xlab("Position") +
     ylab("Relative occurrence") +
+    ggtitle(paste("Nucleotide distribution of",
+      NUC_MAP[[nuc]],
+      "at",
+      pos,
+      "for segment",
+      segment
+      )
+    ) + 
+    theme(plot.title = element_text(size=20)) +
     scale_x_continuous(breaks=position, labels=labels) +
     annotate("text", x=position, y=y_text, label=symbols) +
     geom_rect(xmin=x_min, xmax=x_max, ymin=-1, ymax=2, alpha=0.5, fill="grey")+
     annotate("text", x=x1, y=y_max, label="deleted sequence") +
-    annotate("text", x=x2, y=y_max, label="remaining sequence") +
-    labs(title=NUC_MAP[[nuc]])
+    annotate("text", x=x2, y=y_max, label="remaining sequence")
 
   ggplotly(p)
 }
