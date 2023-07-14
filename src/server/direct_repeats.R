@@ -198,8 +198,8 @@ create_direct_repeats_plot <- function(correction, segment) {
     symbol <- get_stat_symbol(res$p.value)
   }
     
-  t1 <- "Frequency of different direct repeat lengths "
-  t2 <- paste("(n=", n_samples, ") ", symbol, sep="")
+  t1 <- "Frequency of different direct repeat lengths for segment "
+  t2 <- paste(segment, " (n=", n_samples, ") ", symbol, sep="")
   title <- paste(t1, t2, sep="")
 
   # create a barplot
@@ -208,7 +208,8 @@ create_direct_repeats_plot <- function(correction, segment) {
     ylim(0, 1.0) +
     xlab("Length of direct repeat") +
     ylab("Relative occurrence") +
-    ggtitle(title)
+    ggtitle(title) +
+    theme(plot.title = element_text(size=20))
   ggplotly(p)
 }
 

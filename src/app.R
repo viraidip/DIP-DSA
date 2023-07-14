@@ -12,7 +12,7 @@ library(shinydashboard)
 library(shinyvalidate)
 library(stringr)
 library(tools)
-library(VennDiagram)
+library(ggvenn)
 
 library("Biostrings")
 
@@ -78,14 +78,14 @@ ui <- bootstrapPage(
           tabName="motif_search",
           icon=icon("magnifying-glass")
         ),
+        menuItem("Nucleoprotein density",
+          tabName="np_density",
+          icon=icon("cubes-stacked")
+        ),
         hr(),
         menuItem("Linear regression",
           tabName="regression",
           icon=icon("chart-line")
-        ),
-        menuItem("Nucleoprotein density",
-          tabName="np_density",
-          icon=icon("cubes-stacked")
         ),
         menuItem("Candidate prediction",
           tabName="candidate_prediction",
@@ -246,8 +246,8 @@ server <- function(input, output, session) {
 
 
 ### dataset overview ###
-  observeEvent(input$link_to_single_datapoint_tab, {
-    updateTabItems(session, "sidebarmenu", "single_datapoint")
+  observeEvent(input$link_to_single_data_point_tab, {
+    updateTabItems(session, "sidebarmenu", "single_data_point")
   })
 
   output$dataset_stats_info <- renderText(
@@ -489,16 +489,6 @@ server <- function(input, output, session) {
   )
 
 
-### regression ###
-  output$regression_plot <- renderPlot({
-    create_regression_plot(
-      load_dataset(),
-      format_strain_name(input$strain),
-      input$regression_segments
-    )
-  })
-
-
 ### NP density ###
   observeEvent(input$selected_segment, {
     updateTextInput(
@@ -532,6 +522,16 @@ server <- function(input, output, session) {
       format_strain_name(input$strain),
       input$selected_segment,
       input$np_areas
+    )
+  })
+
+
+### regression ###
+  output$regression_plot <- renderPlot({
+    create_regression_plot(
+      load_dataset(),
+      format_strain_name(input$strain),
+      input$regression_segments
     )
   })
 

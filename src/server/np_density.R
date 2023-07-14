@@ -8,7 +8,12 @@ create_np_plot <- function(df, strain, segment, areas) {
     geom_bar(stat="identity", position="dodge", width=1) +
     xlim(0, get_seq_len(strain, segment)) +
     xlab("Nucleotide position on segment") +
-    ylab("NGS read count")
+    ylab("NGS read count") +
+    ggtitle(paste("High NP density areas mapped to deletion sites for segment",
+      segment
+      )
+    ) +
+    theme(plot.title = element_text(size=20))
 
   # if available add high NP areas as rectangles to plot
   if (nrow(a_df) > 0) {
@@ -73,9 +78,13 @@ create_np_ratios_info <- function(df, strain, segment, areas) {
     r2 <- r_df[2, "Freq"]
 
     # statistical test (binom test)
+    fill <- " not "
     if (!is.na(r_df[1, "Low"]) && !is.na(r2)) {
       pv <- binom.test(r_df[1, "Low"], nrow(obs_df), r2)$p.value
       pv <- round(pv, digits=8)
+      if (pv < 0.05) {
+        fill <- " "
+      }
     } else {
       pv <- "NA"
     }
@@ -85,6 +94,8 @@ create_np_ratios_info <- function(df, strain, segment, areas) {
         paste("ratio of observed data: ", round(r1, digits=2)),
         paste("ratio of expected data: ", round(r2, digits=2)),
         paste("p-value of binomial test: ", pv),
+        paste("This means that there are", fill, "less deletion sites in low",
+          " NP areas than expected.", sep=""),
         sep="\n"
       )
     )

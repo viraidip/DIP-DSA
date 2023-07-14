@@ -25,7 +25,14 @@ create_motif_on_sequence_plot <- function(df,strain,segment,motif,mismatch) {
     geom_bar(stat="identity", position="dodge", width=1) +
     xlab("Nucleotide position on segment") +
     ylab("NGS read count") +
-    xlim(0, get_seq_len(strain, segment))
+    xlim(0, get_seq_len(strain, segment)) +
+    ggtitle(paste("Matches of motif '",
+      reformat_motif(motif),
+      "' together with deletion sites for segment ",
+      segment,
+      sep="")
+    ) +
+    theme(plot.title = element_text(size=20))
 
   # only draw if there are less than 100 matches
   if (length(matches) > 0 && length(matches) < 100) {

@@ -58,6 +58,9 @@ create_regression_plot <- function(df, strain, segments) {
     ylim(0, max(data$relative_count)) +
     xlab("Length of segment") +
     ylab("Relative occurrence") +
-    theme(text=element_text(size=14))
+    ggtitle("Relative occurrence per segment against segment length") +
+    theme(text=element_text(size=14),
+      plot.title = element_text(size=20)
+    )
 }
 
