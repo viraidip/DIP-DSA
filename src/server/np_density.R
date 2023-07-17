@@ -20,7 +20,8 @@ create_np_plot <- function(df, strain, segment, areas) {
     p <- p + geom_rect(data=a_df,
       aes(xmin=start, xmax=end, ymin=0, ymax=1, fill=label, alpha=0.9),
       inherit.aes=FALSE
-    )
+    ) +
+    scale_alpha(guide = "none")
   }
 
   ggplotly(p)
