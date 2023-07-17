@@ -77,9 +77,9 @@ create_nuc_dist_data <- function(df, strain, df2, strain2, segment, flattened){
   count_df1 <- prepare_nuc_dist_data(df, segment, flattened, strain, FALSE)
   # use second dataset if availabe
   if (nrow(df2) > 0) {
-    count_df1["group"] <- rep("d1", nrow(count_df1))
+    count_df1["group"] <- rep("dataset 1", nrow(count_df1))
     count_df2 <- prepare_nuc_dist_data(df2, segment, flattened, strain2, FALSE)
-    count_df2["group"] <- rep("d2", nrow(count_df2))
+    count_df2["group"] <- rep("dataset 2", nrow(count_df2))
     final_df <- rbind(count_df1, count_df2)
   # create sampling data if no second dataset is given
   } else {

@@ -12,7 +12,7 @@ format_dataframe_lengths <- function(df, segment, strain, flattened) {
 
 add_stats <- function(df, pl, class) {
   # select parameters by class
-  if (class == "1") {
+  if (class == "dataset 1") {
     col1 = "#8B2323"
     col2 = "#FF4040"
     y_f = 1.0
@@ -24,8 +24,8 @@ add_stats <- function(df, pl, class) {
   # calculate stats and add them to plot
   mean <- mean(df$Length)
   median <- median(df$Length)
-  mean_l <- paste("Mean", class,"=", format(mean, digits=5), sep="")
-  median_l <- paste("Median", class, "=", format(median, digits=5), sep="")
+  mean_l <- paste("Mean =", format(mean, digits=5))
+  median_l <- paste("Median =", format(median, digits=5))
   y <- max(ggplot_build(pl)$data[[1]]$count)
   pl <- pl +
     geom_vline(xintercept=mean, col=col1) +
@@ -39,11 +39,11 @@ create_lengths_plot<-function(df,strain,df2,strain2,segment,flattened,n_bins) {
   # slice df by segment, reformat and bind on position and NGS count
   df <- format_dataframe_lengths(df, segment, strain, flattened)
   validate_plotting(df, segment)
-  df$Class <- "1"
+  df$Class <- "dataset 1"
 
   if (nrow(df2) > 0) {
     df2 <- format_dataframe_lengths(df2, segment, strain, flattened)
-    df2$Class <- "2"
+    df2$Class <- "dataset 2"
     df <- rbind(df, df2)
   }
 
@@ -58,9 +58,9 @@ create_lengths_plot<-function(df,strain,df2,strain2,segment,flattened,n_bins) {
     theme(plot.title = element_text(size=20))
 
   # add mean and median to plot
-  pl <- add_stats(df[df$Class == "1", ], pl, "1")
+  pl <- add_stats(df[df$Class == "dataset 1", ], pl, "dataset 1")
   if (nrow(df2) > 0) {
-    pl <- add_stats(df[df$Class == "2", ], pl, "2")
+    pl <- add_stats(df[df$Class == "dataset 2", ], pl, "dataset 2")
   }
   ggplotly(pl)
 }
@@ -96,9 +96,11 @@ format_dataframe_locations <- function(df, segment, flattened) {
 
 create_locations_plot <- function(df, df2, strain, segment, flattened) {
   df <- format_dataframe_locations(df, segment, flattened)
+
   if (nrow(df2) > 0) {
     df2 <- format_dataframe_locations(df2, segment, flattened)
-    df2$Class <- paste(df2$Class, "2")
+    df2$Class <- paste(df2$Class, "dataset 2")
+    df$Class <- paste(df$Class, "dataset 1")
     df <- rbind(df, df2)
   }
 

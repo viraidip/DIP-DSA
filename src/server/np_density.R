@@ -18,9 +18,10 @@ create_np_plot <- function(df, strain, segment, areas) {
   # if available add high NP areas as rectangles to plot
   if (nrow(a_df) > 0) {
     p <- p + geom_rect(data=a_df,
-      aes(xmin=start, xmax=end, ymin=0, ymax=1, fill=label, alpha=0.9),
-      inherit.aes=FALSE
-    )
+        aes(xmin=start, xmax=end, ymin=0, ymax=1, fill=label, alpha=0.9),
+        inherit.aes=FALSE
+      ) +
+      scale_alpha(guide = "none")
   }
 
   ggplotly(p)

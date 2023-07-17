@@ -26,9 +26,9 @@ create_motif_on_sequence_plot <- function(df,strain,segment,motif,mismatch) {
     xlab("Nucleotide position on segment") +
     ylab("NGS read count") +
     xlim(0, get_seq_len(strain, segment)) +
-    ggtitle(paste("Matches of motif '",
+    ggtitle(paste("Matches of given motif (",
       reformat_motif(motif),
-      "' together with deletion sites for segment ",
+      ") together with deletion sites for segment ",
       segment,
       sep="")
     ) +
@@ -37,11 +37,12 @@ create_motif_on_sequence_plot <- function(df,strain,segment,motif,mismatch) {
   # only draw if there are less than 100 matches
   if (length(matches) > 0 && length(matches) < 100) {
     matches <- data.frame(matches)
-    matches["f"] <- "found motif"
+    matches["match"] <- "found motif"
     p <- p + geom_rect(data=matches,
-      aes(xmin=start, xmax=end, ymin=0, ymax=1, fill=f),
-      inherit.aes=FALSE
-    )
+        aes(xmin=start, xmax=end, ymin=0, ymax=1, fill=match, alpha=0.5),
+        inherit.aes=FALSE
+      ) +
+      scale_alpha(guide = "none")
   }
 
   ggplotly(p)
