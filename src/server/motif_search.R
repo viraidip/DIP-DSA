@@ -26,9 +26,9 @@ create_motif_on_sequence_plot <- function(df,strain,segment,motif,mismatch) {
     xlab("Nucleotide position on segment") +
     ylab("NGS read count") +
     xlim(0, get_seq_len(strain, segment)) +
-    ggtitle(paste("Matches of motif '",
+    ggtitle(paste("Matches of given motif (",
       reformat_motif(motif),
-      "' together with deletion sites for segment ",
+      ") together with deletion sites for segment ",
       segment,
       sep="")
     ) +
