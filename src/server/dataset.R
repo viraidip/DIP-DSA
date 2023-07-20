@@ -32,3 +32,18 @@ plot_venn <- function(df1, df2, s1, d1, s2, d2) {
 
   p
 }
+
+intersecting_candidates <- function(df1, df2) {
+  if (nrow(df1) == 0 || nrow(df2) == 0) {
+    return(data.frame())
+  }
+
+  df1["DI"] <- paste(df1$Segment, df1$Start, df1$End, sep="_")
+  df2["DI"] <- paste(df2$Segment, df2$Start, df2$End, sep="_")
+
+  merged_df <- merge(df1, df2, by="DI", suffixes=c("_df1", "_df2"))
+  final_dataset <- merged_df[, c("Segment_df1", "Start_df1", "End_df1", "NGS_read_count_df1", "NGS_read_count_df2")]
+  colnames(final_dataset) <- c("Segment", "Start", "End", "NGS_read_count_dataset1", "NGS_read_count_dataset2")
+
+  return(final_dataset)
+}

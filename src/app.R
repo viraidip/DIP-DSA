@@ -275,6 +275,16 @@ server <- function(input, output, session) {
     )
   })
 
+  output$candidate_intersection_table <- renderDataTable({
+    df2 <- check_second_dataset(
+      input$two_datasets,
+      format_strain_name(input$strain2),
+      input$dataset2
+    )
+    datatable(intersecting_candidates(load_dataset(), df2))
+  }
+  )
+
 
 ### single data point ###
   observeEvent(input$link_to_dataset_tab, {
