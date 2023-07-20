@@ -359,6 +359,20 @@ server <- function(input, output, session) {
     )
   })
 
+  output$start_end_connection_plot <- renderPlotly({
+    df2 <- check_second_dataset(
+      input$two_datasets,
+      format_strain_name(input$strain2),
+      input$dataset2
+    )
+    create_start_end_connection_plot(
+      load_dataset(),
+      df2,
+      format_strain_name(input$strain),
+      input$selected_segment
+    )
+  })
+  
   output$end_3_5_plot <- renderPlotly({
     create_end_3_5_plot(
       load_dataset(),
