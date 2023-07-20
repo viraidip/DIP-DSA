@@ -104,7 +104,9 @@ add_packaging_signal <- function(p, strain, segment) {
   x <- unlist(packaging_signal[segment])
   y <- layer_scales(p)$y$get_limits()[2]
   color <- c("blue", "blue", "red", "red")
-  p <- p + geom_vline(xintercept=x, color=color, linetype="dotted") +
+  p <- p + geom_vline(xintercept=x, color=color, linetype="dotted") #+
+
+    '
     geom_rect(
       aes(xmin=0, xmax=x[1], ymin=0, ymax=y, fill="incorporation signal"),
       alpha=0.3
@@ -121,6 +123,7 @@ add_packaging_signal <- function(p, strain, segment) {
       aes(xmin=x[4], xmax=x[2], ymin=0, ymax=y, fill="bundling signal"),
       alpha=0.3
     )
+    '
   return (p)
 }
 
