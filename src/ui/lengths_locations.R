@@ -33,6 +33,13 @@ lengths_locations_tab <- tabItem(tabName="lengths_locations",
       "Locations of all start and end positions of the deletion sites are",
       "plotted in reference to the full sequence.",
       plotlyOutput("locations_plot"),
+      sliderInput(
+        inputId="cutoff_start_end",
+        label="Set cutoff of NGS read count. Greater or equal samples are included in plot:",
+        1,
+        1000,
+        1
+      ),
       plotlyOutput("start_end_connection_plot")
     ),
     box(

@@ -368,8 +368,11 @@ server <- function(input, output, session) {
     create_start_end_connection_plot(
       load_dataset(),
       df2,
+      input$dataset,
+      input$dataset2,
       format_strain_name(input$strain),
-      input$selected_segment
+      input$selected_segment,
+      input$cutoff_start_end
     )
   })
   

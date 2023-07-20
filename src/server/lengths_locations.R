@@ -43,8 +43,10 @@ create_lengths_plot<-function(df,strain,df2,strain2,segment,flattened,n_bins) {
 
   if (nrow(df2) > 0) {
     df2 <- format_dataframe_lengths(df2, segment, strain, flattened)
-    df2$Class <- "dataset 2"
-    df <- rbind(df, df2)
+    if (nrow(df2) > 0) {
+      df2$Class <- "dataset 2"
+      df <- rbind(df, df2)
+    }
   }
 
   pl <- ggplot(df, aes(x=Length, fill=Class)) +
@@ -70,7 +72,9 @@ create_lengths_plot<-function(df,strain,df2,strain2,segment,flattened,n_bins) {
 format_dataframe_locations <- function(df, segment, flattened) {
   # slice df by segment, reformat and bind on position and NGS count
   df <- df[df$Segment == segment, ]
-  validate_plotting(df, segment)
+  if (nrow(df) == 0) {
+    return(data.frame())
+  }
 
   start_df <- df[, c("Start", "NGS_read_count")]
   start_df["Class"] <- "Start"
@@ -122,12 +126,15 @@ add_packaging_signal <- function(p, strain, segment) {
 
 create_locations_plot <- function(df, df2, strain, segment, flattened) {
   df <- format_dataframe_locations(df, segment, flattened)
+  validate_plotting(df, segment)
 
   if (nrow(df2) > 0) {
     df2 <- format_dataframe_locations(df2, segment, flattened)
-    df2$Class <- paste(df2$Class, "dataset 2")
-    df$Class <- paste(df$Class, "dataset 1")
-    df <- rbind(df, df2)
+    if (nrow(df2) != 0) {
+      df2$Class <- paste(df2$Class, "dataset 2")
+      df$Class <- paste(df$Class, "dataset 1")
+      df <- rbind(df, df2)
+    }
   }
 
   p <- ggplot(df, aes(x=Position, y=NGS_read_count, fill=Class)) +
@@ -149,18 +156,25 @@ create_locations_plot <- function(df, df2, strain, segment, flattened) {
   ggplotly(p)
 }
 
-create_start_end_connection_plot <- function(df, df2, strain, segment) {
+create_start_end_connection_plot <- function(df, df2, d1, d2, strain, segment, cutoff) {
   df <- df[df$Segment == segment, ]
+  validate_plotting(df, segment)
   df["y"] <- 0
   df["yend"] <- 1
+  ylab <- d1
 
   if (nrow(df2) > 0) {
     df2 <- df2[df2$Segment == segment, ]
-    df2["y"] <- 1.2
-    df2["yend"] <- 2.2
-    df <- rbind(df, df2)
+
+    if (nrow(df2) > 0) {
+      df2["y"] <- 1.2
+      df2["yend"] <- 2.2
+      df <- rbind(df, df2)
+      ylab <- paste(ylab, d2, sep="\t")
+    }    
   }
 
+  df <- df[df$NGS_read_count >= cutoff, ]
   max <- max(df$End)
 
   p <- ggplot() + geom_segment(df,
@@ -168,10 +182,11 @@ create_start_end_connection_plot <- function(df, df2, strain, segment) {
     ) +
     scale_color_gradient() +
     xlab("Nucleotide position") + 
+    ylab(ylab) + 
     geom_rect(aes(xmin=0, xmax=max, ymin=-0.1, ymax=0), alpha=0.9) +
     geom_rect(aes(xmin=0, xmax=max, ymin=1, ymax=1.1), alpha=0.9) +
     annotate(geom="text", x=round(max/2), y=-0.05, label="Start", col="white") +
-    annotate(geom="text", x=round(max/2), y=1.05, label="End", col="white") +
+    annotate(geom="text", x=round(max/2), y=1.05, label="End", col="white")
     ggtitle(paste("Connection of start and end positions for segment",
       segment
       )
