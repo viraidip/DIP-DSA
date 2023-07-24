@@ -52,13 +52,12 @@ load_dataset_tab <- tabItem(tabName="load_dataset",
       title="Upload new dataset",
       selectizeInput(
         inputId="upload_strain",
-        label="Select a strain or write a new one:",
+        label="Select an existing strain:",
         choices=gsub(
           "_",
           "/",
           list.dirs(DATASETSPATH, full.names=FALSE, recursive=FALSE)
-        ),
-        options=list(create=TRUE)
+        )
       ),
       textInput(
         inputId="upload_dataset",
@@ -68,6 +67,19 @@ load_dataset_tab <- tabItem(tabName="load_dataset",
         inputId="upload_dataset_file",
         label="Upload a custom dataset (*.csv):",
         accept=c(".csv")
+      ),
+      br(),
+      actionButton(
+        inputId="dataset_submit",
+        label="Upload data"
+      )
+    ),
+    box(
+      width=12,
+      title="Create new strain",
+      textInput(
+        inputId="new_strain",
+        label="Write the name of the new strain:",
       ),
       div(style="display:inline-block",
         fileInput(
@@ -119,8 +131,8 @@ load_dataset_tab <- tabItem(tabName="load_dataset",
       ),
       br(),
       actionButton(
-        inputId="dataset_submit",
-        label="Upload data"
+        inputId="strain_submit",
+        label="Create new strain"
       )
     )
   )
