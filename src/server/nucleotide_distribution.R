@@ -46,7 +46,7 @@ prepare_nuc_dist_data <- function(df, segment, flattened, strain, sampling) {
   if (flattened == "flattened") {
     ngs_read_counts[ngs_read_counts != 1] <- 1
   }
- 
+
   # load sequence
   sequence <- get_seq(strain, segment)
 
@@ -77,10 +77,17 @@ create_nuc_dist_data <- function(df, strain, df2, strain2, segment, flattened){
   count_df1 <- prepare_nuc_dist_data(df, segment, flattened, strain, FALSE)
   # use second dataset if availabe
   if (nrow(df2) > 0) {
-    count_df1["group"] <- rep("dataset 1", nrow(count_df1))
     count_df2 <- prepare_nuc_dist_data(df2, segment, flattened, strain2, FALSE)
-    count_df2["group"] <- rep("dataset 2", nrow(count_df2))
-    final_df <- rbind(count_df1, count_df2)
+    if (nrow(count_df2) > 0) {
+      count_df1["group"] <- rep("dataset 1", nrow(count_df1))
+      count_df2["group"] <- rep("dataset 2", nrow(count_df2))
+      final_df <- rbind(count_df1, count_df2)
+    } else {
+      count_df1["group"] <- rep("observed", nrow(count_df1))
+      sampling_df <- prepare_nuc_dist_data(df, segment, flattened, strain, TRUE)
+      sampling_df["group"] <- rep("expected", nrow(sampling_df))
+      final_df <- rbind(count_df1, sampling_df)
+    }  
   # create sampling data if no second dataset is given
   } else {
     count_df1["group"] <- rep("observed", nrow(count_df1))

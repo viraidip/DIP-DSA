@@ -43,8 +43,10 @@ create_lengths_plot<-function(df,strain,df2,strain2,segment,flattened,n_bins) {
 
   if (nrow(df2) > 0) {
     df2 <- format_dataframe_lengths(df2, segment, strain, flattened)
-    df2$Class <- "dataset 2"
-    df <- rbind(df, df2)
+    if (nrow(df2) > 0) {
+      df2$Class <- "dataset 2"
+      df <- rbind(df, df2)
+    }
   }
 
   pl <- ggplot(df, aes(x=Length, fill=Class)) +
@@ -70,7 +72,9 @@ create_lengths_plot<-function(df,strain,df2,strain2,segment,flattened,n_bins) {
 format_dataframe_locations <- function(df, segment, flattened) {
   # slice df by segment, reformat and bind on position and NGS count
   df <- df[df$Segment == segment, ]
-  validate_plotting(df, segment)
+  if (nrow(df) == 0) {
+    return(data.frame())
+  }
 
   start_df <- df[, c("Start", "NGS_read_count")]
   start_df["Class"] <- "Start"
@@ -94,14 +98,46 @@ format_dataframe_locations <- function(df, segment, flattened) {
   return(df2)
 }
 
+add_packaging_signal <- function(p, strain, segment) {
+  packaging_signal <- load_packaging_signal_data(strain)
+  slen <- get_seq_len(strain, segment)
+  x <- unlist(packaging_signal[segment])
+  y <- layer_scales(p)$y$get_limits()[2]
+  color <- c("blue", "blue", "red", "red")
+  p <- p + geom_vline(xintercept=x, color=color, linetype="dotted") #+
+
+    '
+    geom_rect(
+      aes(xmin=0, xmax=x[1], ymin=0, ymax=y, fill="incorporation signal"),
+      alpha=0.3
+    ) +
+    geom_rect(
+      aes(xmin=x[2], xmax=slen, ymin=0, ymax=y, fill="incorporation signal"),
+      alpha=0.3
+    ) +
+    geom_rect(
+      aes(xmin=x[3], xmax=x[1], ymin=0, ymax=y, fill="bundling signal"),
+      alpha=0.3
+    ) +
+    geom_rect(
+      aes(xmin=x[4], xmax=x[2], ymin=0, ymax=y, fill="bundling signal"),
+      alpha=0.3
+    )
+    '
+  return (p)
+}
+
 create_locations_plot <- function(df, df2, strain, segment, flattened) {
   df <- format_dataframe_locations(df, segment, flattened)
+  validate_plotting(df, segment)
 
   if (nrow(df2) > 0) {
     df2 <- format_dataframe_locations(df2, segment, flattened)
-    df2$Class <- paste(df2$Class, "dataset 2")
-    df$Class <- paste(df$Class, "dataset 1")
-    df <- rbind(df, df2)
+    if (nrow(df2) != 0) {
+      df2$Class <- paste(df2$Class, "dataset 2")
+      df$Class <- paste(df$Class, "dataset 1")
+      df <- rbind(df, df2)
+    }
   }
 
   p <- ggplot(df, aes(x=Position, y=NGS_read_count, fill=Class)) +
@@ -114,31 +150,64 @@ create_locations_plot <- function(df, df2, strain, segment, flattened) {
       )
     ) + 
     theme(plot.title = element_text(size=20))
+
   # add info about packaging signal if it exists
   if (packaging_signal_data_exists(strain)) {
-    packaging_signal <- load_packaging_signal_data(strain)
-    slen <- get_seq_len(strain, segment)
-    x <- unlist(packaging_signal[segment])
-    y <- layer_scales(p)$y$get_limits()[2]
-    color <- c("blue", "blue", "red", "red")
-    p <- p + geom_vline(xintercept=x, color=color, linetype="dotted") +
-      geom_rect(
-        aes(xmin=0, xmax=x[1], ymin=0, ymax=y, fill="incorporation signal"),
-        alpha=0.3
-      ) +
-      geom_rect(
-        aes(xmin=x[2], xmax=slen, ymin=0, ymax=y, fill="incorporation signal"),
-        alpha=0.3
-      ) +
-      geom_rect(
-        aes(xmin=x[3], xmax=x[1], ymin=0, ymax=y, fill="bundling signal"),
-        alpha=0.3
-      ) +
-      geom_rect(
-        aes(xmin=x[4], xmax=x[2], ymin=0, ymax=y, fill="bundling signal"),
-        alpha=0.3
-      )
+    p <- add_packaging_signal(p, strain, segment)
   }
+
+  ggplotly(p)
+}
+
+create_start_end_connection_plot <- function(df, df2, d1, d2, strain, segment, cutoff) {
+  df <- df[df$Segment == segment, ]
+  validate_plotting(df, segment)
+  df["y"] <- 0
+  df["yend"] <- 1
+  ylab <- d1
+
+  if (nrow(df2) > 0) {
+    df2 <- df2[df2$Segment == segment, ]
+
+    if (nrow(df2) > 0) {
+      df2["y"] <- 1.2
+      df2["yend"] <- 2.2
+      df <- rbind(df, df2)
+      ylab <- paste(ylab, d2, sep="\t")
+    }    
+  }
+
+  df <- df[df$NGS_read_count >= cutoff, ]
+  max <- max(df$End)
+
+  p <- ggplot() + geom_segment(df,
+      mapping=aes(x=Start, y=y, xend=End, yend=yend, col=NGS_read_count)
+    ) +
+    scale_color_gradient() +
+    xlab("Nucleotide position") + 
+    ylab(ylab) + 
+    geom_rect(aes(xmin=0, xmax=max, ymin=-0.1, ymax=0), alpha=0.9) +
+    geom_rect(aes(xmin=0, xmax=max, ymin=1, ymax=1.1), alpha=0.9) +
+    annotate(geom="text", x=round(max/2), y=-0.05, label="Start", col="white") +
+    annotate(geom="text", x=round(max/2), y=1.05, label="End", col="white")
+    ggtitle(paste("Connection of start and end positions for segment",
+      segment
+      )
+    ) + 
+    theme(plot.title = element_text(size=20))
+  if (nrow(df2) > 0) {
+    p <- p + geom_rect(aes(xmin=0, xmax=max, ymin=1.1, ymax=1.2), alpha=0.9) +
+    geom_rect(aes(xmin=0, xmax=max, ymin=2.2, ymax=2.3), alpha=0.9) +
+    geom_hline(yintercept=1.1, col="red") +
+    annotate(geom="text", x=round(max/2), y=1.15, label="Start", col="white") +
+    annotate(geom="text", x=round(max/2), y=2.25, label="End", col="white")
+  }
+
+  # add info about packaging signal if it exists
+  if (packaging_signal_data_exists(strain)) {
+    p <- add_packaging_signal(p, strain, segment)
+  }
+
   ggplotly(p)
 }
 

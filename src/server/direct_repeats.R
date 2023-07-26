@@ -67,19 +67,29 @@ create_direct_repeats_data<-function(df,strain,df2,strain2,segment,flattened) {
 
   # check if a second dataset is given to compare
   if (nrow(df2) > 0) {
-    # count for data set 1
-    df["direct_repeats"] <- apply(df, 1, direct_repeats_counting_routine, s)
-    df["group"] <- rep("dataset 1", nrow(df))
-
-    # prepare and count for dataset 2
     df2 <- prepare_data(df2, strain2, segment, flattened)
-    s2 <- get_seq(strain2, segment)
-    df2["direct_repeats"] <- apply(df2, 1, direct_repeats_counting_routine, s2)
-    df2["group"] <- rep("dataset 2", nrow(df2))
+    # catch error if second dataset has no entries on selected strain
+    if (nrow(df2) != 0) {
+      df["direct_repeats"] <- apply(df, 1, direct_repeats_counting_routine, s)
+      df["group"] <- rep("dataset 1", nrow(df))
+      s2 <- get_seq(strain2, segment)
+      df2["direct_repeats"] <- apply(df2, 1, direct_repeats_counting_routine, s2)
+      df2["group"] <- rep("dataset 2", nrow(df2))
 
-    final_df <- rbind(df, df2)
+      final_df <- rbind(df, df2)
+    } else {
+      df["group"] <- rep("observed", nrow(df))
+      n_samples <- nrow(df) * 5
+      sampling_df <- create_direct_repeat_sampling_data(df, n_samples, s)
+      sampling_df["group"] <- rep("expected", nrow(sampling_df))
 
-  # create sampling data if no second dataset is given
+      final_df <- rbind(df, sampling_df)
+      final_df["direct_repeats"] <- apply(final_df,
+        1,
+        direct_repeats_counting_routine,
+        s
+      )
+    }
   } else {
     df["group"] <- rep("observed", nrow(df))
     # create sampling data

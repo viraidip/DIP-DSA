@@ -22,7 +22,8 @@ dataset_tab <- tabItem(tabName="dataset",
       "Displays a venn diagramm, if two data sets are selected. Shows how",
       "many DI candidates are in each set and how many of them can be found",
       "in both.",
-      plotOutput("dataset_venn")
+      plotOutput("dataset_venn"),
+      dataTableOutput("candidate_intersection_table")
     )
   )
 )

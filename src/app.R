@@ -173,33 +173,9 @@ server <- function(input, output, session) {
 
   observeEvent(input$dataset_submit, {
     # check if all fields are filled
-    req(
-      input$upload_strain, input$upload_dataset,
-      input$upload_dataset_file,
-      input$upload_PB2_file, input$upload_PB1_file,
-      input$upload_PA_file, input$upload_HA_file,
-      input$upload_NP_file, input$upload_NA_file,
-      input$upload_M_file, input$upload_NS_file
-    )
-
-    # move submitted files to right folder
-    from_list <- list(
-      input$upload_dataset_file$datapath,
-      input$upload_PB2_file$datapath, input$upload_PB1_file$datapath,
-      input$upload_PA_file$datapath, input$upload_HA_file$datapath,
-      input$upload_NP_file$datapath, input$upload_NA_file$datapath,
-      input$upload_M_file$datapath, input$upload_NS_file$datapath
-    )
-
-    # check if strain exists create a folder if not
+    req(input$upload_strain, input$upload_dataset, input$upload_dataset_file)
     upload_strain <- format_strain_name(input$upload_strain)
     strain_path <- file.path(DATASETSPATH, upload_strain)
-    if (!dir.exists(strain_path)) {
-      dir.create(strain_path)
-      update_dataset <- FALSE
-    } else {
-      update_dataset <- TRUE
-    }
 
     # check if .csv file already exists and rename if so
     dataset_name <- input$upload_dataset
@@ -211,14 +187,56 @@ server <- function(input, output, session) {
       file_path <- file.path(strain_path, f_name)
     }
     to_list <- list(file_path)
+    from_list <- list(input$upload_dataset_file$datapath)
+    move_files(from_list, to_list)
 
-    # check if fastas already exists and create folder if not
-    fasta_path <- file.path(strain_path, "fastas")
-    if (!dir.exists(fasta_path)) {
-      dir.create(fasta_path)
+    # select the new submitted dataset
+    c <- gsub("_","/",list.dirs(DATASETSPATH,full.names=FALSE,recursive=FALSE))
+    updateSelectInput(
+      session,
+      inputId="strain",
+      choices=c,
+      selected=input$upload_strain
+    )
+    c <- tools::file_path_sans_ext(list.files(strain_path, pattern="csv"))
+    updateSelectInput(
+      session,
+      inputId="dataset",
+      choices=c,
+      selected=dataset_name
+    )
+  })
+
+  observeEvent(input$strain_submit, {
+    # check if all fields are filled
+    req(
+      input$new_strain, input$upload_PB2_file, input$upload_PB1_file,
+      input$upload_PA_file, input$upload_HA_file, input$upload_NP_file,
+      input$upload_NA_file, input$upload_M_file, input$upload_NS_file
+    )
+
+    # move submitted files to right folder
+    from_list <- list(
+      input$upload_PB2_file$datapath, input$upload_PB1_file$datapath,
+      input$upload_PA_file$datapath, input$upload_HA_file$datapath,
+      input$upload_NP_file$datapath, input$upload_NA_file$datapath,
+      input$upload_M_file$datapath, input$upload_NS_file$datapath
+    )
+
+    print(input$new_strain)
+    # check if strain exists create a folder if not
+    upload_strain <- format_strain_name(input$new_strain)
+    strain_path <- file.path(DATASETSPATH, upload_strain)
+    if (dir.exists(strain_path)) {
+      return()     
+    } else {
+      dir.create(strain_path)
     }
-
+    fasta_path <- file.path(strain_path, "fastas")
+    dir.create(fasta_path)
+    
     # create list with paths on where to save the files and then move them
+    to_list <- list()
     for (s in SEGMENTS) {
       f_name <- paste(s, ".fasta", sep="")
       to_list <- append(to_list, file.path(fasta_path, f_name))
@@ -226,22 +244,11 @@ server <- function(input, output, session) {
     move_files(from_list, to_list)
 
     c <- gsub("_","/",list.dirs(DATASETSPATH,full.names=FALSE,recursive=FALSE))
-    # select the new submitted dataset
     updateSelectInput(
       session,
-      inputId="strain",
-      choices=c,
-      selected=input$upload_strain
+      inputId="upload_strain",
+      choices=c
     )
-    if (update_dataset) {
-      c <- tools::file_path_sans_ext(list.files(strain_path, pattern="csv"))
-      updateSelectInput(
-        session,
-        inputId="dataset",
-        choices=c,
-        selected=dataset_name
-      )
-    }
   })
 
 
@@ -274,6 +281,16 @@ server <- function(input, output, session) {
       input$dataset2
     )
   })
+
+  output$candidate_intersection_table <- renderDataTable({
+    df2 <- check_second_dataset(
+      input$two_datasets,
+      format_strain_name(input$strain2),
+      input$dataset2
+    )
+    datatable(intersecting_candidates(load_dataset(), df2))
+  }
+  )
 
 
 ### single data point ###
@@ -349,6 +366,23 @@ server <- function(input, output, session) {
     )
   })
 
+  output$start_end_connection_plot <- renderPlotly({
+    df2 <- check_second_dataset(
+      input$two_datasets,
+      format_strain_name(input$strain2),
+      input$dataset2
+    )
+    create_start_end_connection_plot(
+      load_dataset(),
+      df2,
+      input$dataset,
+      input$dataset2,
+      format_strain_name(input$strain),
+      input$selected_segment,
+      input$cutoff_start_end
+    )
+  })
+  
   output$end_3_5_plot <- renderPlotly({
     create_end_3_5_plot(
       load_dataset(),
