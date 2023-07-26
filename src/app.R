@@ -27,6 +27,7 @@ use_condaenv(CONDAENV)
 source('ui/load_dataset.R', local=TRUE)
 source('ui/dataset.R', local=TRUE)
 source('ui/single_data_point.R', local=TRUE)
+source('ui/all_datasets.R', local=TRUE)
 source('ui/lengths_locations.R', local=TRUE)
 source('ui/nucleotide_distribution.R', local=TRUE)
 source('ui/direct_repeats.R', local=TRUE)
@@ -55,6 +56,10 @@ ui <- bootstrapPage(
         menuItem("Inspect single data point",
           tabName="single_data_point",
           icon=icon("check")
+        ),
+        menuItem("Inspect all datasets",
+          tabName="all_datasets",
+          icon=icon("magnifying-glass")
         ),
         hr(),
         selectInput(
@@ -103,6 +108,7 @@ ui <- bootstrapPage(
         load_dataset_tab,
         dataset_tab,
         single_data_point_tab,
+        all_datasets_tab,
         lengths_locations_tab,
         nucleotide_distribution_tab,
         direct_repeats_tab,
@@ -124,6 +130,7 @@ ui <- bootstrapPage(
 source("server/load_dataset.R", local=TRUE)
 source("server/dataset.R", local=TRUE)
 source("server/single_data_point.R", local=TRUE)
+source("server/all_datasets.R", local=TRUE)
 source("server/lengths_locations.R", local=TRUE)
 source("server/nucleotide_distribution.R", local=TRUE)
 source("server/direct_repeats.R", local=TRUE)
@@ -332,6 +339,17 @@ server <- function(input, output, session) {
     )
   })
 
+
+### all datasets ###
+  output$intersecting_candidates_table <- renderDataTable(
+    datatable(all_intersecting_candidates(
+      input$selected_datasets,
+      input$min_occurrences
+      ),
+      selection="single"
+    )
+  )
+  
 
 ### lenghts and locations ###
   output$lengths_plot <- renderPlotly({
