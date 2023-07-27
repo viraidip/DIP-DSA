@@ -350,6 +350,12 @@ server <- function(input, output, session) {
     )
   )
   
+  output$overlap_matrix_plot <- renderPlotly({
+    plot_overlap_matrix(
+      input$selected_datasets
+    )
+  })
+
 
 ### lenghts and locations ###
   output$lengths_plot <- renderPlotly({
