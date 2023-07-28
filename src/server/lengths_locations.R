@@ -104,26 +104,7 @@ add_packaging_signal <- function(p, strain, segment) {
   x <- unlist(packaging_signal[segment])
   y <- layer_scales(p)$y$get_limits()[2]
   color <- c("blue", "blue", "red", "red")
-  p <- p + geom_vline(xintercept=x, color=color, linetype="dotted") #+
-
-    '
-    geom_rect(
-      aes(xmin=0, xmax=x[1], ymin=0, ymax=y, fill="incorporation signal"),
-      alpha=0.3
-    ) +
-    geom_rect(
-      aes(xmin=x[2], xmax=slen, ymin=0, ymax=y, fill="incorporation signal"),
-      alpha=0.3
-    ) +
-    geom_rect(
-      aes(xmin=x[3], xmax=x[1], ymin=0, ymax=y, fill="bundling signal"),
-      alpha=0.3
-    ) +
-    geom_rect(
-      aes(xmin=x[4], xmax=x[2], ymin=0, ymax=y, fill="bundling signal"),
-      alpha=0.3
-    )
-    '
+  p <- p + geom_vline(xintercept=x, color=color, linetype="dotted") 
   return (p)
 }
 
@@ -178,7 +159,7 @@ create_start_end_connection_plot <- function(df, df2, d1, d2, strain, segment, c
   }
 
   df <- df[df$NGS_read_count >= cutoff, ]
-  max <- max(df$End)
+  max <- get_seq_len(strain, segment) 
 
   p <- ggplot() + geom_segment(df,
       mapping=aes(x=Start, y=y, xend=End, yend=yend, col=NGS_read_count)
@@ -204,9 +185,9 @@ create_start_end_connection_plot <- function(df, df2, d1, d2, strain, segment, c
   }
 
   # add info about packaging signal if it exists
-  if (packaging_signal_data_exists(strain)) {
-    p <- add_packaging_signal(p, strain, segment)
-  }
+#  if (packaging_signal_data_exists(strain)) {
+ #   p <- add_packaging_signal(p, strain, segment)
+  #}
 
   ggplotly(p)
 }
