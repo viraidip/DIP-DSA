@@ -69,7 +69,7 @@ create_lengths_plot<-function(df,strain,df2,strain2,segment,flattened,n_bins) {
 
 ###############################################################################
 
-format_dataframe_locations <- function(df, segment, flattened) {
+format_dataframe_locations <- function(df, segment, flattened, strain) {
   # slice df by segment, reformat and bind on position and NGS count
   df <- df[df$Segment == segment, ]
   if (nrow(df) == 0) {
@@ -89,13 +89,19 @@ format_dataframe_locations <- function(df, segment, flattened) {
     df["NGS_read_count"] <- 1
   }
 
-  df2 <- ddply(df,
+  df <- ddply(df,
     c("Position", "Class"),
     summarise,
     NGS_read_count=sum(NGS_read_count)
   )
 
-  return(df2)
+  get_nucleotide_at_position <- function(position, seq) {
+    as.character(subseq(seq, start=position, end=position))
+  }
+  sequence <- get_seq(strain, segment)
+  df$Nucleotide <- sapply(df$Position, get_nucleotide_at_position, seq=sequence)
+
+  return(df)
 }
 
 add_packaging_signal <- function(p, strain, segment) {
@@ -109,11 +115,11 @@ add_packaging_signal <- function(p, strain, segment) {
 }
 
 create_locations_plot <- function(df, df2, strain, segment, flattened) {
-  df <- format_dataframe_locations(df, segment, flattened)
+  df <- format_dataframe_locations(df, segment, flattened, strain)
   validate_plotting(df, segment)
 
   if (nrow(df2) > 0) {
-    df2 <- format_dataframe_locations(df2, segment, flattened)
+    df2 <- format_dataframe_locations(df2, segment, flattened, strain)
     if (nrow(df2) != 0) {
       df2$Class <- paste(df2$Class, "dataset 2")
       df$Class <- paste(df$Class, "dataset 1")
@@ -121,7 +127,7 @@ create_locations_plot <- function(df, df2, strain, segment, flattened) {
     }
   }
 
-  p <- ggplot(df, aes(x=Position, y=NGS_read_count, fill=Class)) +
+  p <- ggplot(df, aes(x=Position, y=NGS_read_count, fill=Nucleotide)) +
     geom_bar(stat="identity", position="dodge", width=1) +
     xlim(0, get_seq_len(strain, segment)) +
     xlab("Nucleotide position on segment") +
