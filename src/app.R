@@ -17,7 +17,7 @@ library(ggvenn)
 library("Biostrings")
 
 source("utils.R")
-use_condaenv(CONDAENV)
+#use_condaenv(CONDAENV)
 
 ##########
 ### UI ###
@@ -34,7 +34,7 @@ source('ui/direct_repeats.R', local=TRUE)
 source('ui/motif_search.R', local=TRUE)
 source('ui/regression.R', local=TRUE)
 source('ui/np_density.R', local=TRUE)
-source('ui/candidate_prediction.R', local=TRUE)
+#source('ui/candidate_prediction.R', local=TRUE)
 source('ui/about.R', local=TRUE)
 
 ui <- bootstrapPage(
@@ -92,10 +92,10 @@ ui <- bootstrapPage(
           tabName="regression",
           icon=icon("chart-line")
         ),
-        menuItem("Candidate prediction",
-          tabName="candidate_prediction",
-          icon=icon("clipboard-check")
-        ),
+    #    menuItem("Candidate prediction",
+     #     tabName="candidate_prediction",
+      #    icon=icon("clipboard-check")
+       # ),
         hr(),
         menuItem("About",
           tabName="about",
@@ -115,7 +115,7 @@ ui <- bootstrapPage(
         motif_search_tab,
         regression_tab,
         np_density_tab,
-        candidate_prediction_tab,
+      #  candidate_prediction_tab,
         about_tab
       )
     )
@@ -137,7 +137,7 @@ source("server/direct_repeats.R", local=TRUE)
 source("server/motif_search.R", local=TRUE)
 source("server/regression.R", local=TRUE)
 source("server/np_density.R", local=TRUE)
-source("server/candidate_prediction.R", local=TRUE)
+#source("server/candidate_prediction.R", local=TRUE)
 source("server/about.R", local=TRUE)
 
 server <- function(input, output, session) {
@@ -595,36 +595,36 @@ server <- function(input, output, session) {
 
 
 ### candidate prediction ###
-  observe({
-    max <- get_seq_len(format_strain_name(input$prediction_strain),
-      input$prediction_segment)
-    iv <- InputValidator$new()
-    iv$add_rule("prediction_start", sv_between(1, max))
-    iv$add_rule("prediction_end", sv_between(1, max))
-    iv$enable()
-  })
-  observeEvent(
-    eventExpr = {
-      input$run_prediction
-    },
-    handlerExpr = {
-      label <- run_prediction(
-        input$prediction_start,
-        input$prediction_end,
-        input$prediction_strain,
-        input$prediction_segment,
-        input$classifier
-      )
-      segment <- input$prediction_segment
-      start <- input$prediction_start
-      end <- input$prediction_end
-      output$prediction_results <- renderText({
-        show_prediction_results(
-          label, segment, start, end
-        )
-      })
-    }
-  )
+#  observe({
+ #   max <- get_seq_len(format_strain_name(input$prediction_strain),
+  #    input$prediction_segment)
+   # iv <- InputValidator$new()
+    #iv$add_rule("prediction_start", sv_between(1, max))
+#    iv$add_rule("prediction_end", sv_between(1, max))
+ #   iv$enable()
+  #})
+#  observeEvent(
+ #   eventExpr = {
+  #    input$run_prediction
+   # },
+    #handlerExpr = {
+     # label <- run_prediction(
+      #  input$prediction_start,
+       # input$prediction_end,
+        #input$prediction_strain,
+#        input$prediction_segment,
+ #       input$classifier
+  #    )
+   #   segment <- input$prediction_segment
+    #  start <- input$prediction_start
+     # end <- input$prediction_end
+      #output$prediction_results <- renderText({
+       # show_prediction_results(
+        #  label, segment, start, end
+#        )
+ #     })
+  #  }
+#  )
 
 
 ### about ###
