@@ -2,7 +2,6 @@
 SEGMENTS <- c("PB2", "PB1", "PA", "HA", "NP", "NA", "M", "NS")
 
 DATAPATH <- file.path(".", "data")
-#DATAPATH <- file.path("..", "data")
 DATASETSPATH <- file.path(DATAPATH, "datasets")
 FASTAPATH <- file.path(DATAPATH, "strain_segment_fastas")
 TEMPPATH <- file.path(DATAPATH, "temp")
