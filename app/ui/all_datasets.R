@@ -37,6 +37,11 @@ all_datasets_tab <- tabItem(tabName="all_datasets",
       title="Intersecting DI candidates",
       width=12,
       plotlyOutput("overlap_matrix_plot")
+    ),
+    box(
+      title="Upset plot",
+      width=12,
+      plotOutput("upset_plot")
     )
   )
 )

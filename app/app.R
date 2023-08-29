@@ -13,6 +13,7 @@ library(shinyvalidate)
 library(stringr)
 library(tools)
 library(ggvenn)
+library(ComplexHeatmap)
 
 library("Biostrings")
 
@@ -352,6 +353,12 @@ server <- function(input, output, session) {
   
   output$overlap_matrix_plot <- renderPlotly({
     plot_overlap_matrix(
+      input$selected_datasets
+    )
+  })
+
+  output$upset_plot <- renderPlot({
+    plot_upset_plot(
       input$selected_datasets
     )
   })

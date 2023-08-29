@@ -70,3 +70,23 @@ plot_overlap_matrix <- function(paths) {
 
   return(p)
 }
+
+plot_upset_plot <- function(paths) {
+  validation_text <- "No plot could be created. Please select at least two datasets."
+  shiny::validate(need((length(paths) > 1), validation_text))
+
+  lists <- c()
+  names <- c()
+  for (p in paths) {
+    df <- load_dataset(p)
+    DI_list <- paste(df$Segment, df$Start, df$End, sep="_")
+    name <- str_sub(str_extract(p, "/(.*?)\\."), 2, -2)
+    names <- c(names, name)
+    lists <- c(lists, name=list(DI_list))
+  }
+  names(lists) <- names
+
+  m = make_comb_mat(lists)
+  p <- UpSet(m)
+  return(p)
+}
