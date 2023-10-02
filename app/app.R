@@ -270,6 +270,13 @@ server <- function(input, output, session) {
     )
   )
 
+  output$ngs_distribution_plot <- renderPlotly(
+    plot_ngs_distribution(
+      load_dataset(),
+      input$dataset
+    )
+  )
+
   output$dataset_table <- renderDataTable(
     datatable(load_dataset(), selection="single")
   )

@@ -15,6 +15,16 @@ generate_stats_info <- function(df) {
   )
 }
 
+plot_ngs_distribution <- function(df1, d1) {
+  p <- plot_ly(data = df1, y = ~NGS_read_count, type = "box", name=d1) %>%
+    layout(
+      title = "Boxplot of NGS read count (Log Scale)",
+      yaxis = list(type = "log")
+    )
+
+  p
+}
+
 plot_venn <- function(df1, df2, s1, d1, s2, d2) {
   error_text <- "Select a second dataset to show plot."
   shiny::validate(need((nrow(df1 != 0) & (nrow(df2 != 0))), error_text))

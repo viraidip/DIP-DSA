@@ -1,11 +1,19 @@
 dataset_tab <- tabItem(tabName="dataset",
   h1("Overview about the selected dataset"),
   fluidRow(
-    box(
-      title="Statistical overview",
-      width=12,
-      "Different statistical parameters for the NGS count of the dataset.",
-      verbatimTextOutput("dataset_stats_info")
+    splitLayout(
+      cellWidths = c("50%", "50%"),
+      box(
+        title="Statistical overview",
+        width=12,
+        "Different statistical parameters for the NGS count of the dataset.",
+        verbatimTextOutput("dataset_stats_info")
+      ),
+      box(
+        title = "NGS count distribution",
+        width = 12,
+        plotlyOutput("ngs_distribution_plot")
+      )
     ),
     box(
       title="Inspecting single entries",
