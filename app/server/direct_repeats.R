@@ -177,7 +177,7 @@ create_direct_repeats_plot <- function(correction, segment) {
   if (correction == "Yes") {
     df_1 <- add_correction(df_1)
     # also add two second set, if not expected values
-    if (g2 == "d2") {
+    if (g2 != "expected") {
       df_2 <- add_correction(df_2)
     }
   }
