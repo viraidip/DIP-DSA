@@ -5,17 +5,18 @@ multiple_datasets_tab <- tabItem(tabName="multiple_datasets",
       title="Select datasets",
       width=12,
       selectInput(
-        inputId="selected_datasets",
+        inputId="multiple_datasets",
         label="Select datasets to compare:",
         choices=list.files(DATASETSPATH,
           pattern="csv$",
           full.names=FALSE,
           recursive=TRUE
         ),
-        multiple=TRUE
+        multiple=TRUE,
+        selected=c("A_California_07_2009/Alnaji2019.csv", "A_PuertoRico_8_1934/alnaji2021_extra.csv")
       ),
       sliderInput(
-        inputId="mRCS_multiple",
+        inputId="multiple_RCS",
         label="Set RCS:",
         1,
         100,
@@ -34,6 +35,53 @@ multiple_datasets_tab <- tabItem(tabName="multiple_datasets",
         choices=c(SEGMENTS, "ALL")
       ),
     ),
+    box(
+      title="NGS counts",
+      width=12,
+      "Different statistical parameters for the NGS count of the datasets",
+      plotlyOutput("multiple_ngs_distribution_plot")
+    ),
+
+    box(
+      title="Segment distribution",
+      width=12,
+      "Distribution on the eight RNA segments of the selected datasets",
+      plotlyOutput("multiple_segment_distribution_plot")
+    ),
+
+    box(
+      title="Deletion shift",
+      width=12,
+      "Distribution of the deletion shift for the selected datasets",
+      plotlyOutput("multiple_deletion_shift_plot")
+    ),
+
+    box(
+      title="DVG length",
+      width=12,
+      "Lengths of the DVGs",
+      plotlyOutput("multiple_deletion_length_plot")
+    ),
+
+    box(
+      title="Nucleotide enrichment",
+      width=12,
+      "Distribution of the deletion shift for the selected datasets",
+      plotlyOutput("multiple_nucleotide_enrichment_plot")
+    ),
+
+    box(
+      title="Direct repeats",
+      width=12,
+      "Distribution of the deletion shift for the selected datasets",
+      plotlyOutput("multiple_direct_repeats_plot")
+    ),
+
+
+
+
 
   )
 )
+
+

@@ -1,5 +1,4 @@
-
-load_dataset <- function(fname) {
+load_single_dataset <- function(fname) {
   path <- file.path(DATASETSPATH, fname)
   names <- c("Segment", "Start", "End", "NGS_read_count")
   cl <- c("character", "integer", "integer", "integer")
@@ -16,77 +15,79 @@ load_dataset <- function(fname) {
   return(df)
 }
 
-all_intersecting_candidates <- function(datasets, thresh) {
-  candidates <- c()
-  for (p in datasets) {
-    df <- load_dataset(p)
-    cand <- paste(df$Segment, df$Start, df$End, sep="_")
-    candidates <- append(candidates, cand)
-  }
-  counts <- table(candidates)
-  selected <- counts[counts >= thresh]
-  return(data.frame(selected))
-}
-
-plot_overlap_matrix <- function(paths) {
-  validation_text <- "No plot could be created. Please select at least two datasets."
-  shiny::validate(need((length(paths) > 1), validation_text))
-  
-  lists <- c()
+load_all_datasets <- function(paths) {
+  df_list <- list()
   for (p in paths) {
-    df <- load_dataset(p)
-    DI_list <- paste(df$Segment, df$Start, df$End, sep="_")
-    lists <- c(lists, list(DI_list))
-  }
-
-  # initialize an empty matrix
-  matrix_size <- length(lists)
-  matrix <- matrix(0, nrow = matrix_size, ncol = matrix_size)
-
-  # calculate the differences and populate the matrix
-  for (i in 1:matrix_size) {
-    for (j in 1:matrix_size) {
-      set1 <- unique(lists[[i]])
-      set2 <- unique(lists[[j]])
-
-      matrix[i, j] <- length(intersect(set1, set2)) / (max(length(set1), length(set2)))
-    }
-  }
-  
-  split_paths <- strsplit(paths, "/")
-  labels <- lapply(split_paths, function(path) {
-    last_part <- tail(path, 1)
-    cleaned_path <- gsub(".csv$", "", last_part)
-    return(cleaned_path)
-  })
-
-  df <- as.data.frame(as.table(matrix))
-  p <- ggplot(df, aes(x = Var1, y = Var2, fill=Freq)) +
-    geom_tile() +
-    scale_fill_gradient(low = "white", high = "blue") +
-    labs(x = "Column", y = "Row", title = "Matrix Heatmap") +
-    scale_x_discrete(labels=labels) +
-    scale_y_discrete(labels=labels)
-
-  return(p)
-}
-
-plot_upset_plot <- function(paths) {
-  validation_text <- "No plot could be created. Please select at least two datasets."
-  shiny::validate(need((length(paths) > 1), validation_text))
-
-  lists <- c()
-  names <- c()
-  for (p in paths) {
-    df <- load_dataset(p)
-    DI_list <- paste(df$Segment, df$Start, df$End, sep="_")
+    df <- load_single_dataset(p)
     name <- str_sub(str_extract(p, "/(.*?)\\."), 2, -2)
-    names <- c(names, name)
-    lists <- c(lists, name=list(DI_list))
+    df$name <- name
+    df_list[[length(df_list) + 1]] <- df
   }
-  names(lists) <- names
+  
+  final_df <- do.call(rbind, df_list)
 
-  m = make_comb_mat(lists)
-  p <- UpSet(m)
-  return(p)
+  return(final_df)
 }
+
+load_expected_data <- function(paths){
+  paths_tsv <- gsub("\\.csv$", ".tsv", paths)
+  df <- load_all_datasets(paths_tsv)
+
+  return(df)
+}
+
+plot_multiple_ngs_distribution <- function(paths, RCS) {
+  df <- load_all_datasets(paths)
+  df <- apply_cutoff(df, RCS)
+
+  p <- ggplot(df, aes(x=name, y=NGS_read_count, fill=name)) +
+  geom_boxplot() +
+  scale_y_log10() +
+  labs(title = "Distribution of NGS counts",
+       x = "Dataset",
+       y = "NGS count (log scale)")
+
+  p
+}
+
+plot_multiple_segment_distribution <- function(paths, flattened, RCS) {
+  df <- load_all_datasets(paths)
+  df <- apply_cutoff(df, RCS)
+
+  percentage_df <- prop.table(table(df$name, df$Segment), margin = 1) * 100
+  percentage_df <- as.data.frame(percentage_df)
+  percentage_df$name <- rownames(percentage_df)
+
+  # Create a barplot with percentage distribution
+  pl <- ggplot(percentage_df, aes(x=Var1, y=Freq, fill=Var2)) +
+    geom_bar(stat = "identity", position = "stack") +
+    labs(x="dataset" , y="Segment of DVG [%]") +
+    ggtitle("Segment where DVGs are originating from") + 
+    theme(plot.title = element_text(size=20))
+
+  ggplotly(pl)
+}
+
+plot_multiple_deletion_shift <- function(paths, flattened, RCS) {
+  df <- load_all_datasets(paths)
+  df <- apply_cutoff(df, RCS)
+
+  df$del_length <- (df$End-1) - df$Start
+  df$shift <- df$del_length %% 3
+
+  percentage_df <- prop.table(table(df$name, df$shift), margin = 1) * 100
+  percentage_df <- as.data.frame(percentage_df)
+  percentage_df$name <- rownames(percentage_df)
+
+  pl <- ggplot(percentage_df, aes(x=Var1, y=Freq, fill=Var2)) +
+    geom_bar(stat = "identity", position = "stack") +
+    labs(x="dataset" , y="Segment of DVG [%]") +
+    ggtitle("Segment where DVGs are originating from") + 
+    theme(plot.title = element_text(size=20))
+
+  ggplotly(pl)
+}
+
+
+
+

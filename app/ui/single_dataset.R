@@ -22,7 +22,7 @@ single_dataset_tab <- tabItem(tabName="single_dataset",
         choices="Alnaji2019"
       ),
       sliderInput(
-        inputId="RCS_single",
+        inputId="single_RCS",
         label="Set RCS:",
         1,
         100,
@@ -44,9 +44,17 @@ single_dataset_tab <- tabItem(tabName="single_dataset",
     ),
     box(
       title="Statistical overview",
-      width=12,
+      width=6,
       "Different statistical parameters for the NGS count of the dataset.",
       plotlyOutput("ngs_distribution_plot")
+    ),
+
+    # deletion shift
+    box(
+      title="Deletion shift",
+      width=6,
+      "Shift of the reading frame introduced by deletion site.",
+      plotlyOutput("deletion_shift_plot"),
     ),
 
     # segment distribution
@@ -55,14 +63,6 @@ single_dataset_tab <- tabItem(tabName="single_dataset",
       width=12,
       "Distribution of the DVGs over the eight segments.",
       plotlyOutput("segment_distribution_plot"),
-    ),
-    
-    # deletion shift
-    box(
-      title="Deletion shift",
-      width=12,
-      "Shift of the reading frame introduced by deletion site.",
-      plotlyOutput("deletion_shift_plot"),
     ),
 
     # deletion length and location

@@ -14,6 +14,7 @@ library(stringr)
 library(tools)
 library(ggvenn)
 library(ComplexHeatmap)
+library(reshape2)
 
 library("Biostrings")
 
@@ -203,7 +204,7 @@ server <- function(input, output, session) {
     create_segment_distribution_plot(
       load_dataset(),
       input$single_flattened,
-      input$RCS_single
+      input$single_RCS
     )
   })
 
@@ -212,7 +213,7 @@ server <- function(input, output, session) {
     create_deletion_shift_plot(
       load_dataset(),
       input$single_flattened,
-      input$RCS_single
+      input$single_RCS
     )
   })
 
@@ -224,7 +225,7 @@ server <- function(input, output, session) {
       input$single_selected_segment,
       input$single_flattened,
       input$single_lengths_bins,
-      input$RCS_single
+      input$single_RCS
     )
   })
 
@@ -234,7 +235,7 @@ server <- function(input, output, session) {
       format_strain_name(input$single_strain),
       input$single_selected_segment,
       input$single_flattened,
-      input$RCS_single
+      input$single_RCS
     )
   })
 
@@ -244,7 +245,7 @@ server <- function(input, output, session) {
       input$single_dataset,
       format_strain_name(input$single_strain),
       input$single_selected_segment,
-      input$RCS_single
+      input$single_RCS
     )
   })
   
@@ -253,7 +254,7 @@ server <- function(input, output, session) {
       load_dataset(),
       format_strain_name(input$single_strain),
       input$single_selected_segment,
-      input$RCS_single
+      input$single_RCS
     )
   })
 
@@ -274,29 +275,29 @@ server <- function(input, output, session) {
   # function is called, when one of the inputs is changed (lines above)
   update_nuc_dist_plots <- function() {
     output$nuc_dist_start_A <- renderPlotly({
-      create_nuc_dist_plot("Start", "A", input$single_selected_segment, input$single_dataset, input$RCS_single, format_strain_name(input$single_strain), input$single_flattened)
+      create_nuc_dist_plot("Start", "A", input$single_selected_segment, input$single_dataset, input$single_RCS, format_strain_name(input$single_strain), input$single_flattened)
     })
     output$nuc_dist_start_C <- renderPlotly({
-      create_nuc_dist_plot("Start", "C", input$single_selected_segment, input$single_dataset, input$RCS_single, format_strain_name(input$single_strain), input$single_flattened)
+      create_nuc_dist_plot("Start", "C", input$single_selected_segment, input$single_dataset, input$single_RCS, format_strain_name(input$single_strain), input$single_flattened)
     })
     output$nuc_dist_start_G <- renderPlotly({
-      create_nuc_dist_plot("Start", "G", input$single_selected_segment, input$single_dataset, input$RCS_single, format_strain_name(input$single_strain), input$single_flattened)
+      create_nuc_dist_plot("Start", "G", input$single_selected_segment, input$single_dataset, input$single_RCS, format_strain_name(input$single_strain), input$single_flattened)
     })
     output$nuc_dist_start_U <- renderPlotly({
-      create_nuc_dist_plot("Start", "U", input$single_selected_segment, input$single_dataset, input$RCS_single, format_strain_name(input$single_strain), input$single_flattened)
+      create_nuc_dist_plot("Start", "U", input$single_selected_segment, input$single_dataset, input$single_RCS, format_strain_name(input$single_strain), input$single_flattened)
     })
   
     output$nuc_dist_end_A <- renderPlotly({
-      create_nuc_dist_plot("End", "A", input$single_selected_segment, input$single_dataset, input$RCS_single, format_strain_name(input$single_strain), input$single_flattened)
+      create_nuc_dist_plot("End", "A", input$single_selected_segment, input$single_dataset, input$single_RCS, format_strain_name(input$single_strain), input$single_flattened)
     })
     output$nuc_dist_end_C <- renderPlotly({
-      create_nuc_dist_plot("End", "C", input$single_selected_segment, input$single_dataset, input$RCS_single, format_strain_name(input$single_strain), input$single_flattened)
+      create_nuc_dist_plot("End", "C", input$single_selected_segment, input$single_dataset, input$single_RCS, format_strain_name(input$single_strain), input$single_flattened)
     })
     output$nuc_dist_end_G <- renderPlotly({
-      create_nuc_dist_plot("End", "G", input$single_selected_segment, input$single_dataset, input$RCS_single, format_strain_name(input$single_strain), input$single_flattened)
+      create_nuc_dist_plot("End", "G", input$single_selected_segment, input$single_dataset, input$single_RCS, format_strain_name(input$single_strain), input$single_flattened)
     })
     output$nuc_dist_end_U <- renderPlotly({
-      create_nuc_dist_plot("End", "U", input$single_selected_segment, input$single_dataset, input$RCS_single, format_strain_name(input$single_strain), input$single_flattened)
+      create_nuc_dist_plot("End", "U", input$single_selected_segment, input$single_dataset, input$single_RCS, format_strain_name(input$single_strain), input$single_flattened)
     })
   }
 
@@ -314,7 +315,7 @@ server <- function(input, output, session) {
           format_strain_name(input$single_strain),
           input$single_dataset,
           input$single_selected_segment,
-          input$RCS_single,
+          input$single_RCS,
           input$single_flattened
         )
       })
@@ -324,6 +325,60 @@ server <- function(input, output, session) {
 
 
 ### multiple datasets
+  # NGS counts
+  output$multiple_ngs_distribution_plot <- renderPlotly(
+    plot_multiple_ngs_distribution(
+      input$multiple_datasets,
+      input$multiple_RCS
+    )
+  )
+
+  # segment distribution
+  output$multiple_segment_distribution_plot <- renderPlotly({
+    plot_multiple_segment_distribution(
+      input$multiple_datasets,
+      input$single_flattened,
+      input$multiple_RCS
+    )
+  })
+
+  # deletion shifts
+  output$multiple_deletion_shift_plot <- renderPlotly({
+    plot_multiple_deletion_shift(
+      input$multiple_datasets,
+      input$single_flattened,
+      input$multiple_RCS
+    )
+  })
+
+  # DVG length
+  output$multiple_deletion_length_plot <- renderPlotly({
+    plot_multiple_deletion_length(
+      input$multiple_datasets,
+      input$single_flattened,
+      input$multiple_RCS
+    )
+  })
+
+  # nucleotide enrichment
+  output$multiple_nucleotide_enrichment_plot <- renderPlotly({
+    plot_multiple_nucleotide_enrichment(
+      input$multiple_datasets,
+      input$single_flattened,
+      input$multiple_RCS
+    )
+  })
+
+  # direct repeats
+  output$multiple_direct_repeats_plot <- renderPlotly({
+    plot_multiple_direct_repeat(
+      input$multiple_datasets,
+      input$single_flattened,
+      input$multiple_RCS
+    )
+  })
+
+
 
 
 
@@ -368,11 +423,6 @@ server <- function(input, output, session) {
       input$selected_datasets
     )
   })
-
-
-
-
-
 
 
 
