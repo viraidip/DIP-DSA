@@ -19,7 +19,7 @@ format_dataframe_segment_distribution <- function(df, flattened) {
   return (count_df)
 }
 
-create_segment_distribution_plot <- function(df, flattened, RCS) {
+plot_segment_distribution <- function(df, flattened, RCS) {
   df <- apply_cutoff(df, RCS)
   plot_df <- format_dataframe_segment_distribution(df, flattened)
   pl <- ggplot(plot_df, aes(x = Freq, y = factor("All Segments"), fill = Var1)) +
@@ -44,7 +44,7 @@ format_dataframe_deletion_shift <- function(df, flattened) {
   return (count_df)
 }
 
-create_deletion_shift_plot <- function(df, flattened, RCS) {
+plot_deletion_shift <- function(df, flattened, RCS) {
   df <- apply_cutoff(df, RCS)
   plot_df <- format_dataframe_deletion_shift(df, flattened)
 
@@ -95,7 +95,7 @@ add_stats <- function(df, pl, class) {
   return(pl)
 }
 
-create_lengths_plot<-function(df,strain,segment,flattened,n_bins, RCS) {
+plot_lengths<-function(df,strain,segment,flattened,n_bins, RCS) {
   # slice df by segment, reformat and bind on position and NGS count
   df <- apply_cutoff(df, RCS)
   df <- format_dataframe_lengths(df, segment, strain, flattened)
@@ -162,7 +162,7 @@ add_packaging_signal <- function(p, strain, segment) {
   return (p)
 }
 
-create_locations_plot <- function(df, strain, segment, flattened, RCS) {
+plot_locations <- function(df, strain, segment, flattened, RCS) {
   df <- apply_cutoff(df, RCS)
   df <- format_dataframe_locations(df, segment, flattened, strain)
   validate_plotting(df, segment)
@@ -186,7 +186,7 @@ create_locations_plot <- function(df, strain, segment, flattened, RCS) {
   ggplotly(p)
 }
 
-create_start_end_connection_plot <- function(df, d1, strain, segment, RCS) {
+plot_start_end_connection <- function(df, d1, strain, segment, RCS) {
   df <- apply_cutoff(df, RCS)
   df <- df[df$Segment == segment, ]
   validate_plotting(df, segment)
@@ -224,7 +224,7 @@ format_dataframe_end_3_5 <- function(df, strain, segment) {
   return(df)
 }
 
-create_end_3_5_plot <- function(df, strain, segment, RCS) {
+plot_end_3_5_plot <- function(df, strain, segment, RCS) {
   df <- apply_cutoff(df, RCS)
   df <- format_dataframe_end_3_5(df, strain, segment)
 
@@ -313,7 +313,7 @@ prepare_nuc_dist_data <- function(df, segment, flattened, strain) {
   return(count_df)
 }
 
-create_nuc_dist_plot <- function(pos, nuc, segment, datasetname, RCS, strain, flattened) {
+plot_nuc_dist <- function(pos, nuc, segment, datasetname, RCS, strain, flattened) {
   # load df and dataset length from temp files
   df <- read.csv(file.path(DATASETSPATH, strain, paste(datasetname, ".csv", sep="")), na.strings=c("NaN"))
   exp_df <- read.csv(file.path(DATASETSPATH, strain, paste(datasetname, ".tsv", sep="")), na.strings=c("NaN"), sep="\t")
@@ -438,7 +438,7 @@ prepare_plot_data <- function(df, label) {
   return(df)
 }
 
-create_direct_repeats_plot <- function(strain, datasetname, segment, RCS, flattened) {
+plot_direct_repeats <- function(strain, datasetname, segment, RCS, flattened) {
   df <- read.csv(file.path(DATASETSPATH, strain, paste(datasetname, ".csv", sep="")), na.strings=c("NaN"))
   exp_df <- read.csv(file.path(DATASETSPATH, strain, paste(datasetname, ".tsv", sep="")), na.strings=c("NaN"), sep="\t")
 
