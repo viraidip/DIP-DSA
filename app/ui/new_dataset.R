@@ -1,52 +1,6 @@
-load_dataset_tab <- tabItem(tabName="load_dataset",
-  h1("Select an existing dataset or load a custom one"),
+new_dataset_tab <- tabItem(tabName="new_dataset",
+  h1("Enter new data"),
   fluidRow(
-    box(
-      width=12,
-      title="Select existing data set",
-      "More info about the predefined datasets can be found in the",
-      actionLink("link_to_about_tab", "about"),
-      "tab.",
-      selectInput(
-        inputId="strain",
-        label="Select a strain:",
-        choices=gsub(
-          "_",
-          "/",
-          list.dirs(DATASETSPATH, full.names=FALSE, recursive=FALSE)
-        )
-      ),
-      selectInput(
-        inputId="dataset",
-        label="Select an existing dataset:",
-        choices="Alnaji2019"
-      )
-    ),
-    box(
-      width=12,
-      title="Select second dataset",
-      "Here a second dataset can be chosen to compare them to each other.",
-      radioButtons(
-        inputId="two_datasets",
-        label="Use second dataset:",
-        choices=c("No", "Yes"),
-        inline=TRUE
-      ),
-      selectInput(
-        inputId="strain2",
-        label="Select a strain:",
-        choices=gsub(
-          "_",
-          "/",
-          list.dirs(DATASETSPATH, full.names=FALSE, recursive=FALSE)
-        )
-      ),
-      selectInput(
-        inputId="dataset2",
-        label="Select an existing dataset:",
-        choices="Alnaji2019",
-      )
-    ),
     box(
       width=12,
       title="Upload new dataset",

@@ -13,17 +13,6 @@ TEMPPATH <- file.path(DATAPATH, "temp")
 COLOR_MAP <- hash(A="blue", C="yellow", G="green", U="red")
 NUC_MAP <- hash(A="Adenine", C="Cytosine", G="Guanine", U="Uracil")
 
-NP_MAP <- hash(
-  "PB2"="36-86,204-268,496-581,974-1108,1282-1352,1435-1502,1608-1677,
-  1986-2044,2221-2285",
-  "PB1"="94-161,276-337,902-998,1052-1118,1887-1947,2051-2110,2194-2263",
-  "PA"="48-100,151-215,415-472,1515-1575,1719-1779,2152-2191",
-  "HA"="80-140,569-643,848-910,1112-1159,1426-1493,1597-1653",
-  "NP"="245-338,536-594,655-713,948-1014,1058-1115,1492-1540",
-  "NA"="25-80,189-243,737-799,841-902,1011-1075,1153-1213",
-  "M"="32-103,199-269,489-549,582-642,906-963",
-  "NS"="321-382,516-586,673-783"
-)
 
 ### DEFINING FUNCTIONS ###
 run_prechecks <- function() {
@@ -80,27 +69,6 @@ format_strain_name <- function(strain) {
   return(gsub(pattern="/", replacement="_", x=strain))
 }
 
-check_second_dataset <- function(include, strain, dataset) {
-  if (include == "Yes") {
-    path <- file.path(DATASETSPATH, strain, paste(dataset, ".csv", sep=""))
-    nms <- c("Segment", "Start", "End", "NGS_read_count")
-    cls <- c("character", "integer", "integer", "integer")
-    if (file.exists(path)) {
-      df <- read.csv(path, na.strings=c("NaN"), col.names=nms, colClasses=cls)
-    } else {
-      df <- data.frame(
-        "Segment"=character(),
-        "Start"=integer(),
-        "End"=integer(),
-        "NGS_read_count"=integer()
-      )
-    }
-  } else {
-    df <- data.frame()
-  }
-  return (df)
-}
-
 validate_plotting <- function(df, segment) {  
   validation_text <- paste(
     "No plot could be created. Segment",
@@ -110,23 +78,78 @@ validate_plotting <- function(df, segment) {
   shiny::validate(need((nrow(df) != 0), validation_text))
 }
 
-reformat_motif <- function(motif) {
-  motif <- toupper(motif)
-  motif <- gsub("[^ACGU]", "", motif)
-  return(motif)
+apply_cutoff <- function(df, RCS) {
+  df <- df[df$NGS_read_count >= RCS, ]
+  return(df)
 }
 
-reformat_np_areas <- function(areas) {
-  areas <- gsub("[^0-9,-]", "", areas)
-  if (nchar(areas) == 0) {
-    return(data.frame())
+
+generate_sampling_data <- function(seq, s, e, n) {
+  # create all combinations of start and end positions that are possible
+  combinations <- expand.grid(start=seq(s[1], s[2]), end=seq(e[1], e[2]))
+
+  # create for each the DVG Sequence
+  sequences <- sapply(1:nrow(combinations), function(i) {
+    start_pos <- combinations$start[i]
+    end_pos <- combinations$end[i]
+    paste0(substr(seq, 1, start_pos-1), substr(seq, end_pos, nchar(seq)))
+  })
+
+  # create a data frame
+  temp_df <- data.frame(Start=combinations$start, End=combinations$end, Sequence=sequences)
+  max_start_indices <- tapply(
+    seq_len(nrow(temp_df)),
+    temp_df$Sequence,
+    function(indices) indices[which.max(temp_df$Start[indices])]
+  )
+
+  # Create a new dataframe with rows having maximum "Start" for each unique "Sequence"
+  max_start_df <- temp_df[max_start_indices, ]
+  max_start_df <- merge(temp_df, max_start_df, by = "Sequence", all.x = TRUE)
+  max_start_df <- max_start_df[, !duplicated(colnames(max_start_df))]
+  last_two_columns <- max_start_df[, -c(1:(ncol(max_start_df)-2))]
+  names(last_two_columns) <- c("Start", "End")
+  return(last_two_columns[sample(nrow(last_two_columns), n), , drop=FALSE])
+}
+
+
+create_random_data <- function(strain, dataset_name) {
+  path <- file.path(DATASETSPATH, strain)
+  file <- file.path(path, paste(dataset_name, ".csv", sep=""))
+  names <- c("Segment", "Start", "End", "NGS_read_count")
+  cl <- c("character", "integer", "integer", "integer")
+  df <- read.csv(file, na.strings=c("NaN"), col.names=names, colClasses=cl)
+
+  for (seg in SEGMENTS) {
+    temp_df <- df[df$Segment == seg, , drop = FALSE]
+    if (nrow(temp_df) == 0) {
+      next
+    }
+    seq <- get_seq(strain, seg)
+    start <- as.integer(mean(temp_df$Start))
+    end <- as.integer(mean(temp_df$End))
+    s <- c(max(start - 200, 50), start + 200)
+    e <- c(end - 200, min(end + 200, nchar(seq) - 50))
+    
+    if (s[2] >= e[1] || s[1] == s[2] || e[1] == e[2]) {
+      next
+    }
+    
+    N_SAMPLES=5000
+    if (exists("samp_df")) {
+      temp_df <- generate_sampling_data(seq, s, e, N_SAMPLES)
+      temp_df$Segment <- seg
+      samp_df <- rbind(samp_df, temp_df)
+    } else {
+      samp_df <- generate_sampling_data(seq, s, e, N_SAMPLES)
+      samp_df$Segment <- seg
+    }
   }
-  a <- strsplit(areas, split=",")
-  df <- data.frame(a)
-  colnames(df) <- c("areas")
-  df[c("start", "end")] <- str_split_fixed(df$areas, "-", 2)
-  df <- type.convert(df, as.is=TRUE)
-  df["label"] <- "high NP area"
-  return(df[c("start", "end", "label")])
+  
+  samp_df$NGS_read_count <- 1
+  
+  f_name <- paste(dataset_name, ".tsv", sep="")
+  final_path <- file.path(path, f_name)
+  write.table(samp_df, file=final_path, sep="\t", row.names=FALSE)
 }
 
