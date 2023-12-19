@@ -90,11 +90,6 @@ about_tab <- tabItem(tabName="about",
       )
     ),
     box(
-      title="Sources of the given datasets:",
-      width=12,
-      tableOutput("dataset_info_table")
-    ),
-    box(
       title="How to enter a custom dataset?",
       width=12,
       strong("General info:"),

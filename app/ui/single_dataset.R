@@ -74,7 +74,8 @@ single_dataset_tab <- tabItem(tabName="single_dataset",
         label="Set size of bins for histogram:",
         1,
         1000,
-        20
+        20,
+        step=1
       ),
       "The length of the single DI RNAs is plotted as a histogram, showing",
       "the number of occurrences for each length.",

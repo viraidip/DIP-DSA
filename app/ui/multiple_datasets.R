@@ -64,7 +64,8 @@ multiple_datasets_tab <- tabItem(tabName="multiple_datasets",
         label="Set size of bins for histogram:",
         1,
         1000,
-        20
+        20,
+        step=1
       ),
       "Lengths of the DVGs",
       plotlyOutput("multiple_deletion_length_plot")
