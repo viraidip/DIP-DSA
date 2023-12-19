@@ -148,8 +148,10 @@ create_random_data <- function(strain, dataset_name) {
   
   samp_df$NGS_read_count <- 1
   
+  samp_df <- samp_df[, c(3, 1, 2, 4)]
+
   f_name <- paste(dataset_name, ".tsv", sep="")
   final_path <- file.path(path, f_name)
-  write.table(samp_df, file=final_path, sep="\t", row.names=FALSE)
+  write.table(samp_df, file=final_path, sep="\t", row.names=FALSE, quote=FALSE)
 }
 

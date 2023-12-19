@@ -13,7 +13,7 @@ multiple_datasets_tab <- tabItem(tabName="multiple_datasets",
           recursive=TRUE
         ),
         multiple=TRUE,
-        selected=c("A_California_07_2009/Alnaji2019.csv", "A_PuertoRico_8_1934/alnaji2021_extra.csv")
+        selected=c("A_California_07_2009/Alnaji2019_Cal07.csv", "A_NewCaledonia_1999/Alnaji2019_NC.csv")
       ),
       sliderInput(
         inputId="multiple_RCS",
@@ -59,28 +59,48 @@ multiple_datasets_tab <- tabItem(tabName="multiple_datasets",
     box(
       title="DVG length",
       width=12,
+      sliderInput(
+        inputId="multiple_lengths_bins",
+        label="Set size of bins for histogram:",
+        1,
+        1000,
+        20
+      ),
       "Lengths of the DVGs",
       plotlyOutput("multiple_deletion_length_plot")
     ),
 
     box(
-      title="Nucleotide enrichment",
-      width=12,
-      "Distribution of the deletion shift for the selected datasets",
-      plotlyOutput("multiple_nucleotide_enrichment_plot")
+      title="Nucleotide enrichment (Start position)",
+      width=6,
+      "Distribution of nucleotide enrichment at start of the deletion site.",
+      radioButtons(
+        inputId="multiple_enrichment_nucleotide_start",
+        label="Select nucleotide:",
+        choices=c("A", "C", "G", "U"),
+        inline=TRUE
+      ),
+      plotlyOutput("multiple_nucleotide_enrichment_start_plot")
+    ),
+    box(
+      title="Nucleotide enrichment (End position)",
+      width=6,
+      "Distribution of nucleotide enrichment at end of the deletion site.",
+      radioButtons(
+        inputId="multiple_enrichment_nucleotide_end",
+        label="Select nucleotide:",
+        choices=c("A", "C", "G", "U"),
+        inline=TRUE
+      ),
+      plotlyOutput("multiple_nucleotide_enrichment_end_plot")
     ),
 
     box(
       title="Direct repeats",
       width=12,
-      "Distribution of the deletion shift for the selected datasets",
+      "Distribution of the direct repeat lengths.",
       plotlyOutput("multiple_direct_repeats_plot")
-    ),
-
-
-
-
-
+    )
   )
 )
 

@@ -36,27 +36,27 @@ source('ui/about.R', local=TRUE)
 ui <- bootstrapPage(
   dashboardPage(
     title="DIP-Deletion Site Analyzer",
-    skin="green",
+    skin="red",
     dashboardHeader(title="DIP-DSA"),
     dashboardSidebar(
       sidebarMenu(
         id="sidebarmenu",
         menuItem("Add new dataset",
           tabName="new_dataset",
-          icon=icon("database")
+          icon=icon("file-circle-plus")
         ),
         hr(),
         menuItem("Single dataset",
           tabName="single_dataset",
-          icon=icon("ruler-horizontal")
+          icon=icon("folder")
         ),
         menuItem("Multiple datasets",
           tabName="multiple_datasets",
-          icon=icon("magnifying-glass-chart")
+          icon=icon("folder-tree")
         ),
         menuItem("Dataset intersection",
           tabName="dataset_intersection",
-          icon=icon("magnifying-glass")
+          icon=icon("magnifying-glass-chart")
         ),
         hr(),
         menuItem("About",
@@ -337,7 +337,7 @@ server <- function(input, output, session) {
   output$multiple_segment_distribution_plot <- renderPlotly({
     plot_multiple_segment_distribution(
       input$multiple_datasets,
-      input$single_flattened,
+      input$multiple_flattened,
       input$multiple_RCS
     )
   })
@@ -346,7 +346,7 @@ server <- function(input, output, session) {
   output$multiple_deletion_shift_plot <- renderPlotly({
     plot_multiple_deletion_shift(
       input$multiple_datasets,
-      input$single_flattened,
+      input$multiple_flattened,
       input$multiple_RCS
     )
   })
@@ -355,16 +355,31 @@ server <- function(input, output, session) {
   output$multiple_deletion_length_plot <- renderPlotly({
     plot_multiple_deletion_length(
       input$multiple_datasets,
-      input$single_flattened,
+      input$multiple_selected_segment,
+      input$multiple_flattened,
+      input$multiple_lengths_bins,
       input$multiple_RCS
     )
   })
 
   # nucleotide enrichment
-  output$multiple_nucleotide_enrichment_plot <- renderPlotly({
+  output$multiple_nucleotide_enrichment_start_plot <- renderPlotly({
     plot_multiple_nucleotide_enrichment(
       input$multiple_datasets,
-      input$single_flattened,
+      input$multiple_selected_segment,
+      "Start",
+      input$multiple_flattened,
+      input$multiple_enrichment_nucleotide_start,
+      input$multiple_RCS
+    )
+  })
+  output$multiple_nucleotide_enrichment_end_plot <- renderPlotly({
+    plot_multiple_nucleotide_enrichment(
+      input$multiple_datasets,
+      input$multiple_selected_segment,
+      "End",
+      input$multiple_flattened,
+      input$multiple_enrichment_nucleotide_end,
       input$multiple_RCS
     )
   })
@@ -373,7 +388,8 @@ server <- function(input, output, session) {
   output$multiple_direct_repeats_plot <- renderPlotly({
     plot_multiple_direct_repeat(
       input$multiple_datasets,
-      input$single_flattened,
+      input$multiple_selected_segment,
+      input$multiple_flattened,
       input$multiple_RCS
     )
   })

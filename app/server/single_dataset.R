@@ -1,12 +1,12 @@
 #### dataset info
 plot_ngs_distribution <- function(df1, d1) {
-  p <- plot_ly(data = df1, y = ~NGS_read_count, type = "box", name=d1) %>%
+  pl <- plot_ly(data = df1, y = ~NGS_read_count, type = "box", name=d1) %>%
     layout(
       title = "Boxplot of NGS read count (Log Scale)",
       yaxis = list(type = "log")
     )
 
-  p
+  pl
 }
 
 
@@ -103,7 +103,7 @@ plot_lengths<-function(df,strain,segment,flattened,n_bins, RCS) {
   df$Class <- "dataset 1"
 
   pl <- ggplot(df, aes(x=Length, fill=Class)) +
-    geom_histogram(alpha=0.3, binwidth=n_bins, position="identity") +
+    geom_histogram(alpha=0.3, bins=n_bins, position="identity") +
     xlab("Length of DI candidate") +
     ylab("Number of occurrences") +
     ggtitle(paste("Histogram of DI RNA candidate lengths for segment",
@@ -224,13 +224,13 @@ format_dataframe_end_3_5 <- function(df, strain, segment) {
   return(df)
 }
 
-plot_end_3_5_plot <- function(df, strain, segment, RCS) {
+plot_end_3_5 <- function(df, strain, segment, RCS) {
   df <- apply_cutoff(df, RCS)
   df <- format_dataframe_end_3_5(df, strain, segment)
 
   p <- ggplot(df, aes(x=Length_3, y=Length_5)) +
     geom_point() +
-    geom_abline(a=0, b=1, col="green") +
+    geom_abline(intercept=0, slope=1, col="green") +
     xlim(0, 700) +
     ylim(0, 700) +
     xlab("3' length") +
@@ -270,27 +270,21 @@ counting_routine <- function(l, window, letter, ngs_read_count) {
   return(l)
 }
 
-count_nuc_dist <- function(seq, positions, ngs_read_counts) {
-  A <- integer(10)
-  C <- integer(10)
-  G <- integer(10)
-  U <- integer(10)
+count_nuc_dist <- function(seq, positions, ngs_read_counts, nuc) {
+  count <- integer(10)
   for (i in 1:length(positions)) {
     p <- positions[[i]]
     ngs_read_count <- ngs_read_counts[[i]]
     window <- subseq(seq, start=p-4, end=p+5)
-    A <- counting_routine(A, window, "A", ngs_read_count)
-    C <- counting_routine(C, window, "C", ngs_read_count)
-    G <- counting_routine(G, window, "G", ngs_read_count)
-    U <- counting_routine(U, window, "U", ngs_read_count)
+    count <- counting_routine(count, window, nuc, ngs_read_count)
   }
-  rel_occurrence <- c(A, C, G, U) / sum(ngs_read_counts)
-  position <- c(rep(seq(1, 10), 4))
-  nucleotide <- c(rep("A", 10), rep("C", 10), rep("G", 10), rep("U", 10))
+  rel_occurrence <- count / sum(ngs_read_counts)
+  position <- c(seq(1, 10))
+  nucleotide <- c(rep(nuc, 10))
   return(data.frame(rel_occurrence, position, nucleotide))
 }
 
-prepare_nuc_dist_data <- function(df, segment, flattened, strain) {
+prepare_nuc_dist_data <- function(df, segment, flattened, strain, pos, nuc) {
   df <- df[df$Segment == segment, ]
   if (nrow(df) == 0) {
     return(df)
@@ -301,20 +295,12 @@ prepare_nuc_dist_data <- function(df, segment, flattened, strain) {
   }
   ngs_read_counts <- df$NGS_read_count
 
-  # load sequence
   sequence <- get_seq(strain, segment)
-
-  # count nuc dist around deletion site
-  start_df <- count_nuc_dist(sequence, df[, "Start"], ngs_read_counts)
-  end_df <- count_nuc_dist(sequence, df[, "End"]-1, ngs_read_counts)
-  start_df["location"] <- rep("Start", nrow(start_df))
-  end_df["location"] <- rep("End", nrow(end_df))
-  count_df <- rbind(start_df, end_df)
+  count_df <- count_nuc_dist(sequence, df[, pos], ngs_read_counts, nuc)
   return(count_df)
 }
 
 plot_nuc_dist <- function(pos, nuc, segment, datasetname, RCS, strain, flattened) {
-  # load df and dataset length from temp files
   df <- read.csv(file.path(DATASETSPATH, strain, paste(datasetname, ".csv", sep="")), na.strings=c("NaN"))
   exp_df <- read.csv(file.path(DATASETSPATH, strain, paste(datasetname, ".tsv", sep="")), na.strings=c("NaN"), sep="\t")
 
@@ -327,18 +313,14 @@ plot_nuc_dist <- function(pos, nuc, segment, datasetname, RCS, strain, flattened
     ngs_read_count <- sum(df$NGS_read_count)
   }
 
-  count_df <- prepare_nuc_dist_data(df, segment, flattened, strain)
+  count_df <- prepare_nuc_dist_data(df, segment, flattened, strain, pos, nuc)
   count_df["group"] <- rep("observed", nrow(count_df))
   n <- nrow(count_df)
-  sampling_df <- prepare_nuc_dist_data(exp_df, segment, flattened, strain)
+  sampling_df <- prepare_nuc_dist_data(exp_df, segment, flattened, strain, pos, nuc)
   sampling_df["group"] <- rep("expected", nrow(sampling_df))
   final_df <- rbind(count_df, sampling_df)
 
   validate_plotting(final_df, segment)
-
-  # slice dataset by Start/End and nucleotide
-  final_df <- final_df[final_df$location == pos,]
-  final_df <- final_df[final_df$nucleotide == nuc,]
 
   # statistical testing with binom test
   position <- c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)

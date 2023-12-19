@@ -19,7 +19,7 @@ single_dataset_tab <- tabItem(tabName="single_dataset",
       selectInput(
         inputId="single_dataset",
         label="Select an existing dataset:",
-        choices="Alnaji2019"
+        choices="Alnaji2019_Cal07"
       ),
       sliderInput(
         inputId="single_RCS",
@@ -73,7 +73,7 @@ single_dataset_tab <- tabItem(tabName="single_dataset",
         inputId="single_lengths_bins",
         label="Set size of bins for histogram:",
         1,
-        100,
+        1000,
         20
       ),
       "The length of the single DI RNAs is plotted as a histogram, showing",

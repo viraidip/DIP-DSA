@@ -13,7 +13,7 @@ dataset_intersection_tab <- tabItem(tabName="dataset_intersection",
           recursive=TRUE
         ),
         multiple=TRUE,
-        selected=c("A_California_07_2009/Alnaji2019.csv", "A_PuertoRico_8_1934/alnaji2021_extra.csv")
+        selected=c("A_California_07_2009/Alnaji2019_Cal07.csv", "A_NewCaledonia_1999/Alnaji2019_NC.csv")
       ),
       sliderInput(
         inputId="RCS_intersection",
