@@ -118,6 +118,28 @@ server <- function(input, output, session) {
     move_files(from_list, to_list)
 
     create_random_data(upload_strain, dataset_name)
+
+    c <- tools::file_path_sans_ext(list.files(strain_path, pattern="csv"))
+    updateSelectInput(
+      session,
+      inputId="single_dataset",
+      choices=c
+    )
+
+    c <- list.files(DATASETSPATH, pattern="csv$", full.names=FALSE, recursive=TRUE)
+    updateSelectInput(
+      session,
+      inputId="multiple_datasets",
+      choices=c,
+      selected=c[1:2]
+    )
+    updateSelectInput(
+      session,
+      inputId="selected_datasets",
+      choices=c,
+      selected=c[1:2]
+    )
+
   })
 
   observeEvent(input$strain_submit, {
@@ -154,6 +176,13 @@ server <- function(input, output, session) {
       to_list <- append(to_list, file.path(fasta_path, f_name))
     }
     move_files(from_list, to_list)
+
+    c <- gsub("_","/",list.dirs(DATASETSPATH,full.names=FALSE,recursive=FALSE))
+    updateSelectInput(
+      session,
+      inputId="upload_strain",
+      choices=c
+    )
   })
 
 
@@ -163,7 +192,7 @@ server <- function(input, output, session) {
   observe({
     path <- file.path(DATASETSPATH, format_strain_name(input$single_strain))
     dataset_names <- tools::file_path_sans_ext(list.files(path, pattern="csv"))
-    updateSelectInput(session, "dataset", choices=dataset_names)
+    updateSelectInput(session, "single_dataset", choices=dataset_names)
   })
 
   load_dataset <- reactive({
@@ -185,10 +214,6 @@ server <- function(input, output, session) {
       )
     }
     return(df)
-  })
-
-  observeEvent(input$link_to_single_data_point_tab, {
-    updateTabItems(session, "sidebarmenu", "single_data_point")
   })
 
   # NGS counts
