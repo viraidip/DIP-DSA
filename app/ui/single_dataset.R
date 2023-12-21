@@ -4,9 +4,6 @@ single_dataset_tab <- tabItem(tabName="single_dataset",
     box(
       width=12,
       title="Select data",
-      "More info about the predefined datasets can be found in the",
-      actionLink("link_to_about_tab", "about"),
-      "tab.",
       selectInput(
         inputId="single_strain",
         label="Select a strain:",
@@ -22,8 +19,8 @@ single_dataset_tab <- tabItem(tabName="single_dataset",
         choices="Alnaji2019_Cal07"
       ),
       sliderInput(
-        inputId="single_RCS",
-        label="Set RCS:",
+        inputId="single_RSC",
+        label="Set the RSC (read support cutoff):",
         1,
         100,
         2,
@@ -37,13 +34,16 @@ single_dataset_tab <- tabItem(tabName="single_dataset",
       ),
       selectInput(
         inputId="single_selected_segment",
-        label="Select segment",
-        choices=c(SEGMENTS, "ALL")
+        label="Select segment:",
+        choices=c(SEGMENTS)
       ),
-
+      actionButton(
+        inputId="single_submit",
+        label="Generate plots"
+      )
     ),
     box(
-      title="NGS count distribution (log scale)",
+      title="Distribution of NGS count",
       width=6,
       "The NGS counts of the DVGs given in the selected dataset.",
       plotlyOutput("ngs_distribution_plot")
@@ -127,9 +127,6 @@ single_dataset_tab <- tabItem(tabName="single_dataset",
         inline=TRUE
       ),
       plotlyOutput("nucleotide_enrichment_end_plot")
-    ),
-
-
-
+    )
   )
 )

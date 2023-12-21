@@ -1,6 +1,6 @@
-plot_multiple_ngs_distribution <- function(paths, RCS) {
+plot_multiple_ngs_distribution <- function(paths, RSC) {
   df <- load_all_datasets(paths)
-  df <- apply_cutoff(df, RCS)
+  df <- apply_cutoff(df, RSC)
 
   pl <- ggplot(df, aes(x=name, y=NGS_read_count, fill=name)) +
   geom_boxplot() +
@@ -11,9 +11,9 @@ plot_multiple_ngs_distribution <- function(paths, RCS) {
 }
 
 
-plot_multiple_deletion_shift <- function(paths, flattened, RCS) {
+plot_multiple_deletion_shift <- function(paths, flattened, RSC) {
   df <- load_all_datasets(paths)
-  df <- apply_cutoff(df, RCS)
+  df <- apply_cutoff(df, RSC)
 
   if (flattened == "flattened") {
     df["NGS_read_count"] <- 1
@@ -35,38 +35,62 @@ plot_multiple_deletion_shift <- function(paths, flattened, RCS) {
       TRUE ~ as.character(Shift)
     ))
 
+  expected <- c(1/3, 1/3, 1/3)
+  labels <- c()
+  for (name in unique(plot_df$name)) {
+    observed_values <- plot_df$Freq[plot_df[["name"]] == name]
+    r <- chisq.test(observed_values, p=expected)
+    label <- paste(name, " (p-value: ", round(r$p.value, 2), ")", sep="")
+    labels <- c(labels, label)
+  }
+
   pl <- ggplot(plot_df, aes(x=name, y=Freq, fill=factor(Shift))) +
     geom_bar(stat = "identity", position = "stack") +
-    labs(x="Dataset" , y="Deletion shift [%]", fill="Shifts")
+    labs(x="Dataset" , y="Deletion shift [%]", fill="Shifts") +
+    scale_x_discrete(labels=labels)
 
   ggplotly(pl)
 }
 
 
-plot_multiple_segment_distribution <- function(paths, flattened, RCS) {
+plot_multiple_segment_distribution <- function(paths, flattened, RSC) {
   df <- load_all_datasets(paths)
-  df <- apply_cutoff(df, RCS)
+  df <- apply_cutoff(df, RSC)
 
   if (flattened == "flattened") {
     df["NGS_read_count"] <- 1
   }
 
   plot_df <- df %>%
-    group_by(name, Segment) %>%
+    group_by(name, strain, Segment) %>%
     summarise(counts=sum(NGS_read_count)) %>%
     mutate(Freq=counts / sum(counts) * 100)
-  
+
+  plot_df <- plot_df %>%
+    rowwise() %>%
+    mutate(seq_len=get_seq_len(strain, Segment))
+
+  labels <- c()
+  for (name in unique(plot_df$name)) {
+    subset_df <- plot_df[plot_df[["name"]] == name, ]
+    expected <- subset_df$seq_len / sum(subset_df$seq_len)
+    r <- chisq.test(subset_df$Freq, p=expected)
+    label <- paste(name, "", get_stat_symbol(r$p.value))
+    labels <- c(labels, label)
+  }
+
   pl <- ggplot(plot_df, aes(x=name, y=Freq, fill=Segment)) +
     geom_bar(stat = "identity", position = "stack") +
-    labs(x="Dataset" , y="Segment of DVG [%]", fill="Segment")
+    labs(x="Dataset" , y="Segment of DVG [%]", fill="Segment") +
+    scale_x_discrete(labels=labels)
 
   ggplotly(pl)
 }
 
 
-plot_multiple_deletion_length<-function(paths,segment,flattened,n_bins, RCS) {
+plot_multiple_deletion_length<-function(paths,segment,flattened,n_bins, RSC) {
   df <- load_all_datasets(paths)
-  df <- apply_cutoff(df, RCS)
+  df <- apply_cutoff(df, RSC)
   
   # slice df by segment, reformat and bind on position and NGS count
   df <- df[df$Segment == segment, ]
@@ -88,11 +112,11 @@ plot_multiple_deletion_length<-function(paths,segment,flattened,n_bins, RCS) {
 }
 
 
-plot_multiple_nucleotide_enrichment<-function(paths, segment, pos, flattened, nuc, RCS) {
+plot_multiple_nucleotide_enrichment<-function(paths, segment, pos, flattened, nuc, RSC) {
   df <- load_all_datasets(paths)
   exp_df <- load_expected_data(paths)
 
-  df <- apply_cutoff(df, RCS)
+  df <- apply_cutoff(df, RSC)
   df <- df[df$Segment == segment, ]  
   exp_df <- exp_df[exp_df$Segment == segment, ]
 
@@ -122,7 +146,6 @@ plot_multiple_nucleotide_enrichment<-function(paths, segment, pos, flattened, nu
     
     comb$diff <- comb$rel_occurrence - comb$rel_occ2
     diff <- c(diff, comb$diff)
-
   }
 
   plot_df <- data.frame(position=position, dataset=dataset, diff=diff)
@@ -153,15 +176,11 @@ plot_multiple_nucleotide_enrichment<-function(paths, segment, pos, flattened, nu
   ggplotly(pl)
 }
 
-
-
-
-
-plot_multiple_direct_repeat<-function(paths, segment, flattened, RCS) {
+plot_multiple_direct_repeat<-function(paths, segment, flattened, RSC) {
   df <- load_all_datasets(paths)
   exp_df <- load_expected_data(paths)
 
-  df <- apply_cutoff(df, RCS)
+  df <- apply_cutoff(df, RSC)
   df <- df[df$Segment == segment, ]  
   exp_df <- exp_df[exp_df$Segment == segment, ]
 

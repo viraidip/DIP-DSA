@@ -4,6 +4,7 @@ new_dataset_tab <- tabItem(tabName="new_dataset",
     box(
       width=12,
       title="Upload new dataset",
+
       selectizeInput(
         inputId="upload_strain",
         label="Select an existing strain:",
@@ -22,6 +23,9 @@ new_dataset_tab <- tabItem(tabName="new_dataset",
         label="Upload a custom dataset (*.csv):",
         accept=c(".csv")
       ),
+      "More info about the structure of the csv file can be found in the",
+      actionLink("link_to_about_tab", "about"),
+      "tab.",
       br(),
       actionButton(
         inputId="dataset_submit",

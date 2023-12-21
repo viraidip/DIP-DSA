@@ -188,249 +188,242 @@ server <- function(input, output, session) {
   })
 
 
-
 ### single dataset ###
-  # Loading and dataset selection
+######################
+  # update dataset selection when changing strain
   observe({
     path <- file.path(DATASETSPATH, format_strain_name(input$single_strain))
     dataset_names <- tools::file_path_sans_ext(list.files(path, pattern="csv"))
     updateSelectInput(session, "single_dataset", choices=dataset_names)
   })
 
-  # NGS counts
-  output$ngs_distribution_plot <- renderPlotly({
-    plot_ngs_distribution(
-      format_strain_name(input$single_strain),
-      input$single_dataset
-    )
-  })
+  observeEvent(input$single_submit, {
+    # NGS counts
+    output$ngs_distribution_plot <- renderPlotly({
+      plot_ngs_distribution(
+        format_strain_name(input$single_strain),
+        input$single_dataset
+      )
+    })
 
-  # segment distribution
-  output$segment_distribution_plot <- renderPlotly({
-    plot_segment_distribution(
-      format_strain_name(input$single_strain),
-      input$single_dataset,
-      input$single_flattened,
-      input$single_RCS
-    )
-  })
+    # segment distribution
+    output$segment_distribution_plot <- renderPlotly({
+      plot_segment_distribution(
+        format_strain_name(input$single_strain),
+        input$single_dataset,
+        input$single_flattened,
+        input$single_RSC
+      )
+    })
 
-  # deletion shifts
-  output$deletion_shift_plot <- renderPlotly({
-    plot_deletion_shift(
-      format_strain_name(input$single_strain),
-      input$single_dataset,
-      input$single_flattened,
-      input$single_RCS
-    )
-  })
+    # deletion shifts
+    output$deletion_shift_plot <- renderPlotly({
+      plot_deletion_shift(
+        format_strain_name(input$single_strain),
+        input$single_dataset,
+        input$single_flattened,
+        input$single_RSC
+      )
+    })
 
-  # lengths  
-  output$lengths_plot <- renderPlotly({
-    plot_lengths(
-      format_strain_name(input$single_strain),
-      input$single_dataset,
-      input$single_selected_segment,
-      input$single_flattened,
-      input$single_lengths_bins,
-      input$single_RCS
-    )
-  })
+    # lengths  
+    output$lengths_plot <- renderPlotly({
+      plot_lengths(
+        format_strain_name(input$single_strain),
+        input$single_dataset,
+        input$single_selected_segment,
+        input$single_flattened,
+        input$single_lengths_bins,
+        input$single_RSC
+      )
+    })
 
-  output$locations_plot <- renderPlotly({
-    plot_locations(
-      format_strain_name(input$single_strain),
-      input$single_dataset,
-      input$single_selected_segment,
-      input$single_flattened,
-      input$single_RCS
-    )
-  })
+    # location
+    output$locations_plot <- renderPlotly({
+      plot_locations(
+        format_strain_name(input$single_strain),
+        input$single_dataset,
+        input$single_selected_segment,
+        input$single_flattened,
+        input$single_RSC
+      )
+    })
 
-  output$start_end_connection_plot <- renderPlotly({
-    plot_start_end_connection(
-      format_strain_name(input$single_strain),
-      input$single_dataset,
-      input$single_selected_segment,
-      input$single_RCS
-    )
-  })
-  
-  output$end_3_5_plot <- renderPlotly({
-    plot_end_3_5(
-      format_strain_name(input$single_strain),
-      input$single_dataset,
-      input$single_selected_segment,
-      input$single_RCS
-    )
-  })
+    # connections start-end
+    output$start_end_connection_plot <- renderPlotly({
+      plot_start_end_connection(
+        format_strain_name(input$single_strain),
+        input$single_dataset,
+        input$single_selected_segment,
+        input$single_RSC
+      )
+    })
+    
+    # compare 5' and 3'
+    output$end_3_5_plot <- renderPlotly({
+      plot_end_3_5(
+        format_strain_name(input$single_strain),
+        input$single_dataset,
+        input$single_selected_segment,
+        input$single_RSC
+      )
+    })
 
+    # Nucleotide enrichment
+    output$nucleotide_enrichment_start_plot <- renderPlotly({
+      plot_nucleotide_enrichment(
+        format_strain_name(input$single_strain),
+        input$single_dataset,
+        "Start",
+        input$enrichment_nucleotide_start,
+        input$single_selected_segment,
+        input$single_RSC,
+        input$single_flattened
+      )
+    })
+    output$nucleotide_enrichment_end_plot <- renderPlotly({
+      plot_nucleotide_enrichment(
+        format_strain_name(input$single_strain),
+        input$single_dataset,
+        "End",
+        input$enrichment_nucleotide_end,
+        input$single_selected_segment,
+        input$single_RSC,
+        input$single_flattened
+      )
+    })
 
-  # Nucleotide enrichment
-  output$nucleotide_enrichment_start_plot <- renderPlotly({
-    plot_nucleotide_enrichment(
-      format_strain_name(input$single_strain),
-      input$single_dataset,
-      "Start",
-      input$enrichment_nucleotide_start,
-      input$single_selected_segment,
-      input$single_RCS,
-      input$single_flattened
-    )
-  })
-
-  output$nucleotide_enrichment_end_plot <- renderPlotly({
-    plot_nucleotide_enrichment(
-      format_strain_name(input$single_strain),
-      input$single_dataset,
-      "End",
-      input$enrichment_nucleotide_end,
-      input$single_selected_segment,
-      input$single_RCS,
-      input$single_flattened
-    )
-  })
-
-  # direct repeats
-  output$direct_repeats_plot <- renderPlotly({
-    plot_direct_repeats(
-      format_strain_name(input$single_strain),
-      input$single_dataset,
-      input$single_selected_segment,
-      input$single_RCS,
-      input$single_flattened
-    )
-  })
-
-
-
-### multiple datasets
-  # NGS counts
-  output$multiple_ngs_distribution_plot <- renderPlotly(
-    plot_multiple_ngs_distribution(
-      input$multiple_datasets,
-      input$multiple_RCS
-    )
-  )
-
-  # segment distribution
-  output$multiple_segment_distribution_plot <- renderPlotly({
-    plot_multiple_segment_distribution(
-      input$multiple_datasets,
-      input$multiple_flattened,
-      input$multiple_RCS
-    )
-  })
-
-  # deletion shifts
-  output$multiple_deletion_shift_plot <- renderPlotly({
-    plot_multiple_deletion_shift(
-      input$multiple_datasets,
-      input$multiple_flattened,
-      input$multiple_RCS
-    )
-  })
-
-  # DVG length
-  output$multiple_deletion_length_plot <- renderPlotly({
-    plot_multiple_deletion_length(
-      input$multiple_datasets,
-      input$multiple_selected_segment,
-      input$multiple_flattened,
-      input$multiple_lengths_bins,
-      input$multiple_RCS
-    )
-  })
-
-  # nucleotide enrichment
-  output$multiple_nucleotide_enrichment_start_plot <- renderPlotly({
-    plot_multiple_nucleotide_enrichment(
-      input$multiple_datasets,
-      input$multiple_selected_segment,
-      "Start",
-      input$multiple_flattened,
-      input$multiple_enrichment_nucleotide_start,
-      input$multiple_RCS
-    )
-  })
-  output$multiple_nucleotide_enrichment_end_plot <- renderPlotly({
-    plot_multiple_nucleotide_enrichment(
-      input$multiple_datasets,
-      input$multiple_selected_segment,
-      "End",
-      input$multiple_flattened,
-      input$multiple_enrichment_nucleotide_end,
-      input$multiple_RCS
-    )
-  })
-
-  # direct repeats
-  output$multiple_direct_repeats_plot <- renderPlotly({
-    plot_multiple_direct_repeat(
-      input$multiple_datasets,
-      input$multiple_selected_segment,
-      input$multiple_flattened,
-      input$multiple_RCS
-    )
+    # direct repeats
+    output$direct_repeats_plot <- renderPlotly({
+      plot_direct_repeats(
+        format_strain_name(input$single_strain),
+        input$single_dataset,
+        input$single_selected_segment,
+        input$single_RSC,
+        input$single_flattened
+      )
+    })
   })
 
 
-
-
-
-
-
-### dataset intersection
-  output$dataset_venn <- renderPlot({
-    df2 <- data.frame() # remove later
-    plot_venn(
-      load_dataset(),
-      df2,
-      input$strain,
-      input$dataset,
-      input$strain2,
-      input$dataset2
+### multiple datasets ###
+#########################
+  observeEvent(input$multiple_submit, {
+    # NGS counts
+    output$multiple_ngs_distribution_plot <- renderPlotly(
+      plot_multiple_ngs_distribution(
+        input$multiple_datasets,
+        input$multiple_RSC
+      )
     )
+
+    # segment distribution
+    output$multiple_segment_distribution_plot <- renderPlotly({
+      plot_multiple_segment_distribution(
+        input$multiple_datasets,
+        input$multiple_flattened,
+        input$multiple_RSC
+      )
+    })
+
+    # deletion shifts
+    output$multiple_deletion_shift_plot <- renderPlotly({
+      plot_multiple_deletion_shift(
+        input$multiple_datasets,
+        input$multiple_flattened,
+        input$multiple_RSC
+      )
+    })
+
+    # DVG length
+    output$multiple_deletion_length_plot <- renderPlotly({
+      plot_multiple_deletion_length(
+        input$multiple_datasets,
+        input$multiple_selected_segment,
+        input$multiple_flattened,
+        input$multiple_lengths_bins,
+        input$multiple_RSC
+      )
+    })
+
+    # nucleotide enrichment
+    output$multiple_nucleotide_enrichment_start_plot <- renderPlotly({
+      plot_multiple_nucleotide_enrichment(
+        input$multiple_datasets,
+        input$multiple_selected_segment,
+        "Start",
+        input$multiple_flattened,
+        input$multiple_enrichment_nucleotide_start,
+        input$multiple_RSC
+      )
+    })
+    output$multiple_nucleotide_enrichment_end_plot <- renderPlotly({
+      plot_multiple_nucleotide_enrichment(
+        input$multiple_datasets,
+        input$multiple_selected_segment,
+        "End",
+        input$multiple_flattened,
+        input$multiple_enrichment_nucleotide_end,
+        input$multiple_RSC
+      )
+    })
+
+    # direct repeats
+    output$multiple_direct_repeats_plot <- renderPlotly({
+      plot_multiple_direct_repeat(
+        input$multiple_datasets,
+        input$multiple_selected_segment,
+        input$multiple_flattened,
+        input$multiple_RSC
+      )
+    })
   })
 
-  output$candidate_intersection_table <- renderDataTable({
-    df2 <- data.frame() # remove later
-    datatable(intersecting_candidates(load_dataset(), df2))
-  }
-  )
 
-  output$intersecting_candidates_table <- renderDataTable(
-    datatable(all_intersecting_candidates(
-      input$selected_datasets,
-      input$min_occurrences
-      ),
-      selection="single"
+### dataset intersection ###
+############################
+  observeEvent(input$intersection_submit, {
+    # overview table of candidates
+    output$intersecting_candidates_table <- renderDataTable(
+      datatable(intersecting_candidates_table(
+        input$selected_datasets,
+        input$RSC_intersection,
+        input$min_occurrences
+        ),
+        selection="single"
+      )
     )
-  )
-  
-  output$overlap_matrix_plot <- renderPlotly({
-    plot_overlap_matrix(
-      input$selected_datasets
-    )
+    
+    # matrix with intersecting candidates
+    output$overlap_matrix_plot <- renderPlotly({
+      plot_overlap_matrix(
+        input$selected_datasets,
+        input$RSC_intersection
+      )
+    })
+
+    # upset plot
+    output$upset_plot <- renderPlot({
+      plot_upset(
+        input$selected_datasets,
+        input$RSC_intersection
+      )
+    })
+
+    # candidates in NGS count boxplot
+    output$intersecting_candidates_NGS_plot <- renderPlotly({
+      plot_intersecting_candidates_NGS(
+        input$selected_datasets,
+        input$RSC_intersection
+      )
+    })
   })
-
-  output$upset_plot <- renderPlot({
-    plot_upset_plot(
-      input$selected_datasets
-    )
-  })
-
-
-
 
 
 ### about ###
-  output$dataset_info_table <- renderTable({
-    create_dataset_info_table()
-  })
+  # No functions needed right now
 
 }
-
 
 ###########
 ### APP ###

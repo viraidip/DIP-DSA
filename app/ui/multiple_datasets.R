@@ -2,7 +2,7 @@ multiple_datasets_tab <- tabItem(tabName="multiple_datasets",
   h1("Analyse multiple datasets"),
   fluidRow(
     box(
-      title="Select datasets",
+      title="Set parameters",
       width=12,
       selectInput(
         inputId="multiple_datasets",
@@ -16,8 +16,8 @@ multiple_datasets_tab <- tabItem(tabName="multiple_datasets",
         selected=c("A_California_07_2009/Alnaji2019_Cal07.csv", "A_NewCaledonia_1999/Alnaji2019_NC.csv")
       ),
       sliderInput(
-        inputId="multiple_RCS",
-        label="Set RCS:",
+        inputId="multiple_RSC",
+        label="Set the RSC (read support cutoff):",
         1,
         100,
         2,
@@ -31,9 +31,13 @@ multiple_datasets_tab <- tabItem(tabName="multiple_datasets",
       ),
       selectInput(
         inputId="multiple_selected_segment",
-        label="Select segment",
-        choices=c(SEGMENTS, "ALL")
+        label="Select segment:",
+        choices=c(SEGMENTS)
       ),
+      actionButton(
+        inputId="multiple_submit",
+        label="Generate plots"
+      )
     ),
     box(
       title="NGS counts",
