@@ -68,6 +68,11 @@ ui <- bootstrapPage(
       )
     ),
     dashboardBody(
+      tags$style(HTML("
+        body {
+          font-size: 16px;
+        }"
+      )),
       tabItems(
         new_dataset_tab,
         
