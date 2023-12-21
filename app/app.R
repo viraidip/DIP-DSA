@@ -16,6 +16,8 @@ library(ggvenn)
 library(ComplexHeatmap)
 library(reshape2)
 
+library(dplyr)
+
 library("Biostrings")
 
 source("utils.R")
@@ -195,39 +197,19 @@ server <- function(input, output, session) {
     updateSelectInput(session, "single_dataset", choices=dataset_names)
   })
 
-  load_dataset <- reactive({
-    path <- file.path(
-      DATASETSPATH,
-      format_strain_name(input$single_strain),
-      paste(input$single_dataset, ".csv", sep="")
-    )
-    names <- c("Segment", "Start", "End", "NGS_read_count")
-    cl <- c("character", "integer", "integer", "integer")
-    if (file.exists(path)) {
-      df <- read.csv(path, na.strings=c("NaN"), col.names=names, colClasses=cl)
-    } else {
-      df <- data.frame(
-        "Segment"=character(),
-        "Start"=integer(),
-        "End"=integer(),
-        "NGS_read_count"=integer()
-      )
-    }
-    return(df)
-  })
-
   # NGS counts
-  output$ngs_distribution_plot <- renderPlotly(
+  output$ngs_distribution_plot <- renderPlotly({
     plot_ngs_distribution(
-      load_dataset(),
+      format_strain_name(input$single_strain),
       input$single_dataset
     )
-  )
+  })
 
   # segment distribution
   output$segment_distribution_plot <- renderPlotly({
     plot_segment_distribution(
-      load_dataset(),
+      format_strain_name(input$single_strain),
+      input$single_dataset,
       input$single_flattened,
       input$single_RCS
     )
@@ -236,7 +218,8 @@ server <- function(input, output, session) {
   # deletion shifts
   output$deletion_shift_plot <- renderPlotly({
     plot_deletion_shift(
-      load_dataset(),
+      format_strain_name(input$single_strain),
+      input$single_dataset,
       input$single_flattened,
       input$single_RCS
     )
@@ -245,8 +228,8 @@ server <- function(input, output, session) {
   # lengths  
   output$lengths_plot <- renderPlotly({
     plot_lengths(
-      load_dataset(),
       format_strain_name(input$single_strain),
+      input$single_dataset,
       input$single_selected_segment,
       input$single_flattened,
       input$single_lengths_bins,
@@ -256,8 +239,8 @@ server <- function(input, output, session) {
 
   output$locations_plot <- renderPlotly({
     plot_locations(
-      load_dataset(),
       format_strain_name(input$single_strain),
+      input$single_dataset,
       input$single_selected_segment,
       input$single_flattened,
       input$single_RCS
@@ -266,9 +249,8 @@ server <- function(input, output, session) {
 
   output$start_end_connection_plot <- renderPlotly({
     plot_start_end_connection(
-      load_dataset(),
-      input$single_dataset,
       format_strain_name(input$single_strain),
+      input$single_dataset,
       input$single_selected_segment,
       input$single_RCS
     )
@@ -276,8 +258,8 @@ server <- function(input, output, session) {
   
   output$end_3_5_plot <- renderPlotly({
     plot_end_3_5(
-      load_dataset(),
       format_strain_name(input$single_strain),
+      input$single_dataset,
       input$single_selected_segment,
       input$single_RCS
     )
@@ -285,67 +267,40 @@ server <- function(input, output, session) {
 
 
   # Nucleotide enrichment
-  observeEvent(
-    eventExpr = {
-      input$single_strain
-      input$single_dataset
-      input$single_selected_segment
+  output$nucleotide_enrichment_start_plot <- renderPlotly({
+    plot_nucleotide_enrichment(
+      format_strain_name(input$single_strain),
+      input$single_dataset,
+      "Start",
+      input$enrichment_nucleotide_start,
+      input$single_selected_segment,
+      input$single_RCS,
       input$single_flattened
-    },
-    handlerExpr = {
-      update_nuc_dist_plots()
-    }
-  )
+    )
+  })
 
-  # function is called, when one of the inputs is changed (lines above)
-  update_nuc_dist_plots <- function() {
-    output$nuc_dist_start_A <- renderPlotly({
-      plot_nuc_dist("Start", "A", input$single_selected_segment, input$single_dataset, input$single_RCS, format_strain_name(input$single_strain), input$single_flattened)
-    })
-    output$nuc_dist_start_C <- renderPlotly({
-      plot_nuc_dist("Start", "C", input$single_selected_segment, input$single_dataset, input$single_RCS, format_strain_name(input$single_strain), input$single_flattened)
-    })
-    output$nuc_dist_start_G <- renderPlotly({
-      plot_nuc_dist("Start", "G", input$single_selected_segment, input$single_dataset, input$single_RCS, format_strain_name(input$single_strain), input$single_flattened)
-    })
-    output$nuc_dist_start_U <- renderPlotly({
-      plot_nuc_dist("Start", "U", input$single_selected_segment, input$single_dataset, input$single_RCS, format_strain_name(input$single_strain), input$single_flattened)
-    })
-  
-    output$nuc_dist_end_A <- renderPlotly({
-      plot_nuc_dist("End", "A", input$single_selected_segment, input$single_dataset, input$single_RCS, format_strain_name(input$single_strain), input$single_flattened)
-    })
-    output$nuc_dist_end_C <- renderPlotly({
-      plot_nuc_dist("End", "C", input$single_selected_segment, input$single_dataset, input$single_RCS, format_strain_name(input$single_strain), input$single_flattened)
-    })
-    output$nuc_dist_end_G <- renderPlotly({
-      plot_nuc_dist("End", "G", input$single_selected_segment, input$single_dataset, input$single_RCS, format_strain_name(input$single_strain), input$single_flattened)
-    })
-    output$nuc_dist_end_U <- renderPlotly({
-      plot_nuc_dist("End", "U", input$single_selected_segment, input$single_dataset, input$single_RCS, format_strain_name(input$single_strain), input$single_flattened)
-    })
-  }
+  output$nucleotide_enrichment_end_plot <- renderPlotly({
+    plot_nucleotide_enrichment(
+      format_strain_name(input$single_strain),
+      input$single_dataset,
+      "End",
+      input$enrichment_nucleotide_end,
+      input$single_selected_segment,
+      input$single_RCS,
+      input$single_flattened
+    )
+  })
 
   # direct repeats
-  observeEvent(
-    eventExpr = {
-      input$single_strain
-      input$single_dataset
-      input$single_selected_segment
+  output$direct_repeats_plot <- renderPlotly({
+    plot_direct_repeats(
+      format_strain_name(input$single_strain),
+      input$single_dataset,
+      input$single_selected_segment,
+      input$single_RCS,
       input$single_flattened
-    },
-    handlerExpr = {
-      output$direct_repeats_plot <- renderPlotly({
-        plot_direct_repeats(
-          format_strain_name(input$single_strain),
-          input$single_dataset,
-          input$single_selected_segment,
-          input$single_RCS,
-          input$single_flattened
-        )
-      })
-    }
-  )
+    )
+  })
 
 
 

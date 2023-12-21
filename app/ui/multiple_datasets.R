@@ -41,21 +41,18 @@ multiple_datasets_tab <- tabItem(tabName="multiple_datasets",
       "Different statistical parameters for the NGS count of the datasets",
       plotlyOutput("multiple_ngs_distribution_plot")
     ),
-
-    box(
-      title="Segment distribution",
-      width=12,
-      "Distribution on the eight RNA segments of the selected datasets",
-      plotlyOutput("multiple_segment_distribution_plot")
-    ),
-
     box(
       title="Deletion shift",
       width=12,
       "Distribution of the deletion shift for the selected datasets",
       plotlyOutput("multiple_deletion_shift_plot")
     ),
-
+    box(
+      title="Segment distribution",
+      width=12,
+      "Distribution on the eight RNA segments of the selected datasets",
+      plotlyOutput("multiple_segment_distribution_plot")
+    ),
     box(
       title="DVG length",
       width=12,
@@ -70,7 +67,6 @@ multiple_datasets_tab <- tabItem(tabName="multiple_datasets",
       "Lengths of the DVGs",
       plotlyOutput("multiple_deletion_length_plot")
     ),
-
     box(
       title="Nucleotide enrichment (Start position)",
       width=6,
@@ -95,7 +91,6 @@ multiple_datasets_tab <- tabItem(tabName="multiple_datasets",
       ),
       plotlyOutput("multiple_nucleotide_enrichment_end_plot")
     ),
-
     box(
       title="Direct repeats",
       width=12,

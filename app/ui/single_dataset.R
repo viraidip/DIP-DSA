@@ -43,86 +43,93 @@ single_dataset_tab <- tabItem(tabName="single_dataset",
 
     ),
     box(
-      title="Statistical overview",
+      title="NGS count distribution (log scale)",
       width=6,
-      "Different statistical parameters for the NGS count of the dataset.",
+      "The NGS counts of the DVGs given in the selected dataset.",
       plotlyOutput("ngs_distribution_plot")
     ),
-
-    # deletion shift
     box(
       title="Deletion shift",
       width=6,
       "Shift of the reading frame introduced by deletion site.",
       plotlyOutput("deletion_shift_plot"),
     ),
-
-    # segment distribution
     box(
       title="Segment distribution",
-      width=12,
+      width=6,
       "Distribution of the DVGs over the eight segments.",
       plotlyOutput("segment_distribution_plot"),
     ),
-
-    # deletion length and location
     box(  
       title="DVG lengths",
-      width=12,
+      width=6,
       sliderInput(
         inputId="single_lengths_bins",
         label="Set size of bins for histogram:",
         1,
-        1000,
+        400,
         20,
         step=1
       ),
-      "The length of the single DI RNAs is plotted as a histogram, showing",
+      "The length of the single DVGs is plotted as a histogram, showing",
       "the number of occurrences for each length.",
       plotlyOutput("lengths_plot"),
-
-      "Locations of all start and end positions of the deletion sites are",
-      "plotted in reference to the full sequence.",
+    ),
+    box(
+      title="Deletion locations",
+      width=6,
+      "Locations and nucleotides of all start and end positions of the ",
+      "deletion sites are plotted in reference to the full sequence.",
       plotlyOutput("locations_plot"),
-      "Descriptive text",
-      plotlyOutput("start_end_connection_plot"),
-    
-    
+    ),
+    box(
+      title="3' and 5' sequence end comparision",
+      width=6,
       "Comparision of the lengths of the 3' and 5' ends. If data about the",
       "packaging signal is available, incorporation signal is included in",
       "blue and bundling signal is included in red",
       plotlyOutput("end_3_5_plot")
     ),
-
-    # nucleotide enrichment
     box(
-      title="Nucleotide enrichment at start of deletion site",
+      title="Deletion connections",
       width=6,
-      "Distribution of the four nucleotides at the start of the deletion site.",
-      plotlyOutput("nuc_dist_start_A"),
-      plotlyOutput("nuc_dist_start_C"),
-      plotlyOutput("nuc_dist_start_G"),
-      plotlyOutput("nuc_dist_start_U")
-    ),
-    box(
-      title="Nucleotide enrichment at end of deletion site",
-      width=6,
-      "Distribution of the four nucleotides at the end of the deletion site.",
-      plotlyOutput("nuc_dist_end_A"),
-      plotlyOutput("nuc_dist_end_C"),
-      plotlyOutput("nuc_dist_end_G"),
-      plotlyOutput("nuc_dist_end_U")
+      "The plot displays the connection between the start and end positons",
+      "of the DVGs.",
+      plotlyOutput("start_end_connection_plot"),
     ),
 
-    # direct repeats
     box(
       title="Frequency of direct repeats",
-      width=12,
+      width=6,
       "The length of the overlapping sequence of the start and end of the",
       "deletion site is calculated and plotted in a bar plot. The results are",
       "compared against a sampling apporach.",
       plotlyOutput("direct_repeats_plot")
     ),
+    box(
+      title="Nucleotide enrichment at start of deletion site",
+      width=6,
+      radioButtons(
+        inputId="enrichment_nucleotide_start",
+        label="Select nucleotide:",
+        choices=c("A", "C", "G", "U"),
+        inline=TRUE
+      ),
+      plotlyOutput("nucleotide_enrichment_start_plot"),
+    ),
+    box(
+      title="Nucleotide enrichment at end of deletion site",
+      width=6,
+      radioButtons(
+        inputId="enrichment_nucleotide_end",
+        label="Select nucleotide:",
+        choices=c("A", "C", "G", "U"),
+        inline=TRUE
+      ),
+      plotlyOutput("nucleotide_enrichment_end_plot")
+    ),
+
+
 
   )
 )

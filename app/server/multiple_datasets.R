@@ -1,40 +1,3 @@
-load_single_dataset <- function(fname, sep=",") {
-  path <- file.path(DATASETSPATH, fname)
-  names <- c("Segment", "Start", "End", "NGS_read_count")
-  cl <- c("character", "integer", "integer", "integer")
-  if (file.exists(path)) {
-    df <- read.csv(path, na.strings=c("NaN"), col.names=names, colClasses=cl, sep=sep)
-  } else {
-    df <- data.frame(
-      "Segment"=character(),
-      "Start"=integer(),
-      "End"=integer(),
-      "NGS_read_count"=integer()
-    )
-  }
-  return(df)
-}
-
-load_all_datasets <- function(paths, sep=",") {
-  df_list <- list()
-  for (p in paths) {
-    df <- load_single_dataset(p, sep=sep)
-    df$name <- str_sub(str_extract(p, "/(.*?)\\."), 2, -2)
-    df$strain <- str_extract(p, ".*(?=/)")
-    df_list[[length(df_list) + 1]] <- df
-  }
-  final_df <- do.call(rbind, df_list)
-
-  return(final_df)
-}
-
-load_expected_data <- function(paths){
-  paths_tsv <- gsub("\\.csv$", ".tsv", paths)
-  df <- load_all_datasets(paths_tsv, sep="\t")
-
-  return(df)
-}
-
 plot_multiple_ngs_distribution <- function(paths, RCS) {
   df <- load_all_datasets(paths)
   df <- apply_cutoff(df, RCS)
@@ -42,47 +5,60 @@ plot_multiple_ngs_distribution <- function(paths, RCS) {
   pl <- ggplot(df, aes(x=name, y=NGS_read_count, fill=name)) +
   geom_boxplot() +
   scale_y_log10() +
-  labs(title = "Distribution of NGS counts",
-       x = "Dataset",
-       y = "NGS count (log scale)")
-
-  pl
-}
-
-plot_multiple_segment_distribution <- function(paths, flattened, RCS) {
-  df <- load_all_datasets(paths)
-  df <- apply_cutoff(df, RCS)
-
-  percentage_df <- prop.table(table(df$name, df$Segment), margin = 1) * 100
-  percentage_df <- as.data.frame(percentage_df)
-  percentage_df$name <- rownames(percentage_df)
-
-  # Create a barplot with percentage distribution
-  pl <- ggplot(percentage_df, aes(x=Var1, y=Freq, fill=Var2)) +
-    geom_bar(stat = "identity", position = "stack") +
-    labs(x="dataset" , y="Segment of DVG [%]") +
-    ggtitle("Segment where DVGs are originating from") + 
-    theme(plot.title = element_text(size=20))
+  labs(x="Dataset", y="NGS count (log scale)", fill="Dataset")
 
   ggplotly(pl)
 }
+
 
 plot_multiple_deletion_shift <- function(paths, flattened, RCS) {
   df <- load_all_datasets(paths)
   df <- apply_cutoff(df, RCS)
 
+  if (flattened == "flattened") {
+    df["NGS_read_count"] <- 1
+  }
+
   df$del_length <- (df$End-1) - df$Start
-  df$shift <- df$del_length %% 3
+  df$Shift <- df$del_length %% 3
 
-  percentage_df <- prop.table(table(df$name, df$shift), margin = 1) * 100
-  percentage_df <- as.data.frame(percentage_df)
-  percentage_df$name <- rownames(percentage_df)
+  plot_df <- df %>%
+    group_by(name, Shift) %>%
+    summarise(counts=sum(NGS_read_count)) %>%
+    mutate(Freq=counts / sum(counts) * 100)
 
-  pl <- ggplot(percentage_df, aes(x=Var1, y=Freq, fill=Var2)) +
+  plot_df <- plot_df %>%
+    mutate(Shift=case_when(
+      Shift == 0 ~ "In-Frame",
+      Shift == 1 ~ "+1 shift",
+      Shift == 2 ~ "-1 shift",
+      TRUE ~ as.character(Shift)
+    ))
+
+  pl <- ggplot(plot_df, aes(x=name, y=Freq, fill=factor(Shift))) +
     geom_bar(stat = "identity", position = "stack") +
-    labs(x="dataset" , y="Segment of DVG [%]") +
-    ggtitle("Segment where DVGs are originating from") + 
-    theme(plot.title = element_text(size=20))
+    labs(x="Dataset" , y="Deletion shift [%]", fill="Shifts")
+
+  ggplotly(pl)
+}
+
+
+plot_multiple_segment_distribution <- function(paths, flattened, RCS) {
+  df <- load_all_datasets(paths)
+  df <- apply_cutoff(df, RCS)
+
+  if (flattened == "flattened") {
+    df["NGS_read_count"] <- 1
+  }
+
+  plot_df <- df %>%
+    group_by(name, Segment) %>%
+    summarise(counts=sum(NGS_read_count)) %>%
+    mutate(Freq=counts / sum(counts) * 100)
+  
+  pl <- ggplot(plot_df, aes(x=name, y=Freq, fill=Segment)) +
+    geom_bar(stat = "identity", position = "stack") +
+    labs(x="Dataset" , y="Segment of DVG [%]", fill="Segment")
 
   ggplotly(pl)
 }
@@ -106,14 +82,8 @@ plot_multiple_deletion_length<-function(paths,segment,flattened,n_bins, RCS) {
   
   pl <- ggplot(df, aes(x=Length, fill=name)) +
     geom_histogram(position="identity", alpha=0.3, bins=n_bins) +
-    xlab("Length of DI candidate") +
-    ylab("Number of occurrences") +
-    ggtitle(paste("Histogram of DI RNA candidate lengths for segment",
-      segment
-      )
-    ) + 
-    theme(plot.title = element_text(size=20))
-
+    labs(x="Length of DI candidate", y="Number of occurrences", fill="Dataset")
+    
   ggplotly(pl)
 }
 
@@ -142,8 +112,8 @@ plot_multiple_nucleotide_enrichment<-function(paths, segment, pos, flattened, nu
     }
     
     strain <- unique(n_df$strain)
-    counts <- prepare_nuc_dist_data(n_df, segment, flattened, strain, pos, nuc)
-    exp_counts <- prepare_nuc_dist_data(exp_n_df, segment, flattened, strain, pos, nuc)
+    counts <- prepare_nucleotide_enrichment_data(n_df, segment, flattened, strain, pos, nuc)
+    exp_counts <- prepare_nucleotide_enrichment_data(exp_n_df, segment, flattened, strain, pos, nuc)
 
     comb <- cbind(counts, exp_counts$rel_occurrence)
     current_names <- colnames(comb)
@@ -172,14 +142,13 @@ plot_multiple_nucleotide_enrichment<-function(paths, segment, pos, flattened, nu
   pl <- ggplot(plot_df, aes(x=position, y=dataset, fill=diff)) +
     geom_tile() +
     scale_fill_gradient2(low="blue", mid="white", high="red") +
-    labs(x = "Position",
-        y = "Dataset") +
+    labs(x="Position", y="Dataset", fill="\u0394 (obs. - exp.)") +
     theme_minimal() +
     scale_x_continuous(breaks=position, labels=labels) +
    # annotate("text", x=position, y=y_text, label=symbols) +
-    geom_rect(xmin=x_min, xmax=x_max, ymin=-1, ymax=y_max+0.5, alpha=0.5, fill="grey")+
-    annotate("text", x=x1, y=y_max, label="deleted sequence") +
-    annotate("text", x=x2, y=y_max, label="remaining sequence")
+    geom_rect(xmin=x_min, xmax=x_max, ymin=-1, ymax=y_max+1.0, alpha=0.2, fill="grey")+
+    annotate("text", x=x1, y=y_max+0.05, label="deleted sequence") +
+    annotate("text", x=x2, y=y_max+0.05, label="remaining sequence")
 
   ggplotly(pl)
 }
@@ -203,7 +172,18 @@ plot_multiple_direct_repeat<-function(paths, segment, flattened, RCS) {
   diff <- c()
 
   for (name in unique_names) {
-    n_df <- df[df$name == name, ]
+    r_df <- df[df$name == name, ]
+
+    if (flattened == "flattened") {
+      r_df$NGS_read_count[r_df$NGS_read_count != 1] <- 1
+      n_df <- r_df
+    } else {
+      n_df <- data.frame(Start=integer(),End=integer(),NGS_read_count=integer())
+      for (i in 1:nrow(r_df)) {
+        n_df <- rbind(n_df, r_df[rep(i, r_df[i,3]),])
+      }
+    }
+
     exp_n_df <- exp_df[exp_df$name == name, ]
 
     if (nrow(n_df) == 0 || nrow(exp_n_df) == 0) {
@@ -211,40 +191,30 @@ plot_multiple_direct_repeat<-function(paths, segment, flattened, RCS) {
       next
     }
     
+    validate_plotting(n_df, segment)
+
     strain <- unique(n_df$strain)
     seq <- get_seq(strain, segment)
+    n_samples <- nrow(n_df)
+    n_df$direct_repeats <- apply(n_df,1,direct_repeats_counting_routine,seq)
+    exp_df$direct_repeats <- apply(exp_n_df,1,direct_repeats_counting_routine,seq)
+    df_1 <- prepare_direct_repeat_plot_data(n_df, "observed")
+    df_2 <- prepare_direct_repeat_plot_data(exp_df, "expected")
 
-    n_df["group"] <- rep("observed", nrow(n_df))
-    exp_n_df["group"] <- rep("expected", nrow(exp_n_df))
-
-    final_df <- rbind(n_df, exp_n_df)
-    final_df["direct_repeats"] <- apply(final_df, 1, direct_repeats_counting_routine, seq)
-
-    validate_plotting(final_df, segment)
-
-    g1 <- unique(final_df[c("group")])[[1]][1]
-    g2 <- unique(final_df[c("group")])[[1]][2]
-    df_1 <- prepare_plot_data(final_df, g1)
-    df_2 <- prepare_plot_data(final_df, g2)
-    n_1 <- nrow(df_1)
-    n_2 <- nrow(df_2)
-
+    # fill NA values with 0.0 to have a good representation in the final plot
     max_length <- max(max(df_1$length), max(df_2$length))
     for (i in 0:max_length) {
       if (!any(i==df_1[,1])) {
-        df_1 <- rbind(df_1, list(i, 0.0, g1))
+        df_1 <- rbind(df_1, list(i, 0.0, "observed"))
       }
       if (!any(i==df_2[,1])) {
-        df_2 <- rbind(df_2, list(i, 0.0, g2))
+        df_2 <- rbind(df_2, list(i, 0.0, "expected"))
       }
     }
-
-
     df_1$freq <- as.numeric(df_1$freq)
     df_2$freq <- as.numeric(df_2$freq)
     
     diff <- c(diff, df_1$freq - df_2$freq)
-
   }
 
   plot_df <- data.frame(position=position, dataset=dataset, diff=diff)
@@ -254,8 +224,7 @@ plot_multiple_direct_repeat<-function(paths, segment, flattened, RCS) {
   pl <- ggplot(plot_df, aes(x=position, y=dataset, fill=diff)) +
     geom_tile() +
     scale_fill_gradient2(low="blue", mid="white", high="red") +
-    labs(x="Direct repeat length",
-        y="Dataset") +
+    labs(x="Direct repeat length", y="Dataset", fill="\u0394 (obs. - exp.)") +
     theme_minimal() +
     scale_x_continuous(breaks=position, labels=labels)
 
