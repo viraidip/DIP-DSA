@@ -1,23 +1,15 @@
-library(bslib)
-library(comprehenr)
 library(DT)
 library(ggplot2)
 library(hash)
 library(jsonlite)
 library(plotly)
 library(plyr)
-library(reticulate)
 library(shiny)
 library(shinydashboard)
 library(shinyvalidate)
 library(stringr)
-library(tools)
-library(ggvenn)
 library(ComplexHeatmap)
-library(reshape2)
-
 library(dplyr)
-
 library("Biostrings")
 
 source("utils.R")
