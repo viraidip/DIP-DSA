@@ -6,10 +6,6 @@ DATASETSPATH <- file.path(DATAPATH, "datasets")
 FASTAPATH <- file.path(DATAPATH, "strain_segment_fastas")
 TEMPPATH <- file.path(DATAPATH, "temp")
 
-#con <- file("../conda_path.txt","r")
-#CONDAENV <- readLines(con,n=1)
-#close(con)
-
 COLOR_MAP <- hash(A="blue", C="yellow", G="green", U="red")
 NUC_MAP <- hash(A="Adenine", C="Cytosine", G="Guanine", U="Uracil")
 
@@ -326,12 +322,17 @@ counting_routine <- function(l, window, letter, ngs_read_count) {
   return(l)
 }
 
-count_nuc_dist <- function(seq, positions, ngs_read_counts, nuc) {
+count_nuc_dist <- function(seq, positions, pos, ngs_read_counts, nuc) {
   count <- integer(10)
   for (i in 1:length(positions)) {
     p <- positions[[i]]
     ngs_read_count <- ngs_read_counts[[i]]
-    window <- subseq(seq, start=p-4, end=p+5)
+    if (pos == "Start") {
+      window <- subseq(seq, start=p-4, end=p+5)  
+    } else if (pos == "End") {
+      window <- subseq(seq, start=p-5, end=p+4)
+    }
+    
     count <- counting_routine(count, window, nuc, ngs_read_count)
   }
   rel_occurrence <- count / sum(ngs_read_counts)
@@ -352,6 +353,6 @@ prepare_nucleotide_enrichment_data <- function(df, segment, flattened, strain, p
   ngs_read_counts <- df$NGS_read_count
 
   sequence <- get_seq(strain, segment)
-  count_df <- count_nuc_dist(sequence, df[, pos], ngs_read_counts, nuc)
+  count_df <- count_nuc_dist(sequence, df[, pos], pos, ngs_read_counts, nuc)
   return(count_df)
 }

@@ -3,9 +3,9 @@ plot_multiple_ngs_distribution <- function(paths, RSC) {
   df <- apply_cutoff(df, RSC)
 
   pl <- ggplot(df, aes(x=name, y=NGS_read_count, fill=name)) +
-  geom_boxplot() +
-  scale_y_log10() +
-  labs(x="Dataset", y="NGS count (log scale)", fill="Dataset")
+    geom_boxplot() +
+    scale_y_log10() +
+    labs(x="Dataset", y="NGS count (log scale)", fill="Dataset")
 
   ggplotly(pl)
 }

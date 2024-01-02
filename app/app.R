@@ -20,11 +20,9 @@ source("utils.R")
 # Loads the sources for the UI of each tab.
 # Each tab is saved in an individual file.
 source('ui/new_dataset.R', local=TRUE)
-
 source('ui/single_dataset.R', local=TRUE)
 source('ui/multiple_datasets.R', local=TRUE)
 source('ui/dataset_intersection.R', local=TRUE)
-
 source('ui/about.R', local=TRUE)
 
 ui <- bootstrapPage(
@@ -67,11 +65,9 @@ ui <- bootstrapPage(
       )),
       tabItems(
         new_dataset_tab,
-        
         single_dataset_tab,
         multiple_datasets_tab,
         dataset_intersection_tab,
-        
         about_tab
       )
     )
@@ -84,11 +80,9 @@ ui <- bootstrapPage(
 # Load the sources for the server logic.
 # Each tab has an own file for its server functions.
 source("server/new_dataset.R", local=TRUE)
-
 source("server/single_dataset.R", local=TRUE)
 source("server/multiple_datasets.R", local=TRUE)
 source("server/dataset_intersection.R", local=TRUE)
-
 source("server/about.R", local=TRUE)
 
 server <- function(input, output, session) {
