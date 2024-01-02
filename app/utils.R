@@ -1,4 +1,4 @@
-### DEFINING STATIC VALUES ###
+### static values ###
 SEGMENTS <- c("PB2", "PB1", "PA", "HA", "NP", "NA", "M", "NS")
 
 DATAPATH <- file.path(".", "data")
@@ -10,7 +10,7 @@ COLOR_MAP <- hash(A="blue", C="yellow", G="green", U="red")
 NUC_MAP <- hash(A="Adenine", C="Cytosine", G="Guanine", U="Uracil")
 
 
-### DEFINING FUNCTIONS ###
+### general functions ###
 run_prechecks <- function() {
   if (!file.exists(TEMPPATH)) {
     dir.create(TEMPPATH)
@@ -55,11 +55,11 @@ load_packaging_signal_data <- function(strain) {
   return(data)
 }
 
+format_strain_name <- function(strain) {
 # reformat name of strain folder
 # needs to be called everytime the strain folder is accessed
 # folder is e.g. A_California_07_2009
 # but it is displayed and can be selected as A/California/07/2009
-format_strain_name <- function(strain) {
   return(gsub(pattern="/", replacement="_", x=strain))
 }
 
@@ -81,27 +81,27 @@ apply_cutoff <- function(df, RCS) {
   return(df)
 }
 
-
+### random data generation ###
 generate_sampling_data <- function(seq, s, e, n) {
   # create all combinations of start and end positions that are possible
-  combinations <- expand.grid(start=seq(s[1], s[2]), end=seq(e[1], e[2]))
+  combs <- expand.grid(start=seq(s[1], s[2]), end=seq(e[1], e[2]))
 
   # create for each the DVG Sequence
-  sequences <- sapply(1:nrow(combinations), function(i) {
-    start_pos <- combinations$start[i]
-    end_pos <- combinations$end[i]
+  sequences <- sapply(1:nrow(combs), function(i) {
+    start_pos <- combs$start[i]
+    end_pos <- combs$end[i]
     paste0(substr(seq, 1, start_pos-1), substr(seq, end_pos, nchar(seq)))
   })
 
   # create a data frame
-  temp_df <- data.frame(Start=combinations$start, End=combinations$end, Sequence=sequences)
+  temp_df <- data.frame(Start=combs$start, End=combs$end, Sequence=sequences)
   max_start_indices <- tapply(
     seq_len(nrow(temp_df)),
     temp_df$Sequence,
     function(indices) indices[which.max(temp_df$Start[indices])]
   )
 
-  # Create a new dataframe with rows having maximum "Start" for each unique "Sequence"
+  # create new dataframe with rows having max "Start" for each unique Sequence
   max_start_df <- temp_df[max_start_indices, ]
   max_start_df <- merge(temp_df, max_start_df, by = "Sequence", all.x = TRUE)
   max_start_df <- max_start_df[, !duplicated(colnames(max_start_df))]
@@ -110,7 +110,6 @@ generate_sampling_data <- function(seq, s, e, n) {
   return(last_two_columns[sample(nrow(last_two_columns), n), , drop=FALSE])
 }
 
-###### random data generation
 create_random_data <- function(strain, dataset_name) {
   path <- file.path(DATASETSPATH, strain)
   file <- file.path(path, paste(dataset_name, ".csv", sep=""))
@@ -145,7 +144,6 @@ create_random_data <- function(strain, dataset_name) {
   }
   
   samp_df$NGS_read_count <- 1
-  
   samp_df <- samp_df[, c(3, 1, 2, 4)]
 
   f_name <- paste(dataset_name, ".tsv", sep="")
@@ -154,14 +152,18 @@ create_random_data <- function(strain, dataset_name) {
 }
 
 
-
-####### loading of data
+### data loading ###
 load_single_dataset <- function(fname, sep=",") {
   path <- file.path(DATASETSPATH, fname)
   names <- c("Segment", "Start", "End", "NGS_read_count")
   cl <- c("character", "integer", "integer", "integer")
   if (file.exists(path)) {
-    df <- read.csv(path, na.strings=c("NaN"), col.names=names, colClasses=cl, sep=sep)
+    df <- read.csv(path,
+      na.strings=c("NaN"),
+      col.names=names,
+      colClasses=cl,
+      sep=sep
+    )
   } else {
     df <- data.frame(
       "Segment"=character(),
@@ -195,9 +197,7 @@ load_expected_data <- function(paths){
 }
 
 
-
-
-############# Single dataset tab
+### single dataset tab ###
 format_dataframe_lengths <- function(df, segment, strain, flattened) {
   df <- df[df$Segment == segment, ]
   seq_len <- get_seq_len(strain, segment)
@@ -228,7 +228,6 @@ add_stats_lengths <- function(df, pl) {
   return(pl)
 }
 
-
 format_dataframe_locations <- function(df, segment, flattened, strain) {
   # slice df by segment, reformat and bind on position and NGS count
   df <- df[df$Segment == segment, ]
@@ -255,11 +254,11 @@ format_dataframe_locations <- function(df, segment, flattened, strain) {
     NGS_read_count=sum(NGS_read_count)
   )
 
-  get_nucleotide_at_position <- function(position, seq) {
+  get_nuc_at_position <- function(position, seq) {
     as.character(subseq(seq, start=position, end=position))
   }
   sequence <- get_seq(strain, segment)
-  df$Nucleotide <- sapply(df$Position, get_nucleotide_at_position, seq=sequence)
+  df$Nucleotide <- sapply(df$Position, get_nuc_at_position, seq=sequence)
 
   return(df)
 }
@@ -270,13 +269,12 @@ add_packaging_signal <- function(p, strain, segment) {
   x <- unlist(packaging_signal[segment])
   y <- layer_scales(p)$y$get_limits()[2]
   color <- c("blue", "blue", "red", "red")
-  p <- p + geom_vline(xintercept=x, color=color, linetype="dotted") 
+  p <- p + geom_vline(xintercept=x, color=color, linetype="dotted")
   return (p)
 }
 
 
-
-#### direct repeats
+### direct repeats ###
 direct_repeats_counting_routine <- function(row, sequence) {
   start <- as.integer(row["Start"])
   end <- as.integer(row["End"])
@@ -311,8 +309,7 @@ prepare_direct_repeat_plot_data <- function(df, label) {
 }
 
 
-
-#### nucleotide enrichment
+### nucleotide enrichment ###
 counting_routine <- function(l, window, letter, ngs_read_count) {
   count_indices <- unlist(gregexpr(letter, window))
   if (count_indices[1] != -1){
@@ -341,7 +338,7 @@ count_nuc_dist <- function(seq, positions, pos, ngs_read_counts, nuc) {
   return(data.frame(rel_occurrence, position, nucleotide))
 }
 
-prepare_nucleotide_enrichment_data <- function(df, segment, flattened, strain, pos, nuc) {
+prepare_nuc_enr_data <- function(df, segment, flattened, strain, pos, nuc) {
   df <- df[df$Segment == segment, ]
   if (nrow(df) == 0) {
     return(df)

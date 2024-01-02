@@ -1,7 +1,7 @@
 plot_ngs_distribution <- function(strain, datasetname) {
-  df <- load_single_dataset(file.path(strain, paste(datasetname, ".csv", sep="")))
+  df <- load_single_dataset(file.path(strain,paste(datasetname,".csv",sep="")))
   
-  pl <- plot_ly(data = df, y = ~NGS_read_count, type = "box", name=datasetname) %>%
+  pl <- plot_ly(data=df, y=~NGS_read_count, type="box", name=datasetname) %>%
     layout(yaxis=list(title="NGS count (log scale)", type="log"))
 
   pl
@@ -9,7 +9,7 @@ plot_ngs_distribution <- function(strain, datasetname) {
 
 
 plot_deletion_shift <- function(strain, datasetname, flattened, RSC) {
-  df <- load_single_dataset(file.path(strain, paste(datasetname, ".csv", sep="")))
+  df <- load_single_dataset(file.path(strain,paste(datasetname,".csv",sep="")))
   df <- apply_cutoff(df, RSC)
 
   if (flattened == "flattened") {
@@ -45,7 +45,7 @@ plot_deletion_shift <- function(strain, datasetname, flattened, RSC) {
 
 
 plot_segment_distribution <- function(strain, datasetname, flattened, RSC) {
-  df <- load_single_dataset(file.path(strain, paste(datasetname, ".csv", sep="")))
+  df <- load_single_dataset(file.path(strain,paste(datasetname,".csv",sep="")))
   df <- apply_cutoff(df, RSC)
 
   if (flattened == "flattened") {
@@ -76,7 +76,7 @@ plot_segment_distribution <- function(strain, datasetname, flattened, RSC) {
 
 
 plot_lengths<-function(strain, datasetname, segment,flattened,n_bins, RSC) {
-  df <- load_single_dataset(file.path(strain, paste(datasetname, ".csv", sep="")))
+  df <- load_single_dataset(file.path(strain,paste(datasetname,".csv",sep="")))
   df <- apply_cutoff(df, RSC)
   df <- format_dataframe_lengths(df, segment, strain, flattened)
   validate_plotting(df, segment)
@@ -93,7 +93,7 @@ plot_lengths<-function(strain, datasetname, segment,flattened,n_bins, RSC) {
 
 
 plot_locations <- function(strain, datasetname, segment, flattened, RSC) {
-  df <- load_single_dataset(file.path(strain, paste(datasetname, ".csv", sep="")))
+  df <- load_single_dataset(file.path(strain,paste(datasetname,".csv",sep="")))
   df <- apply_cutoff(df, RSC)
   df <- format_dataframe_locations(df, segment, flattened, strain)
   validate_plotting(df, segment)
@@ -113,7 +113,7 @@ plot_locations <- function(strain, datasetname, segment, flattened, RSC) {
 
 
 plot_end_3_5 <- function(strain, datasetname, segment, RSC) {
-  df <- load_single_dataset(file.path(strain, paste(datasetname, ".csv", sep="")))
+  df <- load_single_dataset(file.path(strain,paste(datasetname,".csv",sep="")))
   df <- apply_cutoff(df, RSC)
   
   df <- df[df$Segment == segment, ]
@@ -149,7 +149,7 @@ plot_end_3_5 <- function(strain, datasetname, segment, RSC) {
 
 
 plot_start_end_connection <- function(strain, datasetname, segment, RSC) {
-  df <- load_single_dataset(file.path(strain, paste(datasetname, ".csv", sep="")))
+  df <- load_single_dataset(file.path(strain,paste(datasetname,".csv",sep="")))
   df <- apply_cutoff(df, RSC)
   df <- df[df$Segment == segment, ]
   validate_plotting(df, segment)
@@ -167,7 +167,7 @@ plot_start_end_connection <- function(strain, datasetname, segment, RSC) {
     labs(x="Nucleotide position", y=datasetname, color="NGS read count") +
     geom_rect(aes(xmin=0, xmax=max, ymin=-0.1, ymax=0), alpha=0.9) +
     geom_rect(aes(xmin=0, xmax=max, ymin=1, ymax=1.1), alpha=0.9) +
-    annotate(geom="text", x=round(max/2), y=-0.05, label="Start", col="white") +
+    annotate(geom="text", x=round(max/2), y=-0.05, label="Start", col="white")+
     annotate(geom="text", x=round(max/2), y=1.05, label="End", col="white")
 
   ggplotly(p)
@@ -175,8 +175,13 @@ plot_start_end_connection <- function(strain, datasetname, segment, RSC) {
 
 
 plot_direct_repeats <- function(strain, datasetname, segment, RSC, flattened) {
-  df <- load_single_dataset(file.path(strain, paste(datasetname, ".csv", sep="")))
-  exp_df <- load_single_dataset(file.path(strain, paste(datasetname, ".tsv", sep="")), sep="\t")
+  df <- load_single_dataset(
+    file.path(strain, paste(datasetname, ".csv", sep=""))
+  )
+  exp_df <- load_single_dataset(
+    file.path(strain, paste(datasetname, ".tsv", sep="")),
+    sep="\t"
+  )
 
   df <- apply_cutoff(df, RSC)
   df <- df[df$Segment == segment,]
@@ -229,7 +234,7 @@ plot_direct_repeats <- function(strain, datasetname, segment, RSC, flattened) {
     s <- get_stat_symbol(p)
   }
 
-  text <- paste("n=", n_samples, ", Wilcox p-value:", format(p, 3), " ", s, sep="")
+  text <- paste("n=",n_samples,", Wilcox p-value:",format(p, 3)," ",s,sep="")
   # create a barplot
   p <- ggplot(data=plot_df, aes(x=length, y=freq, fill=group)) +
     geom_bar(stat="identity", position=position_dodge()) +
@@ -241,15 +246,26 @@ plot_direct_repeats <- function(strain, datasetname, segment, RSC, flattened) {
 }
 
 
-plot_nucleotide_enrichment <- function(strain, datasetname, pos, nuc, segment, RSC, flattened) {
-  df <- load_single_dataset(file.path(strain, paste(datasetname, ".csv", sep="")))
-  exp_df <- load_single_dataset(file.path(strain, paste(datasetname, ".tsv", sep="")), sep="\t")
+plot_nucleotide_enrichment <- function(strain,
+                                       datasetname,
+                                       pos,
+                                       nuc,
+                                       segment,
+                                       RSC,
+                                       flattened) {
+  df <- load_single_dataset(
+    file.path(strain, paste(datasetname, ".csv", sep=""))
+  )
+  exp_df <- load_single_dataset(
+    file.path(strain, paste(datasetname, ".tsv", sep="")),
+    sep="\t"
+  )
   df <- apply_cutoff(df, RSC)
   n <- sum(df$Segment == segment)
 
-  count_df <- prepare_nucleotide_enrichment_data(df, segment, flattened, strain, pos, nuc)
+  count_df <- prepare_nuc_enr_data(df, segment, flattened, strain, pos, nuc)
   count_df["group"] <- rep("observed", nrow(count_df))
-  sampling_df <- prepare_nucleotide_enrichment_data(exp_df, segment, flattened, strain, pos, nuc)
+  sampling_df <- prepare_nuc_enr_data(exp_df,segment,flattened,strain,pos,nuc)
   sampling_df["group"] <- rep("expected", nrow(sampling_df))
   final_df <- rbind(count_df, sampling_df)
 

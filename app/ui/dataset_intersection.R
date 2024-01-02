@@ -13,7 +13,9 @@ dataset_intersection_tab <- tabItem(tabName="dataset_intersection",
           recursive=TRUE
         ),
         multiple=TRUE,
-        selected=c("A_California_07_2009/Alnaji2019_Cal07.csv", "A_NewCaledonia_1999/Alnaji2019_NC.csv")
+        selected=c("A_California_07_2009/Alnaji2019_Cal07.csv",
+          "A_NewCaledonia_1999/Alnaji2019_NC.csv"
+        )
       ),
       sliderInput(
         inputId="RSC_intersection",
@@ -23,6 +25,14 @@ dataset_intersection_tab <- tabItem(tabName="dataset_intersection",
         2,
         step=1
       ),
+      actionButton(
+        inputId="intersection_submit",
+        label="Generate plots"
+      )
+    ),
+    box(
+      title="DVG candidates above defined threshold",
+      width=12,
       sliderInput(
         inputId="min_occurrences",
         label="Set the number of minimum occurrences of a DI candidate:",
@@ -36,14 +46,6 @@ dataset_intersection_tab <- tabItem(tabName="dataset_intersection",
         2,
         step=1
       ),
-      actionButton(
-        inputId="intersection_submit",
-        label="Generate plots"
-      )
-    ),
-    box(
-      title="DVG candidates above defined threshold",
-      width=12,
       dataTableOutput("intersecting_candidates_table")
     ),
     box(

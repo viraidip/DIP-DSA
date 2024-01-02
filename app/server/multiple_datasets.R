@@ -94,7 +94,10 @@ plot_multiple_deletion_length<-function(paths,segment,flattened,n_bins, RSC) {
   
   # slice df by segment, reformat and bind on position and NGS count
   df <- df[df$Segment == segment, ]
-  df$seq_len <- apply(df, 1, function(row) get_seq_len(row["strain"], row["Segment"]))
+  df$seq_len <- apply(df,
+    1,
+    function(row) get_seq_len(row["strain"], row["Segment"])
+  )
   df["Length"] <- df["Start"] + (df["seq_len"] - df["End"] + 1)
 
   # multiply each column by NGS count if data is unflattened
@@ -112,7 +115,7 @@ plot_multiple_deletion_length<-function(paths,segment,flattened,n_bins, RSC) {
 }
 
 
-plot_multiple_nucleotide_enrichment<-function(paths, segment, pos, flattened, nuc, RSC) {
+plot_multiple_nucleotide_enrichment<-function(paths,segment,pos,flat,nuc,RSC) {
   df <- load_all_datasets(paths)
   exp_df <- load_expected_data(paths)
 
@@ -136,8 +139,8 @@ plot_multiple_nucleotide_enrichment<-function(paths, segment, pos, flattened, nu
     }
     
     strain <- unique(n_df$strain)
-    counts <- prepare_nucleotide_enrichment_data(n_df, segment, flattened, strain, pos, nuc)
-    exp_counts <- prepare_nucleotide_enrichment_data(exp_n_df, segment, flattened, strain, pos, nuc)
+    counts <- prepare_nuc_enr_data(n_df, segment, flat, strain, pos, nuc)
+    exp_counts<-prepare_nuc_enr_data(exp_n_df, segment, flat, strain, pos, nuc)
 
     comb <- cbind(counts, exp_counts$rel_occurrence)
     current_names <- colnames(comb)
@@ -168,8 +171,7 @@ plot_multiple_nucleotide_enrichment<-function(paths, segment, pos, flattened, nu
     labs(x="Position", y="Dataset", fill="\u0394 (obs. - exp.)") +
     theme_minimal() +
     scale_x_continuous(breaks=position, labels=labels) +
-   # annotate("text", x=position, y=y_text, label=symbols) +
-    geom_rect(xmin=x_min, xmax=x_max, ymin=-1, ymax=y_max+1.0, alpha=0.2, fill="grey")+
+    geom_rect(x_min, x_max, -1, y_max+1.0, alpha=0.2, fill="grey") +
     annotate("text", x=x1, y=y_max+0.05, label="deleted sequence") +
     annotate("text", x=x2, y=y_max+0.05, label="remaining sequence")
 
@@ -197,26 +199,32 @@ plot_multiple_direct_repeat<-function(paths, segment, flattened, RSC) {
       r_df$NGS_read_count[r_df$NGS_read_count != 1] <- 1
       n_df <- r_df
     } else {
-      n_df <- data.frame(Start=integer(),End=integer(),NGS_read_count=integer())
+      n_df<-data.frame(Start=integer(),End=integer(),NGS_read_count=integer())
       for (i in 1:nrow(r_df)) {
         n_df <- rbind(n_df, r_df[rep(i, r_df[i,3]),])
       }
     }
 
     exp_n_df <- exp_df[exp_df$name == name, ]
-
     if (nrow(n_df) == 0 || nrow(exp_n_df) == 0) {
       diff <- c(diff, rep(0, 7))
       next
     }
-    
     validate_plotting(n_df, segment)
 
     strain <- unique(n_df$strain)
     seq <- get_seq(strain, segment)
     n_samples <- nrow(n_df)
-    n_df$direct_repeats <- apply(n_df,1,direct_repeats_counting_routine,seq)
-    exp_df$direct_repeats <- apply(exp_n_df,1,direct_repeats_counting_routine,seq)
+    n_df$direct_repeats <- apply(n_df,
+      1,
+      direct_repeats_counting_routine,
+      seq
+    )
+    exp_df$direct_repeats <- apply(exp_n_df,
+      1,
+      direct_repeats_counting_routine,
+      seq
+    )
     df_1 <- prepare_direct_repeat_plot_data(n_df, "observed")
     df_2 <- prepare_direct_repeat_plot_data(exp_df, "expected")
 

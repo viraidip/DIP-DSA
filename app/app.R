@@ -112,14 +112,14 @@ server <- function(input, output, session) {
 
     create_random_data(upload_strain, dataset_name)
 
+    # add new options to select input
     c <- tools::file_path_sans_ext(list.files(strain_path, pattern="csv"))
     updateSelectInput(
       session,
       inputId="single_dataset",
       choices=c
     )
-
-    c <- list.files(DATASETSPATH, pattern="csv$", full.names=FALSE, recursive=TRUE)
+    c <- list.files(DATASETSPATH, "csv$", full.names=FALSE, recursive=TRUE)
     updateSelectInput(
       session,
       inputId="multiple_datasets",
@@ -132,7 +132,6 @@ server <- function(input, output, session) {
       choices=c,
       selected=c[1:2]
     )
-
   })
 
   observeEvent(input$strain_submit, {
@@ -192,106 +191,106 @@ server <- function(input, output, session) {
     # NGS counts
     output$ngs_distribution_plot <- renderPlotly({
       plot_ngs_distribution(
-        format_strain_name(input$single_strain),
-        input$single_dataset
-      )
-    })
-
-    # segment distribution
-    output$segment_distribution_plot <- renderPlotly({
-      plot_segment_distribution(
-        format_strain_name(input$single_strain),
-        input$single_dataset,
-        input$single_flattened,
-        input$single_RSC
+        format_strain_name(isolate(input$single_strain)),
+        isolate(input$single_dataset)
       )
     })
 
     # deletion shifts
     output$deletion_shift_plot <- renderPlotly({
       plot_deletion_shift(
-        format_strain_name(input$single_strain),
-        input$single_dataset,
-        input$single_flattened,
-        input$single_RSC
+        format_strain_name(isolate(input$single_strain)),
+        isolate(input$single_dataset),
+        isolate(input$single_flattened),
+        isolate(input$single_RSC)
+      )
+    })
+
+    # segment distribution
+    output$segment_distribution_plot <- renderPlotly({
+      plot_segment_distribution(
+        format_strain_name(isolate(input$single_strain)),
+        isolate(input$single_dataset),
+        isolate(input$single_flattened),
+        isolate(input$single_RSC)
       )
     })
 
     # lengths  
     output$lengths_plot <- renderPlotly({
       plot_lengths(
-        format_strain_name(input$single_strain),
-        input$single_dataset,
-        input$single_selected_segment,
-        input$single_flattened,
+        format_strain_name(isolate(input$single_strain)),
+        isolate(input$single_dataset),
+        isolate(input$single_selected_segment),
+        isolate(input$single_flattened),
         input$single_lengths_bins,
-        input$single_RSC
+        isolate(input$single_RSC)
       )
     })
 
     # location
     output$locations_plot <- renderPlotly({
       plot_locations(
-        format_strain_name(input$single_strain),
-        input$single_dataset,
-        input$single_selected_segment,
-        input$single_flattened,
-        input$single_RSC
-      )
-    })
-
-    # connections start-end
-    output$start_end_connection_plot <- renderPlotly({
-      plot_start_end_connection(
-        format_strain_name(input$single_strain),
-        input$single_dataset,
-        input$single_selected_segment,
-        input$single_RSC
+        format_strain_name(isolate(input$single_strain)),
+        isolate(input$single_dataset),
+        isolate(input$single_selected_segment),
+        isolate(input$single_flattened),
+        isolate(input$single_RSC)
       )
     })
     
     # compare 5' and 3'
     output$end_3_5_plot <- renderPlotly({
       plot_end_3_5(
-        format_strain_name(input$single_strain),
-        input$single_dataset,
-        input$single_selected_segment,
-        input$single_RSC
+        format_strain_name(isolate(input$single_strain)),
+        isolate(input$single_dataset),
+        isolate(input$single_selected_segment),
+        isolate(input$single_RSC)
       )
     })
 
-    # Nucleotide enrichment
+    # connections start-end
+    output$start_end_connection_plot <- renderPlotly({
+      plot_start_end_connection(
+        format_strain_name(isolate(input$single_strain)),
+        isolate(input$single_dataset),
+        isolate(input$single_selected_segment),
+        isolate(input$single_RSC)
+      )
+    })
+    
+    # direct repeats
+    output$direct_repeats_plot <- renderPlotly({
+      plot_direct_repeats(
+        format_strain_name(isolate(input$single_strain)),
+        isolate(input$single_dataset),
+        isolate(input$single_selected_segment),
+        isolate(input$single_RSC),
+        isolate(input$single_flattened)
+      )
+    })
+
+    # nucleotide enrichment
     output$nucleotide_enrichment_start_plot <- renderPlotly({
       plot_nucleotide_enrichment(
-        format_strain_name(input$single_strain),
-        input$single_dataset,
+        format_strain_name(isolate(input$single_strain)),
+        isolate(input$single_dataset),
         "Start",
         input$enrichment_nucleotide_start,
-        input$single_selected_segment,
-        input$single_RSC,
-        input$single_flattened
+        isolate(input$single_selected_segment),
+        isolate(input$single_RSC),
+        isolate(input$single_flattened)
       )
     })
     output$nucleotide_enrichment_end_plot <- renderPlotly({
       plot_nucleotide_enrichment(
-        format_strain_name(input$single_strain),
-        input$single_dataset,
+        format_strain_name(isolate(input$single_strain)),
+        isolate(input$single_dataset),
         "End",
         input$enrichment_nucleotide_end,
-        input$single_selected_segment,
-        input$single_RSC,
-        input$single_flattened
-      )
-    })
-
-    # direct repeats
-    output$direct_repeats_plot <- renderPlotly({
-      plot_direct_repeats(
-        format_strain_name(input$single_strain),
-        input$single_dataset,
-        input$single_selected_segment,
-        input$single_RSC,
-        input$single_flattened
+        isolate(input$single_selected_segment),
+        isolate(input$single_RSC),
+        isolate(input$single_flattened)
       )
     })
   })
@@ -301,71 +300,71 @@ server <- function(input, output, session) {
 #########################
   observeEvent(input$multiple_submit, {
     # NGS counts
-    output$multiple_ngs_distribution_plot <- renderPlotly(
+    output$multiple_ngs_distribution_plot <- renderPlotly({
       plot_multiple_ngs_distribution(
-        input$multiple_datasets,
-        input$multiple_RSC
+        isolate(input$multiple_datasets),
+        isolate(input$multiple_RSC)
       )
-    )
+    })
 
     # segment distribution
     output$multiple_segment_distribution_plot <- renderPlotly({
       plot_multiple_segment_distribution(
-        input$multiple_datasets,
-        input$multiple_flattened,
-        input$multiple_RSC
+        isolate(input$multiple_datasets),
+        isolate(input$multiple_flattened),
+        isolate(input$multiple_RSC)
       )
     })
 
     # deletion shifts
     output$multiple_deletion_shift_plot <- renderPlotly({
       plot_multiple_deletion_shift(
-        input$multiple_datasets,
-        input$multiple_flattened,
-        input$multiple_RSC
+        isolate(input$multiple_datasets),
+        isolate(input$multiple_flattened),
+        isolate(input$multiple_RSC)
       )
     })
 
     # DVG length
     output$multiple_deletion_length_plot <- renderPlotly({
       plot_multiple_deletion_length(
-        input$multiple_datasets,
-        input$multiple_selected_segment,
-        input$multiple_flattened,
+        isolate(input$multiple_datasets),
+        isolate(input$multiple_selected_segment),
+        isolate(input$multiple_flattened),
         input$multiple_lengths_bins,
-        input$multiple_RSC
+        isolate(input$multiple_RSC)
       )
     })
 
     # nucleotide enrichment
     output$multiple_nucleotide_enrichment_start_plot <- renderPlotly({
       plot_multiple_nucleotide_enrichment(
-        input$multiple_datasets,
-        input$multiple_selected_segment,
+        isolate(input$multiple_datasets),
+        isolate(input$multiple_selected_segment),
         "Start",
-        input$multiple_flattened,
+        isolate(input$multiple_flattened),
         input$multiple_enrichment_nucleotide_start,
-        input$multiple_RSC
+        isolate(input$multiple_RSC)
       )
     })
     output$multiple_nucleotide_enrichment_end_plot <- renderPlotly({
       plot_multiple_nucleotide_enrichment(
-        input$multiple_datasets,
-        input$multiple_selected_segment,
+        isolate(input$multiple_datasets),
+        isolate(input$multiple_selected_segment),
         "End",
-        input$multiple_flattened,
+        isolate(input$multiple_flattened),
         input$multiple_enrichment_nucleotide_end,
-        input$multiple_RSC
+        isolate(input$multiple_RSC)
       )
     })
 
     # direct repeats
     output$multiple_direct_repeats_plot <- renderPlotly({
       plot_multiple_direct_repeat(
-        input$multiple_datasets,
-        input$multiple_selected_segment,
-        input$multiple_flattened,
-        input$multiple_RSC
+        isolate(input$multiple_datasets),
+        isolate(input$multiple_selected_segment),
+        isolate(input$multiple_flattened),
+        isolate(input$multiple_RSC)
       )
     })
   })
@@ -377,9 +376,9 @@ server <- function(input, output, session) {
     # overview table of candidates
     output$intersecting_candidates_table <- renderDataTable(
       datatable(intersecting_candidates_table(
-        input$selected_datasets,
-        input$RSC_intersection,
-        input$min_occurrences
+          isolate(input$selected_datasets),
+          isolate(input$RSC_intersection),
+          input$min_occurrences
         ),
         selection="single"
       )
@@ -388,24 +387,24 @@ server <- function(input, output, session) {
     # matrix with intersecting candidates
     output$overlap_matrix_plot <- renderPlotly({
       plot_overlap_matrix(
-        input$selected_datasets,
-        input$RSC_intersection
+        isolate(input$selected_datasets),
+        isolate(input$RSC_intersection)
       )
     })
 
     # upset plot
     output$upset_plot <- renderPlot({
       plot_upset(
-        input$selected_datasets,
-        input$RSC_intersection
+        isolate(input$selected_datasets),
+        isolate(input$RSC_intersection)
       )
     })
 
     # candidates in NGS count boxplot
     output$intersecting_candidates_NGS_plot <- renderPlotly({
       plot_intersecting_candidates_NGS(
-        input$selected_datasets,
-        input$RSC_intersection
+        isolate(input$selected_datasets),
+        isolate(input$RSC_intersection)
       )
     })
   })
@@ -413,7 +412,6 @@ server <- function(input, output, session) {
 
 ### about ###
   # No functions needed right now
-
 }
 
 ###########

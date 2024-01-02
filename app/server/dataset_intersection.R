@@ -23,7 +23,7 @@ intersecting_candidates_table <- function(paths, RSC, thresh) {
 
 
 plot_overlap_matrix <- function(paths, RSC) {
-  validation_text <- "No plot could be created. Please select at least two datasets."
+  validation_text <- "No plot created. Please select at least two datasets."
   shiny::validate(need((length(paths) > 1), validation_text))
 
   df <- load_all_datasets(paths)
@@ -38,14 +38,17 @@ plot_overlap_matrix <- function(paths, RSC) {
     labels <- c(labels, name)
   }
 
-  # initialize an empty matrix, calculate fraciton and populate the matrix
+  # initialize an empty matrix
   matrix_size <- length(lists)
   matrix <- matrix(0, nrow = matrix_size, ncol = matrix_size)
+  # populate matrix entrywise
   for (i in 1:matrix_size) {
     set1 <- unique(lists[[i]])
     for (j in 1:matrix_size) {
       set2 <- unique(lists[[j]])
-      matrix[i, j] <- length(intersect(set1, set2)) / (max(length(set1), length(set2))) * 100
+      inter <- length(intersect(set1, set2))
+      max <- max(length(set1), length(set2))
+      matrix[i, j] <- (inter / max) * 100
     }
   }
 
@@ -63,7 +66,7 @@ plot_overlap_matrix <- function(paths, RSC) {
 
 
 plot_upset <- function(paths, RSC) {
-  validation_text <- "No plot could be created. Please select at least two datasets."
+  validation_text <- "No plot created. Please select at least two datasets."
   shiny::validate(need((length(paths) > 1), validation_text))
 
   df <- load_all_datasets(paths)
