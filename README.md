@@ -30,9 +30,6 @@ bash setup_script.sh
 For further support on the installation of specific libraries please use the
 original documentation of the corresponding library.
 
-During the setup a conda environment will be loaded, for the classification
-page. So make sure to have anaconda installed on your system.
-
 ### Running the app
 
 To run the application locally type the following command into the commandline.
@@ -41,18 +38,19 @@ To run the application locally type the following command into the commandline.
 bash run_DIP-DSA_local.sh
 ```
 
-It will automatically open the application on http://localhost:1234
+It will automatically open the application on http://localhost:3838
 
-### Building a docker container
+#### Building a docker container
 
 Alternatively a docker container can be built to deploy the application.
 The commands for this are given in docker_commands.sh. It builds the container
 and runs it locally.
+
 ```
-bash run_DIP-DSA_local.sh
+bash docker_commands.sh
 ```
 
-It will automatically open the application on http://localhost:1234
+It will automatically open the application on http://localhost:3838
 
 ### Example dataset
 
