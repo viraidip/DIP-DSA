@@ -43,6 +43,17 @@ bash run_DIP-DSA_local.sh
 
 It will automatically open the application on http://localhost:1234
 
+### Building a docker container
+
+Alternatively a docker container can be built to deploy the application.
+The commands for this are given in docker_commands.sh. It builds the container
+and runs it locally.
+```
+bash run_DIP-DSA_local.sh
+```
+
+It will automatically open the application on http://localhost:1234
+
 ### Example dataset
 
 When uploading a custom data set the user has to provide the data in a specific
