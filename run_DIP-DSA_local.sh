@@ -1,2 +1,2 @@
 
-R -e "shiny::runApp('./src/app.R', port=1234, launch.browser=TRUE)"
+R -e "shiny::runApp('./app/app.R', port=3838, launch.browser=TRUE)"

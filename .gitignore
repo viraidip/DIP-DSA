@@ -39,7 +39,7 @@ vignettes/*.pdf
 .Renviron
 
 # Temp files
-/data/temp
+app/data/temp
 *.swp
 
 
