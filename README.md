@@ -40,7 +40,7 @@ To run the application locally type the following command into the commandline.
 bash run_DIP-DSA_local.sh
 ```
 
-It will automatically open the application on http://localhost:3838
+It will automatically open the application on http://localhost:3838.
 
 #### Building a docker container
 
@@ -52,7 +52,20 @@ and runs it locally.
 bash docker_commands.sh
 ```
 
-It will automatically open the application on http://localhost:3838
+It will automatically open the application on http://localhost:3838.
+
+#### Pull docker image from docker hub
+
+A prebuild docker image can be pulled form docker hub. The image can be found on
+[docker hub](https://hub.docker.com/repository/docker/lohmannjens/dip-dsa/general).
+To run it the following steps need to be performed
+
+```
+docker pull lohmannjens/dip-dsa
+docker run -p 3838:3838 lohmannjens/dip-dsa
+```
+
+After this the appication can be accessed on http://localhost:3838.
 
 ### Example dataset
 
