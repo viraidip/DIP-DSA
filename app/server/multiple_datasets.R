@@ -171,7 +171,6 @@ plot_multiple_nucleotide_enrichment<-function(paths,segment,pos,flat,nuc,RSC) {
     labs(x="Position", y="Dataset", fill="\u0394 (obs. - exp.)") +
     theme_minimal() +
     scale_x_continuous(breaks=position, labels=labels) +
-    geom_rect(x_min, x_max, -1, y_max+1.0, alpha=0.2, fill="grey") +
     annotate("text", x=x1, y=y_max+0.05, label="deleted sequence") +
     annotate("text", x=x2, y=y_max+0.05, label="remaining sequence")
 
