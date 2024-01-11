@@ -12,9 +12,7 @@ NUC_MAP <- hash(A="Adenine", C="Cytosine", G="Guanine", U="Uracil")
 
 ### general functions ###
 run_prechecks <- function() {
-  if (!file.exists(TEMPPATH)) {
-    dir.create(TEMPPATH)
-  }
+  # right now I have no prechecks implemented
 }
 
 get_seq <- function(strain, segment) {
@@ -116,9 +114,10 @@ create_random_data <- function(strain, dataset_name) {
   names <- c("Segment", "Start", "End", "NGS_read_count")
   cl <- c("character", "integer", "integer", "integer")
   df <- read.csv(file, na.strings=c("NaN"), col.names=names, colClasses=cl)
+  df <- apply_cutoff(df, 10) # filter here to remove at least some FP
 
   for (seg in SEGMENTS) {
-    temp_df <- df[df$Segment == seg, , drop = FALSE]
+    temp_df <- df[df$Segment == seg, , drop=FALSE]
     if (nrow(temp_df) == 0) {
       next
     }
