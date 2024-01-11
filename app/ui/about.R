@@ -4,8 +4,8 @@ about_tab <- tabItem(tabName="about",
     box(
       title="What this application is meant for",
       width=12,
-      "This application allows to investigate datasets of Defective",
-      "Interfering RNAs (DI RNAs). They are defined by a big deletion in the",
+      "This application allows to investigate datasets of deletion-containing",
+      "viral genomes (DelVGs). They are defined by a big deletion in the",
       "middle of the original/wild-type sequence. This deletion is described",
       "in the corresponding datasets by the start and the end point of the",
       "deletion."
@@ -75,10 +75,10 @@ about_tab <- tabItem(tabName="about",
           ),
           tags$tr(
             tags$td(strong("description")),
-            tags$td("Name of the segment that the DI RNA is coming from"),
+            tags$td("Name of the segment that the DelVG is coming from"),
             tags$td("Start position of the deletion site"),
             tags$td("End position of the deletion site"),
-            tags$td("Number of counts in the NGS data of this specific DI RNA",
+            tags$td("Number of counts in the NGS data of this specific DelVG",
               "candidate"
             )
           )
@@ -91,7 +91,7 @@ about_tab <- tabItem(tabName="about",
       "The sequence of the RNA before the starting point and end point can be",
       "the same (is repeated). If this is the case it is called a 'direct",
       "repat'. Direct repeats can be of different length and are disscussed",
-      "to be a driving factor in the generation of DI RNAs.",
+      "to be a driving factor in the generation of DelVGs.",
       br(),
       tags$img(src="direct_repeats.png"),
       br(),
