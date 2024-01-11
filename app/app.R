@@ -116,12 +116,22 @@ server <- function(input, output, session) {
     create_random_data(upload_strain, f_name)
 
     # add new options to select input
-    c <- tools::file_path_sans_ext(list.files(strain_path, pattern="csv"))
+    updateSelectInput(
+      session,
+      inputId="single_strain",
+      choices=gsub(
+        "_",
+        "/",
+        list.dirs(DATASETSPATH, full.names=FALSE, recursive=FALSE)
+      )
+    )
+    d_sets <- tools::file_path_sans_ext(list.files(strain_path, pattern="csv"))
     updateSelectInput(
       session,
       inputId="single_dataset",
-      choices=c
+      choices=d_sets
     )
+
     c <- list.files(DATASETSPATH, "csv$", full.names=FALSE, recursive=TRUE)
     updateSelectInput(
       session,

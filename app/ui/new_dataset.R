@@ -38,7 +38,7 @@ new_dataset_tab <- tabItem(tabName="new_dataset",
       title="Create new strain",
       textInput(
         inputId="new_strain",
-        label="Write the name of the new strain:",
+        label="Write name of the new strain (e.g. A/Perth/16/2009):",
       ),
       div(style="display:inline-block",
         fileInput(
