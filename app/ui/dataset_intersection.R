@@ -31,11 +31,11 @@ dataset_intersection_tab <- tabItem(tabName="dataset_intersection",
       )
     ),
     box(
-      title="DVG candidates above defined threshold",
+      title="DelVG candidates above defined threshold",
       width=12,
       sliderInput(
         inputId="min_occurrences",
-        label="Set the number of minimum occurrences of a DI candidate:",
+        label="Set the number of minimum occurrences of a DelVG candidate:",
         1,
         length(list.files(DATASETSPATH,
           pattern="csv$",
@@ -49,7 +49,7 @@ dataset_intersection_tab <- tabItem(tabName="dataset_intersection",
       dataTableOutput("intersecting_candidates_table")
     ),
     box(
-      title="Intersecting DI candidates",
+      title="Intersecting DelVG candidates",
       width=12,
       plotlyOutput("overlap_matrix_plot")
     ),
