@@ -8,9 +8,11 @@ library(shiny)
 library(shinydashboard)
 library(shinyvalidate)
 library(stringr)
-library(ComplexHeatmap)
 library(dplyr)
+
+# these two are from Bioconductor
 library("Biostrings")
+library("ComplexHeatmap")
 
 source("utils.R")
 
@@ -99,26 +101,37 @@ server <- function(input, output, session) {
 
     # check if .csv file already exists and rename if so
     dataset_name <- input$upload_dataset
-    file_path <- file.path(strain_path, paste(dataset_name, ".csv", sep=""))
+    f_name <- dataset_name
+    file_path <- file.path(strain_path, paste(f_name, ".csv", sep=""))
     idx <- 0
     while (file.exists(file_path)) {
       idx <- idx + 1
-      f_name <- paste(dataset_name, "_", idx, ".csv", sep="")
-      file_path <- file.path(strain_path, f_name)
+      f_name <- paste(dataset_name, "_", idx, sep="")
+      file_path <- file.path(strain_path, paste(f_name, ".csv", sep=""))
     }
     to_list <- list(file_path)
     from_list <- list(input$upload_dataset_file$datapath)
     move_files(from_list, to_list)
 
-    create_random_data(upload_strain, dataset_name)
+    create_random_data(upload_strain, f_name)
 
     # add new options to select input
-    c <- tools::file_path_sans_ext(list.files(strain_path, pattern="csv"))
+    updateSelectInput(
+      session,
+      inputId="single_strain",
+      choices=gsub(
+        "_",
+        "/",
+        list.dirs(DATASETSPATH, full.names=FALSE, recursive=FALSE)
+      )
+    )
+    d_sets <- tools::file_path_sans_ext(list.files(strain_path, pattern="csv"))
     updateSelectInput(
       session,
       inputId="single_dataset",
-      choices=c
+      choices=d_sets
     )
+
     c <- list.files(DATASETSPATH, "csv$", full.names=FALSE, recursive=TRUE)
     updateSelectInput(
       session,

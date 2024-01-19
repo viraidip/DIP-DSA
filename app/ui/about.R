@@ -4,8 +4,8 @@ about_tab <- tabItem(tabName="about",
     box(
       title="What this application is meant for",
       width=12,
-      "This application allows to investigate datasets of Defective",
-      "Interfering RNAs (DI RNAs). They are defined by a big deletion in the",
+      "This application allows to investigate datasets of deletion-containing",
+      "viral genomes (DelVGs). They are defined by a big deletion in the",
       "middle of the original/wild-type sequence. This deletion is described",
       "in the corresponding datasets by the start and the end point of the",
       "deletion."
@@ -23,18 +23,18 @@ about_tab <- tabItem(tabName="about",
         ),
         tags$li(tags$b("Single dataset:"),
           "Allows the user to investigate a single dataset. The read support",
-          "cutoff (RSC) can be indivudally set. Additionally, the user ",
-          "decides if the NGS counts should be included. "
+          "cutoff (RSC) can be set indivudally. In additiona, the user ",
+          "decides if the NGS counts should be included or not."
         ),
         tags$li(tags$b("Multiple datasets:"),
-          "Provides similar analyses as the 'single dataset' tab. But in this",
-          "case multiple datasets can be compared. "
+          "Provides the same analyses as the 'single dataset' tab. But in",
+          "this case multiple datasets can be compared. "
         ),
         tags$li(tags$b("Dataset intersection:"),
-          "In this tab the user can search for DVGs that are present in",
+          "In this tab the user can search for DelVGs that are present in",
           "multiple datasets. It shows the candidates and the overlap between",
           "the datasets. Additionally, a plot of the NGS counts is given",
-          "where the DVGs with the highest occurrence are marked."
+          "where the DelVGs with the highest occurrence are marked."
         )
       )
     ),
@@ -49,7 +49,8 @@ about_tab <- tabItem(tabName="about",
       ),
       strong("Example dataset:"),
       br(),
-      "Including correct order and naming of the headers",
+      "Including correct order and naming of the headers. The header names",
+      "start with a capitalised letter.",
       tags$table(border=2, width="100%",
         tags$tbody(
           tags$tr(
@@ -75,10 +76,10 @@ about_tab <- tabItem(tabName="about",
           ),
           tags$tr(
             tags$td(strong("description")),
-            tags$td("Name of the segment that the DI RNA is coming from"),
+            tags$td("Name of the segment where the DelVG is originating from"),
             tags$td("Start position of the deletion site"),
             tags$td("End position of the deletion site"),
-            tags$td("Number of counts in the NGS data of this specific DI RNA",
+            tags$td("Number of counts in the NGS data of this specific DelVG",
               "candidate"
             )
           )
@@ -88,16 +89,17 @@ about_tab <- tabItem(tabName="about",
     box(
       title="What are 'direct repeats'?",
       width=12,
-      "The sequence of the RNA before the starting point and end point can be",
-      "the same (is repeated). If this is the case it is called a 'direct",
-      "repat'. Direct repeats can be of different length and are disscussed",
-      "to be a driving factor in the generation of DI RNAs.",
+      "The sequence of the RNA before the starting point and end point of the",
+      "deletion site can be the same (is repeated). This phenomena is",
+      "described in literature a 'direct (sequence) repeat. Direct repeats",
+      "can be of different length and are disscussed to be a driving factor",
+      "in the generation of DelVGs.",
       br(),
       tags$img(src="direct_repeats.png"),
       br(),
-      "The actual start and end point of a DIP that has a direct repeat",
+      "The actual start and end point of a DelVG that has a direct repeat",
       "longer than 0 can not be determined certainly. In the given image a",
-      "direct repeat of length 3 is given. There are four possible ways on",
+      "direct repeat of length 3 is depicted. There are four possible ways on",
       "how it could have been created during the experiment. If n is the",
       "length of the direct repeat, there are always n+1 options on how it",
       "could have been created."
@@ -108,7 +110,7 @@ about_tab <- tabItem(tabName="about",
       "To get into contact with the developement team open a new",
       tags$a(href="https://github.com/LohmannJens/DIP-DSA/issues", "issue"),
       "on GitHub. There you can get help with more detailed questions and",
-      "come up with new ideas and features."
+      "come up with new ideas and features for the application."
     )
   )
 )
