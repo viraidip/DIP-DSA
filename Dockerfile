@@ -12,6 +12,6 @@ RUN R -e "BiocManager::install('ComplexHeatmap')"
 RUN chmod -R 777 /DIP-DSA/
 WORKDIR /DIP-DSA/
 
-CMD ["R", "--no-save", "-e", "shiny::runApp('app.R', port=3838, host='0.0.0.0')"]
+CMD ["R", "--no-save", "-e", "shiny::runApp('app.R', port=8161, host='0.0.0.0')"]
 
-EXPOSE 3838
+EXPOSE 8161
