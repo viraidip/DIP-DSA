@@ -1,7 +1,5 @@
 FROM rocker/shiny:latest
 
-COPY ./app/ /DIP-DSA/
-
 RUN apt-get update && apt-get install libcurl4-openssl-dev libssl-dev -y
 RUN install2.r shiny shinydashboard ggplot2 DT stringr dplyr \
         hash plotly plyr jsonlite shinyvalidate
@@ -9,9 +7,13 @@ RUN R -e "install.packages(c('BiocManager'), dependencies=TRUE, repos='https://c
 RUN R -e "BiocManager::install('Biostrings')"
 RUN R -e "BiocManager::install('ComplexHeatmap')"
 
-RUN chmod -R 777 /DIP-DSA/
-WORKDIR /DIP-DSA/
+COPY ./app/ /srv/shiny-server/dipdsa
+COPY ./shiny-server.conf /etc/shiny-server/shiny-server.conf
+RUN chmod -R 777 /srv/shiny-server/
 
-CMD ["R", "--no-save", "-e", "shiny::runApp('app.R', port=8161, host='0.0.0.0')"]
+RUN sed -i -e 's/\blisten 3838\b/listen 8161/g' /etc/shiny-server/shiny-server.conf
+
+USER shiny
 
 EXPOSE 8161
+CMD ["/usr/bin/shiny-server"]
