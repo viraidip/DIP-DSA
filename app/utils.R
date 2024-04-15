@@ -296,12 +296,10 @@ direct_repeats_counting_routine <- function(row, sequence) {
 }
 
 prepare_direct_repeat_plot_data <- function(df, label) {
-  # calculate direct repeat lengths as ratio
   table <- table(df$direct_repeats)
-  table <- table/sum(table)
-
   df <- data.frame(table, rep(label, length(table)))
-  colnames(df) <- c("length", "freq", "group")
+  colnames(df) <- c("length", "counts", "group")
+  df$freq <- df$counts/sum(df$counts)
   df$length <- as.numeric(as.character(df$length))
 
   return(df)

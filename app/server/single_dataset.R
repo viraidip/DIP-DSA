@@ -213,28 +213,30 @@ plot_direct_repeats <- function(strain, datasetname, segment, RSC, flattened) {
   max_length <- max(max(df_1$length), max(df_2$length))
   for (i in 0:max_length) {
     if (!any(i==df_1[,1])) {
-      df_1 <- rbind(df_1, list(i, 0.0, "observed"))
+      df_1 <- rbind(df_1, list(i, 0, "observed", 0.0))
     }
     if (!any(i==df_2[,1])) {
-      df_2 <- rbind(df_2, list(i, 0.0, "expected"))
+      df_2 <- rbind(df_2, list(i, 0, "expected", 0.0))
     }
   }
 
   plot_df <- merge(df_1, df_2, all=TRUE)
   plot_df$freq <- as.numeric(plot_df$freq)
 
-  # statistical testing with Wilcoxon/Mann-Witney test
+  # statistical testing with Chi-squared test
+  matrix <- matrix(c(plot_df[plot_df$group == "observed", "counts"],
+                   plot_df[plot_df$group == "expected", "counts"]), ncol=2)
   data_1 <- r_df$direct_repeats
   data_2 <- exp_df$direct_repeats
   if (length(data_1) == 0) {
     s <- ""
   } else {
-    r <- wilcox.test(data_1, data_2)
+    r <- chisq.test(matrix)
     p <- r$p.value
     s <- get_stat_symbol(p)
   }
 
-  text <- paste("n=",n_samples,", Wilcox p-value:",format(p, 3)," ",s,sep="")
+  text <- paste("n=", n_samples, " ", s, sep="")
   # create a barplot
   p <- ggplot(data=plot_df, aes(x=length, y=freq, fill=group)) +
     geom_bar(stat="identity", position=position_dodge()) +

@@ -203,7 +203,7 @@ plot_multiple_direct_repeat<-function(paths, segment, flattened, RSC) {
         n_df <- rbind(n_df, r_df[rep(i, r_df[i,3]),])
       }
     }
-
+    
     exp_n_df <- exp_df[exp_df$name == name, ]
     if (nrow(n_df) == 0 || nrow(exp_n_df) == 0) {
       diff <- c(diff, rep(0, 7))
@@ -219,22 +219,22 @@ plot_multiple_direct_repeat<-function(paths, segment, flattened, RSC) {
       direct_repeats_counting_routine,
       seq
     )
-    exp_df$direct_repeats <- apply(exp_n_df,
+    exp_n_df$direct_repeats <- apply(exp_n_df,
       1,
       direct_repeats_counting_routine,
       seq
     )
     df_1 <- prepare_direct_repeat_plot_data(n_df, "observed")
-    df_2 <- prepare_direct_repeat_plot_data(exp_df, "expected")
+    df_2 <- prepare_direct_repeat_plot_data(exp_n_df, "expected")
 
     # fill NA values with 0.0 to have a good representation in the final plot
     max_length <- max(max(df_1$length), max(df_2$length))
     for (i in 0:max_length) {
       if (!any(i==df_1[,1])) {
-        df_1 <- rbind(df_1, list(i, 0.0, "observed"))
+        df_1 <- rbind(df_1, list(i, 0, "observed", 0.0))
       }
       if (!any(i==df_2[,1])) {
-        df_2 <- rbind(df_2, list(i, 0.0, "expected"))
+        df_2 <- rbind(df_2, list(i, 0, "expected", 0.0))
       }
     }
     df_1$freq <- as.numeric(df_1$freq)
