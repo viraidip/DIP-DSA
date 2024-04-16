@@ -84,14 +84,15 @@ generate_sampling_data <- function(seq, s, e, n) {
   # create all combinations of start and end positions that are possible
   combs <- expand.grid(start=seq(s[1], s[2]), end=seq(e[1], e[2]))
 
-  # create for each the DVG Sequence
+  # create for each the DelVG Sequence
   sequences <- sapply(1:nrow(combs), function(i) {
     start_pos <- combs$start[i]
     end_pos <- combs$end[i]
     paste0(substr(seq, 1, start_pos-1), substr(seq, end_pos, nchar(seq)))
   })
 
-  # create a data frame
+  # create a data frame and select the indices where start is max for rows with
+  # the same DelVG sequence
   temp_df <- data.frame(Start=combs$start, End=combs$end, Sequence=sequences)
   max_start_indices <- tapply(
     seq_len(nrow(temp_df)),
@@ -99,10 +100,14 @@ generate_sampling_data <- function(seq, s, e, n) {
     function(indices) indices[which.max(temp_df$Start[indices])]
   )
 
-  # create new dataframe with rows having max "Start" for each unique Sequence
+  # create new dataframe with rows having max "Start" for each unique sequence
+  # replace all other rows with the same sequence with this start/end
+  # combination
   max_start_df <- temp_df[max_start_indices, ]
   max_start_df <- merge(temp_df, max_start_df, by = "Sequence", all.x = TRUE)
   max_start_df <- max_start_df[, !duplicated(colnames(max_start_df))]
+
+  # select only start and end column for sampling
   last_two_columns <- max_start_df[, -c(1:(ncol(max_start_df)-2))]
   names(last_two_columns) <- c("Start", "End")
   return(last_two_columns[sample(nrow(last_two_columns), n), , drop=FALSE])
@@ -117,13 +122,13 @@ create_random_data <- function(strain, dataset_name) {
   df <- apply_cutoff(df, 10) # filter here to remove at least some FP
 
   for (seg in SEGMENTS) {
-    temp_df <- df[df$Segment == seg, , drop=FALSE]
-    if (nrow(temp_df) == 0) {
+    s_df <- df[df$Segment == seg, , drop=FALSE]
+    if (nrow(s_df) == 0) {
       next
     }
     seq <- get_seq(strain, seg)
-    start <- as.integer(mean(temp_df$Start))
-    end <- as.integer(mean(temp_df$End))
+    start <- as.integer(mean(s_df$Start))
+    end <- as.integer(mean(s_df$End))
     s <- c(max(start - 200, 50), start + 200)
     e <- c(end - 200, min(end + 200, nchar(seq) - 50))
     
