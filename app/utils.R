@@ -38,7 +38,7 @@ get_stat_symbol <- function(p) {
   } else if (p < 0.05) {
     return("*")
   } else {
-    return("")
+    return("ns.")
   }
 }
 

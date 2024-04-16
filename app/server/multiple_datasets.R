@@ -29,9 +29,9 @@ plot_multiple_deletion_shift <- function(paths, flattened, RSC) {
 
   plot_df <- plot_df %>%
     mutate(Shift=case_when(
-      Shift == 0 ~ "In-Frame",
-      Shift == 1 ~ "+1 shift",
-      Shift == 2 ~ "-1 shift",
+      Shift == 0 ~ "in-frame",
+      Shift == 1 ~ "shift +1",
+      Shift == 2 ~ "shift -1",
       TRUE ~ as.character(Shift)
     ))
 
@@ -40,7 +40,7 @@ plot_multiple_deletion_shift <- function(paths, flattened, RSC) {
   for (name in unique(plot_df$name)) {
     observed_values <- plot_df$Freq[plot_df[["name"]] == name]
     r <- chisq.test(observed_values, p=expected)
-    label <- paste(name, " (p-value: ", round(r$p.value, 2), ")", sep="")
+    label <- paste(name, get_stat_symbol(r$p.value))
     labels <- c(labels, label)
   }
 
@@ -125,9 +125,16 @@ plot_multiple_nucleotide_enrichment<-function(paths,segment,pos,flat,nuc,RSC) {
 
   unique_names <- unique(df$name)
 
-  position <- c(rep(1:10, length(unique_names)))
-  dataset <- rep(unique_names, each = 10)
+  position <- c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+  labels <- c("5", "4", "3", "2", "1", "-1", "-2", "-3", "-4", "-5")
+  if (pos == "End") {
+    labels <- rev(labels)
+  }
+
   diff <- c()
+  p_vals <- c()
+  symb_ys <- c()
+  symb_y <- 1
 
   for (name in unique_names) {
     n_df <- df[df$name == name, ]
@@ -149,15 +156,20 @@ plot_multiple_nucleotide_enrichment<-function(paths,segment,pos,flat,nuc,RSC) {
     
     comb$diff <- comb$rel_occurrence - comb$rel_occ2
     diff <- c(diff, comb$diff)
+
+    for (i in position) {
+      x <- as.integer(counts[i, "rel_occurrence"] * nrow(n_df))
+      p <- as.numeric(exp_counts[i, "rel_occurrence"])
+      p_vals <- c(p_vals, binom.test(x, nrow(n_df), p)$p.value)
+    }
+    symb_ys <- c(symb_ys, rep(symb_y, each=10))
+    symb_y <- symb_y + 1
   }
 
-  plot_df <- data.frame(position=position, dataset=dataset, diff=diff)
-
-  position <- c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
-  labels <- c("5", "4", "3", "2", "1", "-1", "-2", "-3", "-4", "-5")
-  if (pos == "End") {
-    labels <- rev(labels)
-  }
+  symbols <- gsub("ns.", "", lapply(p_vals, get_stat_symbol))
+  positions <- c(rep(1:10, length(unique_names)))
+  dataset <- rep(unique_names, each=10)
+  plot_df <- data.frame(position=positions, dataset=dataset, diff=diff)
    
   y_max <- length(unique_names) + 0.5
   x1 <- ifelse(pos == "Start", 8, 3)
@@ -172,7 +184,8 @@ plot_multiple_nucleotide_enrichment<-function(paths,segment,pos,flat,nuc,RSC) {
     theme_minimal() +
     scale_x_continuous(breaks=position, labels=labels) +
     annotate("text", x=x1, y=y_max+0.05, label="deleted sequence") +
-    annotate("text", x=x2, y=y_max+0.05, label="remaining sequence")
+    annotate("text", x=x2, y=y_max+0.05, label="remaining sequence") +
+    annotate("text", x=positions, y=symb_ys, label=symbols)
 
   ggplotly(pl)
 }
