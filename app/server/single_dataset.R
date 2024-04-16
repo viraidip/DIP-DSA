@@ -26,15 +26,15 @@ plot_deletion_shift <- function(strain, datasetname, flattened, RSC) {
 
   plot_df <- plot_df %>%
     mutate(Shift=case_when(
-      Shift == 0 ~ "In-Frame",
-      Shift == 1 ~ "+1 shift",
-      Shift == 2 ~ "-1 shift",
+      Shift == 0 ~ "in-frame",
+      Shift == 1 ~ "shift +1",
+      Shift == 2 ~ "shift -1",
       TRUE ~ as.character(Shift)
     ))
 
   expected <- c(1/3, 1/3, 1/3)
   r <- chisq.test(plot_df[c("Freq")], p=expected)
-  label <- paste(datasetname, " (p-value: ", round(r$p.value, 2), ")", sep="")
+  label <- paste(datasetname, get_stat_symbol(r$p.value))
 
   pl <- ggplot(plot_df, aes(x="", y=Freq, fill=factor(Shift))) +
     geom_bar(stat = "identity", color = "white") +
@@ -236,7 +236,7 @@ plot_direct_repeats <- function(strain, datasetname, segment, RSC, flattened) {
     s <- get_stat_symbol(p)
   }
 
-  text <- paste("n=", n_samples, " ", s, sep="")
+  text <- paste("n=", n_samples, ", ", s, sep="")
   # create a barplot
   p <- ggplot(data=plot_df, aes(x=length, y=freq, fill=group)) +
     geom_bar(stat="identity", position=position_dodge()) +
@@ -282,6 +282,7 @@ plot_nucleotide_enrichment <- function(strain,
     p_values[[i]] <- binom.test(x, n, p)$p.value
   }
   symbols <- lapply(p_values, get_stat_symbol)
+  symbols <- gsub("ns.", "", symbols)
 
   # max of expected and observed -> is y location of text of stat test
   y_text <- tapply(final_df$rel_occurrence, final_df$position, max)
