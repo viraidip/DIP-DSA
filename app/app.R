@@ -109,11 +109,18 @@ server <- function(input, output, session) {
       f_name <- paste(dataset_name, "_", idx, sep="")
       file_path <- file.path(strain_path, paste(f_name, ".csv", sep=""))
     }
-    to_list <- list(file_path)
     from_list <- list(input$upload_dataset_file$datapath)
+    to_list <- list(file_path)
     move_files(from_list, to_list)
 
-    create_random_data(upload_strain, f_name)
+    df <- read.csv(file_path)
+    if (nrow(df) > 0) {
+      create_random_data(upload_strain, f_name)
+    } else {
+      to_list <- list(file.path(strain_path, paste(f_name, ".tsv", sep="")))
+      move_files(from_list, to_list)
+    }
+    
 
     # add new options to select input
     updateSelectInput(

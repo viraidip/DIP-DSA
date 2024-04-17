@@ -1,6 +1,7 @@
 plot_multiple_ngs_distribution <- function(paths, RSC) {
   df <- load_all_datasets(paths)
   df <- apply_cutoff(df, RSC)
+  validate_df(df)
 
   pl <- ggplot(df, aes(x=name, y=NGS_read_count, fill=name)) +
     geom_boxplot() +

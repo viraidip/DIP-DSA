@@ -184,9 +184,11 @@ load_all_datasets <- function(paths, sep=",") {
   df_list <- list()
   for (p in paths) {
     df <- load_single_dataset(p, sep=sep)
-    df$name <- str_sub(str_extract(p, "/(.*?)\\."), 2, -2)
-    df$strain <- str_extract(p, ".*(?=/)")
-    df_list[[length(df_list) + 1]] <- df
+    if (nrow(df) > 0){
+      df$name <- str_sub(str_extract(p, "/(.*?)\\."), 2, -2)
+      df$strain <- str_extract(p, ".*(?=/)")
+      df_list[[length(df_list) + 1]] <- df      
+    }
   }
   final_df <- do.call(rbind, df_list)
 

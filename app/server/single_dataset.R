@@ -11,6 +11,7 @@ plot_ngs_distribution <- function(strain, datasetname) {
 plot_deletion_shift <- function(strain, datasetname, flattened, RSC) {
   df <- load_single_dataset(file.path(strain,paste(datasetname,".csv",sep="")))
   df <- apply_cutoff(df, RSC)
+  validate_df(df)
 
   if (flattened == "flattened") {
     df["NGS_read_count"] <- 1
@@ -47,6 +48,7 @@ plot_deletion_shift <- function(strain, datasetname, flattened, RSC) {
 plot_segment_distribution <- function(strain, datasetname, flattened, RSC) {
   df <- load_single_dataset(file.path(strain,paste(datasetname,".csv",sep="")))
   df <- apply_cutoff(df, RSC)
+  validate_df(df)
 
   if (flattened == "flattened") {
     df["NGS_read_count"] <- 1
