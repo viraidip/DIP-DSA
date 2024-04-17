@@ -157,10 +157,18 @@ plot_multiple_nucleotide_enrichment<-function(paths,segment,pos,flat,nuc,RSC) {
     comb$diff <- comb$rel_occurrence - comb$rel_occ2
     diff <- c(diff, comb$diff)
 
+    # calculate ANOVA for each position
     for (i in position) {
-      x <- as.integer(counts[i, "rel_occurrence"] * nrow(n_df))
-      p <- as.numeric(exp_counts[i, "rel_occurrence"])
-      p_vals <- c(p_vals, binom.test(x, nrow(n_df), p)$p.value)
+      n <- min(nrow(n_df), 1000)
+      obs_nucs <- as.integer(counts[i, "rel_occurrence"] * n)
+      exp_nucs <- as.integer(exp_counts[i, "rel_occurrence"] * n)
+      nucs <- c(rep(1, times=obs_nucs), rep(0, times=n-obs_nucs),
+               rep(1, times=exp_nucs), rep(0, times=n-exp_nucs))
+      group <- c(rep("obs", n), rep("exp", n))
+      dat <- data.frame(nucs=nucs, group=group)
+      anova <- aov(nucs ~ group, data=dat)
+      p_vals <- c(p_vals, summary(anova)[[1]][["Pr(>F)"]][1])
+
     }
     symb_ys <- c(symb_ys, rep(symb_y, each=10))
     symb_y <- symb_y + 1
