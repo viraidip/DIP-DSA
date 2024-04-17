@@ -201,7 +201,7 @@ plot_multiple_direct_repeat<-function(paths, segment, flattened, RSC) {
   unique_names <- unique(df$name)
 
   position <- c(rep(0:6, length(unique_names)))
-  dataset <- rep(unique_names, each=7)
+  dataset <- c()
   diff <- c()
 
   for (name in unique_names) {
@@ -252,8 +252,13 @@ plot_multiple_direct_repeat<-function(paths, segment, flattened, RSC) {
     }
     df_1$freq <- as.numeric(df_1$freq)
     df_2$freq <- as.numeric(df_2$freq)
-    
     diff <- c(diff, df_1$freq - df_2$freq)
+
+    # statistical testing with Chi-squared test
+    matrix <- matrix(c(df_1$freq, df_2$freq), ncol=2) * 100
+    r <- chisq.test(matrix)
+    s <- get_stat_symbol(r$p.value)
+    dataset <- c(dataset, rep(paste (name, s), each=7))
   }
 
   plot_df <- data.frame(position=position, dataset=dataset, diff=diff)
