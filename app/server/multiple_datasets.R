@@ -1,4 +1,5 @@
 plot_multiple_ngs_distribution <- function(paths, RSC) {
+  validate_selection(paths)
   df <- load_all_datasets(paths)
   df <- apply_cutoff(df, RSC)
   validate_df(df)
@@ -13,6 +14,7 @@ plot_multiple_ngs_distribution <- function(paths, RSC) {
 
 
 plot_multiple_deletion_shift <- function(paths, flattened, RSC) {
+  validate_selection(paths)
   df <- load_all_datasets(paths)
   df <- apply_cutoff(df, RSC)
 
@@ -55,6 +57,7 @@ plot_multiple_deletion_shift <- function(paths, flattened, RSC) {
 
 
 plot_multiple_segment_distribution <- function(paths, flattened, RSC) {
+  validate_selection(paths)
   df <- load_all_datasets(paths)
   df <- apply_cutoff(df, RSC)
 
@@ -90,6 +93,7 @@ plot_multiple_segment_distribution <- function(paths, flattened, RSC) {
 
 
 plot_multiple_deletion_length<-function(paths,segment,flattened,n_bins, RSC) {
+  validate_selection(paths)
   df <- load_all_datasets(paths)
   df <- apply_cutoff(df, RSC)
   
@@ -117,6 +121,7 @@ plot_multiple_deletion_length<-function(paths,segment,flattened,n_bins, RSC) {
 
 
 plot_multiple_nucleotide_enrichment<-function(paths,segment,pos,flat,nuc,RSC) {
+  validate_selection(paths)
   df <- load_all_datasets(paths)
   exp_df <- load_expected_data(paths)
 
@@ -200,6 +205,7 @@ plot_multiple_nucleotide_enrichment<-function(paths,segment,pos,flat,nuc,RSC) {
 }
 
 plot_multiple_direct_repeat<-function(paths, segment, flattened, RSC) {
+  validate_selection(paths)
   df <- load_all_datasets(paths)
   exp_df <- load_expected_data(paths)
 

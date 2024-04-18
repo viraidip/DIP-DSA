@@ -65,6 +65,11 @@ validate_df <- function(df) {
   shiny::validate(need((nrow(df) != 0), "Empty dataframe")) 
 }
 
+validate_selection <- function(paths) {
+  validation_text <- "No data selected. Please select at least one dataset."
+  shiny::validate(need((length(paths) > 0), validation_text))
+}
+
 validate_plotting <- function(df, segment) {  
   validation_text <- paste(
     "No plot could be created. Segment",
