@@ -11,22 +11,25 @@ particles. They contain a long deletion site internally.
 As a first step the right R version (3.6.3) and some additional packages need
 to be installed. These additional libraries are listed here:
 
-- shiny 1.7.2
+- DT 0.33
+- ggplot2 3.5.0
+- hash 2.2.6.3
+- jsonlite 1.8.8
+- plotly 4.10.4
+- plyr 1.8.9
+- shiny 1.8.1.1
 - shinydashboard 0.7.2
-- ggplot2 3.3.6
-- DT 0.24
-- plotly 4.10.0
-- Biostrings 2.54.0
-- hash 2.2.6.2
-- jsonlite 1.8.2
-- comprehenr 0.6.10
-- plyr 1.8.8
+- shinyvalidate 0.1.3
+- stringr 1.5.1
+- dplyr 1.1.4
+- Biostrings 2.62.0
+- ComplexHeatmap 2.10.0
 
 The libraries can be installed by running the following command from the root
 folder:
 
 ```
-bash setup_script.sh
+sudo bash setup_script.sh
 ```
 
 For further support on the installation of specific libraries please use the

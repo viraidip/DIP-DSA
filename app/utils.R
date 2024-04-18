@@ -6,7 +6,7 @@ DATASETSPATH <- file.path(DATAPATH, "datasets")
 FASTAPATH <- file.path(DATAPATH, "strain_segment_fastas")
 TEMPPATH <- file.path(DATAPATH, "temp")
 
-COLOR_MAP <- hash(A="blue", C="yellow", G="green", U="red")
+COLOR_MAP <- hash(A="#F8766D", C="#7CAE00", G="#00BFC4", U="#C77CFF")
 NUC_MAP <- hash(A="Adenine", C="Cytosine", G="Guanine", U="Uracil")
 
 
@@ -38,7 +38,7 @@ get_stat_symbol <- function(p) {
   } else if (p < 0.05) {
     return("*")
   } else {
-    return("")
+    return("ns.")
   }
 }
 
@@ -65,6 +65,11 @@ validate_df <- function(df) {
   shiny::validate(need((nrow(df) != 0), "Empty dataframe")) 
 }
 
+validate_selection <- function(paths) {
+  validation_text <- "No data selected. Please select at least one dataset."
+  shiny::validate(need((length(paths) > 0), validation_text))
+}
+
 validate_plotting <- function(df, segment) {  
   validation_text <- paste(
     "No plot could be created. Segment",
@@ -84,14 +89,15 @@ generate_sampling_data <- function(seq, s, e, n) {
   # create all combinations of start and end positions that are possible
   combs <- expand.grid(start=seq(s[1], s[2]), end=seq(e[1], e[2]))
 
-  # create for each the DVG Sequence
+  # create for each the DelVG Sequence
   sequences <- sapply(1:nrow(combs), function(i) {
     start_pos <- combs$start[i]
     end_pos <- combs$end[i]
-    paste0(substr(seq, 1, start_pos-1), substr(seq, end_pos, nchar(seq)))
+    paste0(substr(seq, 1, start_pos), substr(seq, end_pos, nchar(seq)))
   })
 
-  # create a data frame
+  # create a data frame and select the indices where start is max for rows with
+  # the same DelVG sequence
   temp_df <- data.frame(Start=combs$start, End=combs$end, Sequence=sequences)
   max_start_indices <- tapply(
     seq_len(nrow(temp_df)),
@@ -99,10 +105,14 @@ generate_sampling_data <- function(seq, s, e, n) {
     function(indices) indices[which.max(temp_df$Start[indices])]
   )
 
-  # create new dataframe with rows having max "Start" for each unique Sequence
+  # create new dataframe with rows having max "Start" for each unique sequence
+  # replace all other rows with the same sequence with this start/end
+  # combination
   max_start_df <- temp_df[max_start_indices, ]
-  max_start_df <- merge(temp_df, max_start_df, by = "Sequence", all.x = TRUE)
+  max_start_df <- merge(temp_df, max_start_df, by="Sequence", all.x=TRUE)
   max_start_df <- max_start_df[, !duplicated(colnames(max_start_df))]
+
+  # select only start and end column for sampling
   last_two_columns <- max_start_df[, -c(1:(ncol(max_start_df)-2))]
   names(last_two_columns) <- c("Start", "End")
   return(last_two_columns[sample(nrow(last_two_columns), n), , drop=FALSE])
@@ -114,16 +124,16 @@ create_random_data <- function(strain, dataset_name) {
   names <- c("Segment", "Start", "End", "NGS_read_count")
   cl <- c("character", "integer", "integer", "integer")
   df <- read.csv(file, na.strings=c("NaN"), col.names=names, colClasses=cl)
-  df <- apply_cutoff(df, 10) # filter here to remove at least some FP
+  df <- apply_cutoff(df, 15) # filter here to remove at least some FP
 
   for (seg in SEGMENTS) {
-    temp_df <- df[df$Segment == seg, , drop=FALSE]
-    if (nrow(temp_df) == 0) {
+    s_df <- df[df$Segment == seg, , drop=FALSE]
+    if (nrow(s_df) == 0) {
       next
     }
     seq <- get_seq(strain, seg)
-    start <- as.integer(mean(temp_df$Start))
-    end <- as.integer(mean(temp_df$End))
+    start <- as.integer(mean(s_df$Start))
+    end <- as.integer(mean(s_df$End))
     s <- c(max(start - 200, 50), start + 200)
     e <- c(end - 200, min(end + 200, nchar(seq) - 50))
     
@@ -179,9 +189,11 @@ load_all_datasets <- function(paths, sep=",") {
   df_list <- list()
   for (p in paths) {
     df <- load_single_dataset(p, sep=sep)
-    df$name <- str_sub(str_extract(p, "/(.*?)\\."), 2, -2)
-    df$strain <- str_extract(p, ".*(?=/)")
-    df_list[[length(df_list) + 1]] <- df
+    if (nrow(df) > 0){
+      df$name <- str_sub(str_extract(p, "/(.*?)\\."), 2, -2)
+      df$strain <- str_extract(p, ".*(?=/)")
+      df_list[[length(df_list) + 1]] <- df      
+    }
   }
   final_df <- do.call(rbind, df_list)
 
@@ -296,12 +308,10 @@ direct_repeats_counting_routine <- function(row, sequence) {
 }
 
 prepare_direct_repeat_plot_data <- function(df, label) {
-  # calculate direct repeat lengths as ratio
   table <- table(df$direct_repeats)
-  table <- table/sum(table)
-
   df <- data.frame(table, rep(label, length(table)))
-  colnames(df) <- c("length", "freq", "group")
+  colnames(df) <- c("length", "counts", "group")
+  df$freq <- df$counts/sum(df$counts)
   df$length <- as.numeric(as.character(df$length))
 
   return(df)
