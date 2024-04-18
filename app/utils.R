@@ -93,7 +93,7 @@ generate_sampling_data <- function(seq, s, e, n) {
   sequences <- sapply(1:nrow(combs), function(i) {
     start_pos <- combs$start[i]
     end_pos <- combs$end[i]
-    paste0(substr(seq, 1, start_pos-1), substr(seq, end_pos, nchar(seq)))
+    paste0(substr(seq, 1, start_pos), substr(seq, end_pos, nchar(seq)))
   })
 
   # create a data frame and select the indices where start is max for rows with
@@ -109,7 +109,7 @@ generate_sampling_data <- function(seq, s, e, n) {
   # replace all other rows with the same sequence with this start/end
   # combination
   max_start_df <- temp_df[max_start_indices, ]
-  max_start_df <- merge(temp_df, max_start_df, by = "Sequence", all.x = TRUE)
+  max_start_df <- merge(temp_df, max_start_df, by="Sequence", all.x=TRUE)
   max_start_df <- max_start_df[, !duplicated(colnames(max_start_df))]
 
   # select only start and end column for sampling
@@ -124,7 +124,7 @@ create_random_data <- function(strain, dataset_name) {
   names <- c("Segment", "Start", "End", "NGS_read_count")
   cl <- c("character", "integer", "integer", "integer")
   df <- read.csv(file, na.strings=c("NaN"), col.names=names, colClasses=cl)
-  df <- apply_cutoff(df, 10) # filter here to remove at least some FP
+  df <- apply_cutoff(df, 15) # filter here to remove at least some FP
 
   for (seg in SEGMENTS) {
     s_df <- df[df$Segment == seg, , drop=FALSE]
