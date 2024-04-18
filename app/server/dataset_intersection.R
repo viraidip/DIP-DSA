@@ -7,7 +7,7 @@ get_intersecting_candidates <- function(df) {
   }
 
   final_df <- data.frame(table(candidates))
-  colnames(final_df) <- c("DVG candidate", "occurrence")
+  colnames(final_df) <- c("DelVG candidate", "occurrence")
   thresh <- ceiling(length(unique(df$name)) / 2)
   final_df <- final_df[final_df$occurrence >= thresh, ]
 
@@ -33,7 +33,7 @@ plot_overlap_matrix <- function(paths) {
 
   # initialize an empty matrix
   matrix_size <- length(lists)
-  matrix <- matrix(0, nrow = matrix_size, ncol = matrix_size)
+  matrix <- matrix(0, nrow=matrix_size, ncol=matrix_size)
   # populate matrix entrywise
   for (i in 1:matrix_size) {
     set1 <- unique(lists[[i]])
@@ -48,7 +48,7 @@ plot_overlap_matrix <- function(paths) {
   p <- ggplot(plot_df, aes(x=Dataset1, y=Dataset2, fill=intersection)) +
     geom_tile() +
     scale_fill_viridis_c() +
-    labs(x="Dataset", y="Dataset", fill="Intersection [%]") +
+    labs(x="Dataset", y="Dataset", fill="Intersecting DelVGs [%]") +
     scale_x_discrete(labels=labels) +
     scale_y_discrete(labels=labels)
 
@@ -62,13 +62,13 @@ plot_barplot_candidates <- function(paths) {
   validate_df(df)
   c_df <- get_intersecting_candidates(df)
 
-  colnames(c_df) <- c("DVG_candidate", "occurrence")
-  segments <- str_split(c_df$DVG_candidate, "_")
+  colnames(c_df) <- c("DelVG_candidate", "occurrence")
+  segments <- str_split(c_df$DelVG_candidate, "_")
   c_df$segment <- sapply(segments, function(x) x[1])
 
   pl <- ggplot(c_df, aes(x=segment, fill=factor(occurrence))) +
-    geom_bar(position = "dodge") +
-    labs(x = "Occurrence", y = "Count") +
+    geom_bar(position="dodge") +
+    labs(x="Segment", y="Identified DelVGs", fill="Datasets") +
     theme_minimal()
   
   ggplotly(pl)
@@ -80,21 +80,21 @@ plot_highest_n_ranked <- function(paths, segment, thresh) {
   df <- load_all_datasets(paths)
   df <- df %>%
     group_by(name) %>%
-    mutate(perc = ecdf(NGS_read_count)(NGS_read_count) * 100)
+    mutate(perc=ecdf(NGS_read_count)(NGS_read_count) * 100)
 
   c_df <- get_intersecting_candidates(df)
   df$key <- paste(df$Segment, df$Start, df$End, sep="_")
-  marked_points <- df[df$key %in% as.character(c_df[["DVG candidate"]]), ]
+  marked_points <- df[df$key %in% as.character(c_df[["DelVG candidate"]]), ]
   marked_points <- marked_points[marked_points$Segment == segment, ]
 
   sum_ranking <- marked_points %>%
     group_by(key) %>%
-    summarise(sum = sum(perc, na.rm = TRUE)) %>%
+    summarise(sum=sum(perc, na.rm=TRUE)) %>%
     arrange(desc(sum))
 
   mean_ranking <- marked_points %>%
     group_by(key) %>%
-    summarise(mean = mean(perc, na.rm = TRUE)) %>%
+    summarise(mean=mean(perc, na.rm=TRUE)) %>%
     arrange(desc(mean))
 
   l1 <- sum_ranking$key
@@ -125,7 +125,7 @@ plot_highest_n_ranked <- function(paths, segment, thresh) {
   pl <- ggplot(results_df, aes(x=n, y=overlap_count)) +
     geom_line() +
     geom_point() +
-    labs(x="n", y="Overlap Count") +
+    labs(x="n highest ranked DelVGs", y="# DelVGs in both rankings") +
     annotate("text",
              x=results_df$n+0.3,
              y=results_df$overlap_count-0.15,

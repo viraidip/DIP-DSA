@@ -4,7 +4,6 @@ new_dataset_tab <- tabItem(tabName="new_dataset",
     box(
       width=12,
       title="Upload new dataset",
-
       selectizeInput(
         inputId="upload_strain",
         label="Select an existing strain:",
@@ -26,7 +25,7 @@ new_dataset_tab <- tabItem(tabName="new_dataset",
       "More info about the structure of the csv file can be found in the",
       actionLink("link_to_about_tab", "about"),
       "tab. The upload can take a couple of minutes, because the sampling of",
-      "random data used as expected values takes some time.",
+      "random data, used as expected values, takes some time.",
       br(),
       actionButton(
         inputId="dataset_submit",
@@ -38,7 +37,7 @@ new_dataset_tab <- tabItem(tabName="new_dataset",
       title="Create new strain",
       textInput(
         inputId="new_strain",
-        label="Write name of the new strain (e.g. A/Perth/16/2009):",
+        label="Write the name of the new strain (e.g. A/Perth/16/2009):",
       ),
       div(style="display:inline-block",
         fileInput(

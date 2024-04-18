@@ -2,7 +2,7 @@ multiple_datasets_tab <- tabItem(tabName="multiple_datasets",
   h1("Analyse multiple datasets"),
   fluidRow(
     box(
-      title="Set parameters",
+      title="Select dataset and define parameters for analysis",
       width=12,
       selectInput(
         inputId="multiple_datasets",

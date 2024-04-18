@@ -49,7 +49,7 @@ plot_multiple_deletion_shift <- function(paths, flattened, RSC) {
   }
 
   pl <- ggplot(plot_df, aes(x=name, y=Freq, fill=factor(Shift))) +
-    geom_bar(stat = "identity", position = "stack") +
+    geom_bar(stat="identity", position="stack") +
     labs(x="Dataset" , y="Deletion shift [%]", fill="Shifts") +
     scale_x_discrete(labels=labels)
 
@@ -86,8 +86,8 @@ plot_multiple_segment_distribution <- function(paths, flattened, RSC) {
   }
 
   pl <- ggplot(plot_df, aes(x=name, y=Freq, fill=Segment)) +
-    geom_bar(stat = "identity", position = "stack") +
-    labs(x="Dataset" , y="Segment of DVG [%]", fill="Segment") +
+    geom_bar(stat="identity", position="stack") +
+    labs(x="Dataset" , y="Segment of DelVG [%]", fill="Segment") +
     scale_x_discrete(labels=labels)
 
   ggplotly(pl)
@@ -216,10 +216,10 @@ plot_multiple_direct_repeat<-function(paths, segment, flattened, RSC) {
   exp_df <- load_expected_data(paths)
   exp_df <- exp_df[exp_df$Segment == segment, ]
 
+  unique_names <- unique(df$name)
   position <- c(rep(0:6, length(unique_names)))
   dataset <- c()
   diff <- c()
-  unique_names <- unique(df$name)
   for (name in unique_names) {
     r_df <- df[df$name == name, ]
 

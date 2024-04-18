@@ -3,7 +3,7 @@ single_dataset_tab <- tabItem(tabName="single_dataset",
   fluidRow(
     box(
       width=12,
-      title="Select data",
+      title="Select dataset and define parameters for analysis",
       selectInput(
         inputId="single_strain",
         label="Select a strain:",
@@ -45,7 +45,8 @@ single_dataset_tab <- tabItem(tabName="single_dataset",
     box(
       title="Distribution of NGS count",
       width=6,
-      "The NGS counts of the DVGs given in the selected dataset.",
+      "The logarithm of the NGS counts of the DelVGs given in the selected",
+      "dataset.",
       plotlyOutput("ngs_distribution_plot")
     ),
     box(
@@ -57,21 +58,21 @@ single_dataset_tab <- tabItem(tabName="single_dataset",
     box(
       title="Segment distribution",
       width=6,
-      "Distribution of the DVGs over the eight segments.",
+      "Distribution of the DelVGs over the eight segments.",
       plotlyOutput("segment_distribution_plot"),
     ),
     box(  
-      title="DVG lengths",
+      title="DelVG lengths",
       width=6,
       sliderInput(
         inputId="single_lengths_bins",
-        label="Set size of bins for histogram:",
+        label="Set number of bins for histogram:",
         1,
         400,
         20,
         step=1
       ),
-      "The length of the single DVGs is plotted as a histogram, showing",
+      "The length of the single DelVGs is plotted as a histogram, showing",
       "the number of occurrences for each length.",
       plotlyOutput("lengths_plot"),
     ),
@@ -94,7 +95,7 @@ single_dataset_tab <- tabItem(tabName="single_dataset",
       title="Deletion connections",
       width=6,
       "The plot displays the connection between the start and end positons",
-      "of the DVGs.",
+      "of the DelVGs.",
       plotlyOutput("start_end_connection_plot"),
     ),
 

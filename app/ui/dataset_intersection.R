@@ -1,8 +1,8 @@
 dataset_intersection_tab <- tabItem(tabName="dataset_intersection",
-  h1("Overview about all dataset"),
+  h1("Identification of promising DelVGs by intersecting multiple datasets"),
   fluidRow(
     box(
-      title="Intersecting candidates",
+      title="Select datasets for intersection analysis",
       width=12,
       selectInput(
         inputId="selected_datasets",
@@ -23,7 +23,7 @@ dataset_intersection_tab <- tabItem(tabName="dataset_intersection",
       )
     ),
     box(
-      title="Intersecting DelVG candidates",
+      title="Intersecting DelVG candidates per dataset pair",
       width=12,
       plotlyOutput("overlap_matrix_plot")
     ),
@@ -48,7 +48,6 @@ dataset_intersection_tab <- tabItem(tabName="dataset_intersection",
         10,
         step=1
       ),
-
       plotlyOutput("highest_n_ranked_plot")
     )
   )

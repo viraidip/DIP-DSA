@@ -38,7 +38,7 @@ plot_deletion_shift <- function(strain, datasetname, flattened, RSC) {
   label <- paste(datasetname, get_stat_symbol(r$p.value))
 
   pl <- ggplot(plot_df, aes(x="", y=Freq, fill=factor(Shift))) +
-    geom_bar(stat = "identity", color = "white") +
+    geom_bar(stat="identity") +
     labs(x=label, y="Deletion shift [%]", fill="Shifts")
 
   ggplotly(pl)
@@ -69,9 +69,9 @@ plot_segment_distribution <- function(strain, datasetname, flattened, RSC) {
   label <- paste(datasetname, "", symbol)
 
   pl <- ggplot(plot_df, aes(x=Freq, y=factor("All Segments"), fill=Segment)) +
-    geom_bar(stat = "identity", color = "white", position = "stack") +
+    geom_bar(stat="identity", position="stack") +
     theme_minimal() +
-    labs(x="Segment of DVG [%]", y=label)
+    labs(x="Segment of DelVG [%]", y=label)
 
   ggplotly(pl)
 }
@@ -86,7 +86,7 @@ plot_lengths<-function(strain, datasetname, segment,flattened,n_bins, RSC) {
 
   pl <- ggplot(df, aes(x=Length, fill=Class)) +
     geom_histogram(alpha=0.3, bins=n_bins, position="identity") +
-    labs(x="Length of DVG", y="Number of occurrences", fill="Dataset")
+    labs(x="Length of DelVG", y="Number of occurrences", fill="Dataset")
 
   # add mean and median to plot
   pl <- add_stats_lengths(df, pl)
@@ -100,10 +100,16 @@ plot_locations <- function(strain, datasetname, segment, flattened, RSC) {
   df <- format_dataframe_locations(df, segment, flattened, strain)
   validate_plotting(df, segment)
 
+  if (flattened == "flattened") {
+    y_lab <- "Number of occurrences"
+  } else {
+    y_lab <- "NGS read count"
+  }
+
   p <- ggplot(df, aes(x=Position, y=NGS_read_count, fill=Nucleotide)) +
     geom_bar(stat="identity", position="dodge", width=1) +
     xlim(0, get_seq_len(strain, segment)) +
-    labs(x="Nucleotide position on segment", y="NGS read count")
+    labs(x="Nucleotide position on segment", y=y_lab)
 
   # add info about packaging signal if it exists
   if (packaging_signal_data_exists(strain)) {
@@ -126,11 +132,10 @@ plot_end_3_5 <- function(strain, datasetname, segment, RSC) {
 
   p <- ggplot(df, aes(x=Length_3, y=Length_5)) +
     geom_point() +
-    geom_abline(intercept=0, slope=1, col="green") +
+    geom_abline(intercept=0, slope=1, col="#00BA38") +
     xlim(0, 700) +
     ylim(0, 700) +
-    labs(x="3' length", y="5' length") +
-    geom_segment(aes(x=0, xend=900, y=0, yend=900), color="wheat4")
+    labs(x="3' length", y="5' length")
 
   # add info about packaging signal if it exists
   if (packaging_signal_data_exists(strain)) {
@@ -141,7 +146,7 @@ plot_end_3_5 <- function(strain, datasetname, segment, RSC) {
 
     xv <- c(x[1], x[3])
     xh <- c(seq_len-x[2], seq_len-x[4])
-    color <- c("blue", "red")
+    color <- c("#619CFF", "#F8766D")
 
     p <- p + geom_vline(xintercept=xv, color=color, linetype="dotted") +
      geom_hline(yintercept=xh, color=color, linetype="dotted")
@@ -243,7 +248,7 @@ plot_direct_repeats <- function(strain, datasetname, segment, RSC, flattened) {
   p <- ggplot(data=plot_df, aes(x=length, y=freq, fill=group)) +
     geom_bar(stat="identity", position=position_dodge()) +
     ylim(0, 1.0) +
-    labs(x="Length of direct repeat", y="Relative occurrence") +
+    labs(x="Length of direct repeat", y="Relative occurrence",fill="Dataset") +
     annotate("text", x=3, y=0.9, label=text) +
     theme(plot.title = element_text(size=20))
   ggplotly(p)
@@ -308,14 +313,14 @@ plot_nucleotide_enrichment <- function(strain,
   ) +
     geom_bar(stat="identity",
       fill=COLOR_MAP[[nuc]],
-      color="black",
+      color=COLOR_MAP[[nuc]],
       position=position_dodge()
     ) +
     ylim(0, y_max) +
-    labs(x="Position", y="Relative occurrence") +
-    theme(plot.title = element_text(size=20)) +
+    labs(x="Position", y="Relative occurrence", alpha="Dataset") +
+    theme(plot.title=element_text(size=20)) +
     scale_x_continuous(breaks=position, labels=labels) +
-    annotate("text", x=position, y=y_text, label=symbols) +
+    annotate("text", x=position, y=y_text+0.02, label=symbols, size=6) +
     geom_rect(xmin=x_min, xmax=x_max, ymin=-1, ymax=2, alpha=0.5, fill="grey")+
     annotate("text", x=x1, y=y_max, label="deleted sequence") +
     annotate("text", x=x2, y=y_max, label="remaining sequence")
