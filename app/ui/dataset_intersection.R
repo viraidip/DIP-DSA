@@ -17,36 +17,10 @@ dataset_intersection_tab <- tabItem(tabName="dataset_intersection",
           "A_NewCaledonia_1999/Alnaji2019_NC.csv"
         )
       ),
-      sliderInput(
-        inputId="RSC_intersection",
-        label="Set the RSC (read support cutoff)",
-        1,
-        100,
-        2,
-        step=1
-      ),
       actionButton(
         inputId="intersection_submit",
         label="Generate plots"
       )
-    ),
-    box(
-      title="DelVG candidates above defined threshold",
-      width=12,
-      sliderInput(
-        inputId="min_occurrences",
-        label="Set the number of minimum occurrences of a DelVG candidate:",
-        1,
-        length(list.files(DATASETSPATH,
-          pattern="csv$",
-          full.names=FALSE,
-          recursive=TRUE
-          )
-        ),
-        2,
-        step=1
-      ),
-      dataTableOutput("intersecting_candidates_table")
     ),
     box(
       title="Intersecting DelVG candidates",
@@ -54,14 +28,28 @@ dataset_intersection_tab <- tabItem(tabName="dataset_intersection",
       plotlyOutput("overlap_matrix_plot")
     ),
     box(
-      title="Upset plot",
+      title="Number of candidates per segment that occur in multiple datasets",
       width=12,
-      plotOutput("upset_plot")
+      plotlyOutput("barplot_candidates_plot")
     ),
     box(
-      title="Identified candidates with NGS counts",
+      title="Identified candidates by using mean and sum scoring",
       width=12,
-      plotlyOutput("intersecting_candidates_NGS_plot")
+      selectInput(
+        inputId="intersection_selected_segment",
+        label="Select segment:",
+        choices=c(SEGMENTS)
+      ),
+      sliderInput(
+        inputId="intersection_thresh",
+        label="Using the highest n ranked candidates:",
+        1,
+        100,
+        10,
+        step=1
+      ),
+
+      plotlyOutput("highest_n_ranked_plot")
     )
   )
 )

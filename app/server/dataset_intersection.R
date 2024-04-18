@@ -6,36 +6,29 @@ get_intersecting_candidates <- function(df) {
     candidates <- append(candidates, cand)
   }
 
-  counts <- table(candidates)
-  final_df <- data.frame(counts)
+  final_df <- data.frame(table(candidates))
   colnames(final_df) <- c("DVG candidate", "occurrence")
-  return(final_df)
-}
-
-intersecting_candidates_table <- function(paths, RSC, thresh) {
-  df <- load_all_datasets(paths)
-  df <- apply_cutoff(df, RSC)
-
-  final_df <- get_intersecting_candidates(df)
+  thresh <- ceiling(length(unique(df$name)) / 2)
   final_df <- final_df[final_df$occurrence >= thresh, ]
+
+  text <- paste("No candidates found in at least", thresh, "of the datasets.")
+  shiny::validate(need((nrow(final_df) != 0), text)) 
+
   return(final_df)
 }
 
 
-plot_overlap_matrix <- function(paths, RSC) {
-  validation_text <- "No plot created. Please select at least two datasets."
-  shiny::validate(need((length(paths) > 1), validation_text))
-
+plot_overlap_matrix <- function(paths) {
+  validate_selection(paths)
   df <- load_all_datasets(paths)
-  df <- apply_cutoff(df, RSC)
-  
+  validate_df(df)
+
   lists <- c()
-  labels <- c()
-  for (name in unique(df$name)) {
+  labels <- unique(df$name)
+  for (name in labels) {
     n_df <- df[df$name == name, ]
     DI_list <- paste(n_df$Segment, n_df$Start, n_df$End, sep="_")
     lists <- c(lists, list(DI_list))
-    labels <- c(labels, name)
   }
 
   # initialize an empty matrix
@@ -46,9 +39,7 @@ plot_overlap_matrix <- function(paths, RSC) {
     set1 <- unique(lists[[i]])
     for (j in 1:matrix_size) {
       set2 <- unique(lists[[j]])
-      inter <- length(intersect(set1, set2))
-      max <- max(length(set1), length(set2))
-      matrix[i, j] <- (inter / max) * 100
+      matrix[i, j] <- (length(intersect(set1, set2)) / length(set2)) * 100
     }
   }
 
@@ -56,7 +47,7 @@ plot_overlap_matrix <- function(paths, RSC) {
   colnames(plot_df) <- c("Dataset1", "Dataset2", "intersection")
   p <- ggplot(plot_df, aes(x=Dataset1, y=Dataset2, fill=intersection)) +
     geom_tile() +
-    scale_fill_gradient(low="white", high="blue") +
+    scale_fill_viridis_c() +
     labs(x="Dataset", y="Dataset", fill="Intersection [%]") +
     scale_x_discrete(labels=labels) +
     scale_y_discrete(labels=labels)
@@ -65,45 +56,81 @@ plot_overlap_matrix <- function(paths, RSC) {
 }
 
 
-plot_upset <- function(paths, RSC) {
-  validation_text <- "No plot created. Please select at least two datasets."
-  shiny::validate(need((length(paths) > 1), validation_text))
-
+plot_barplot_candidates <- function(paths) {
+  validate_selection(paths)
   df <- load_all_datasets(paths)
-  df <- apply_cutoff(df, RSC)
+  validate_df(df)
+  c_df <- get_intersecting_candidates(df)
 
-  lists <- c()
-  names <- c()
-  for (name in unique(df$name)) {
-    n_df <- df[df$name == name, ]
-    DI_list <- paste(n_df$Segment, n_df$Start, n_df$End, sep="_")
-    lists <- c(lists, list(DI_list))
-    names <- c(names, name)
-  }
-  names(lists) <- names
+  colnames(c_df) <- c("DVG_candidate", "occurrence")
+  segments <- str_split(c_df$DVG_candidate, "_")
+  c_df$segment <- sapply(segments, function(x) x[1])
 
-  m = make_comb_mat(lists)
-  p <- UpSet(m)
-  return(p)
+  pl <- ggplot(c_df, aes(x=segment, fill=factor(occurrence))) +
+    geom_bar(position = "dodge") +
+    labs(x = "Occurrence", y = "Count") +
+    theme_minimal()
+  
+  ggplotly(pl)
 }
 
 
-plot_intersecting_candidates_NGS <- function(paths, RSC) {
+plot_highest_n_ranked <- function(paths, segment, thresh) {
+  validate_selection(paths)
   df <- load_all_datasets(paths)
-  df <- apply_cutoff(df, RSC)
+  df <- df %>%
+    group_by(name) %>%
+    mutate(perc = ecdf(NGS_read_count)(NGS_read_count) * 100)
 
   c_df <- get_intersecting_candidates(df)
-  thresh <- max(c_df$occurrence)
-  sel_df <- c_df[c_df$occurrence >= thresh, ]
-  
   df$key <- paste(df$Segment, df$Start, df$End, sep="_")
-  marked_points <- df[df$key %in% as.character(sel_df[["DVG candidate"]]), ]
+  marked_points <- df[df$key %in% as.character(c_df[["DVG candidate"]]), ]
+  marked_points <- marked_points[marked_points$Segment == segment, ]
 
-  pl <- ggplot(df, aes(x=name, y=NGS_read_count, color=name)) +
-    geom_boxplot() +
-    scale_y_log10() +
-    labs(x="Dataset", y="NGS count (log scale)", color="Legend", fill="") +
-    geom_point(data=marked_points, aes(fill=key), size=3, shape=8)
+  sum_ranking <- marked_points %>%
+    group_by(key) %>%
+    summarise(sum = sum(perc, na.rm = TRUE)) %>%
+    arrange(desc(sum))
+
+  mean_ranking <- marked_points %>%
+    group_by(key) %>%
+    summarise(mean = mean(perc, na.rm = TRUE)) %>%
+    arrange(desc(mean))
+
+  l1 <- sum_ranking$key
+  l2 <- mean_ranking$key
+  n_values <- c(1:min(thresh, length(l1)))
+  overlap_counts <- numeric()
+  found_cands <- c()
+  cands_per_n <- c()
+  for (n in n_values) {
+    overlap <- intersect(l1[1:n], l2[1:n])
+    overlap_counts <- c(overlap_counts, length(overlap))   
+    new_cands <- setdiff(overlap, found_cands)
+    if (length(new_cands) == 0) { # no new cand found
+      new_cands <- " "
+    } else if (length(new_cands) > 1) { # more than 1 new cand found
+      found_cands <- c(found_cands, new_cands)
+      new_cands <- paste(new_cands, collapse="\n")
+    } else { # exactly 1 new cand found
+      found_cands <- c(found_cands, new_cands)
+    }    
+    cands_per_n <- c(cands_per_n, new_cands)
+  }
+
+  results_df <- data.frame(n=n_values,
+                           overlap_count=overlap_counts,
+                           cands_per_n=cands_per_n)
+
+  pl <- ggplot(results_df, aes(x=n, y=overlap_count)) +
+    geom_line() +
+    geom_point() +
+    labs(x="n", y="Overlap Count") +
+    annotate("text",
+             x=results_df$n+0.3,
+             y=results_df$overlap_count-0.15,
+             label=results_df$cands_per_n) +
+    theme_minimal()
 
   ggplotly(pl)
 }

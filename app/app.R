@@ -393,38 +393,26 @@ server <- function(input, output, session) {
 ### dataset intersection ###
 ############################
   observeEvent(input$intersection_submit, {
-    # overview table of candidates
-    output$intersecting_candidates_table <- renderDataTable(
-      datatable(intersecting_candidates_table(
-          isolate(input$selected_datasets),
-          isolate(input$RSC_intersection),
-          input$min_occurrences
-        ),
-        selection="single"
-      )
-    )
-    
     # matrix with intersecting candidates
     output$overlap_matrix_plot <- renderPlotly({
       plot_overlap_matrix(
-        isolate(input$selected_datasets),
-        isolate(input$RSC_intersection)
+        isolate(input$selected_datasets)
+      )
+    })
+    
+    # barplot with candidates that occur in at least half of the datasets
+    output$barplot_candidates_plot <- renderPlotly({
+      plot_barplot_candidates(
+        isolate(input$selected_datasets)
       )
     })
 
-    # upset plot
-    output$upset_plot <- renderPlot({
-      plot_upset(
+    # highest n ranked candidates
+    output$highest_n_ranked_plot <- renderPlotly({
+      plot_highest_n_ranked(
         isolate(input$selected_datasets),
-        isolate(input$RSC_intersection)
-      )
-    })
-
-    # candidates in NGS count boxplot
-    output$intersecting_candidates_NGS_plot <- renderPlotly({
-      plot_intersecting_candidates_NGS(
-        isolate(input$selected_datasets),
-        isolate(input$RSC_intersection)
+        input$intersection_selected_segment,
+        input$intersection_thresh
       )
     })
   })
