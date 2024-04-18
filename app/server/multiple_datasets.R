@@ -17,6 +17,7 @@ plot_multiple_deletion_shift <- function(paths, flattened, RSC) {
   validate_selection(paths)
   df <- load_all_datasets(paths)
   df <- apply_cutoff(df, RSC)
+  validate_df(df)
 
   if (flattened == "flattened") {
     df["NGS_read_count"] <- 1
@@ -60,6 +61,7 @@ plot_multiple_segment_distribution <- function(paths, flattened, RSC) {
   validate_selection(paths)
   df <- load_all_datasets(paths)
   df <- apply_cutoff(df, RSC)
+  validate_df(df)
 
   if (flattened == "flattened") {
     df["NGS_read_count"] <- 1
@@ -96,6 +98,7 @@ plot_multiple_deletion_length<-function(paths,segment,flattened,n_bins, RSC) {
   validate_selection(paths)
   df <- load_all_datasets(paths)
   df <- apply_cutoff(df, RSC)
+  validate_df(df)
   
   # slice df by segment, reformat and bind on position and NGS count
   df <- df[df$Segment == segment, ]
@@ -123,25 +126,19 @@ plot_multiple_deletion_length<-function(paths,segment,flattened,n_bins, RSC) {
 plot_multiple_nucleotide_enrichment<-function(paths,segment,pos,flat,nuc,RSC) {
   validate_selection(paths)
   df <- load_all_datasets(paths)
-  exp_df <- load_expected_data(paths)
-
   df <- apply_cutoff(df, RSC)
-  df <- df[df$Segment == segment, ]  
+  df <- df[df$Segment == segment, ]
+  validate_df(df)
+
+  exp_df <- load_expected_data(paths)
   exp_df <- exp_df[exp_df$Segment == segment, ]
 
-  unique_names <- unique(df$name)
-
   position <- c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
-  labels <- c("5", "4", "3", "2", "1", "-1", "-2", "-3", "-4", "-5")
-  if (pos == "End") {
-    labels <- rev(labels)
-  }
-
   diff <- c()
   p_vals <- c()
   symb_ys <- c()
   symb_y <- 1
-
+  unique_names <- unique(df$name)
   for (name in unique_names) {
     n_df <- df[df$name == name, ]
     exp_n_df <- exp_df[exp_df$name == name, ]
@@ -190,6 +187,10 @@ plot_multiple_nucleotide_enrichment<-function(paths,segment,pos,flat,nuc,RSC) {
   x2 <- ifelse(pos == "Start", 3, 8)
   x_min <- ifelse(pos == "Start", 5.5, 0)
   x_max <- ifelse(pos == "Start", 11, 5.5)
+  labels <- c("5", "4", "3", "2", "1", "-1", "-2", "-3", "-4", "-5")
+  if (pos == "End") {
+    labels <- rev(labels)
+  }
 
   pl <- ggplot(plot_df, aes(x=position, y=dataset, fill=diff)) +
     geom_tile() +
@@ -204,21 +205,21 @@ plot_multiple_nucleotide_enrichment<-function(paths,segment,pos,flat,nuc,RSC) {
   ggplotly(pl)
 }
 
+
 plot_multiple_direct_repeat<-function(paths, segment, flattened, RSC) {
   validate_selection(paths)
   df <- load_all_datasets(paths)
-  exp_df <- load_expected_data(paths)
-
   df <- apply_cutoff(df, RSC)
-  df <- df[df$Segment == segment, ]  
-  exp_df <- exp_df[exp_df$Segment == segment, ]
+  df <- df[df$Segment == segment, ]
+  validate_df(df)
 
-  unique_names <- unique(df$name)
+  exp_df <- load_expected_data(paths)
+  exp_df <- exp_df[exp_df$Segment == segment, ]
 
   position <- c(rep(0:6, length(unique_names)))
   dataset <- c()
   diff <- c()
-
+  unique_names <- unique(df$name)
   for (name in unique_names) {
     r_df <- df[df$name == name, ]
 
