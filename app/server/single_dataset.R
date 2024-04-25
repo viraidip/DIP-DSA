@@ -1,6 +1,7 @@
-plot_ngs_distribution <- function(strain, datasetname) {
+plot_ngs_distribution <- function(strain, datasetname, prg) {
   df <- load_single_dataset(file.path(strain,paste(datasetname,".csv",sep="")))
-  
+
+  prg$set(0.1, "NGS count plot")
   pl <- plot_ly(data=df, y=~NGS_read_count, type="box", name=datasetname) %>%
     layout(yaxis=list(title="NGS count (log scale)", type="log"))
 
@@ -8,7 +9,7 @@ plot_ngs_distribution <- function(strain, datasetname) {
 }
 
 
-plot_deletion_shift <- function(strain, datasetname, flattened, RSC) {
+plot_deletion_shift <- function(strain, datasetname, flattened, RSC, prg) {
   df <- load_single_dataset(file.path(strain,paste(datasetname,".csv",sep="")))
   df <- apply_cutoff(df, RSC)
   validate_df(df)
@@ -40,12 +41,13 @@ plot_deletion_shift <- function(strain, datasetname, flattened, RSC) {
   pl <- ggplot(plot_df, aes(x="", y=Freq, fill=factor(Shift))) +
     geom_bar(stat="identity") +
     labs(x=label, y="Deletion shift [%]", fill="Shifts")
-
+  
+  prg$set(0.2, "Frame shift plot")
   ggplotly(pl)
 }
 
 
-plot_segment_distribution <- function(strain, datasetname, flattened, RSC) {
+plot_segment_distribution <- function(strain, datasetname, flattened, RSC, prg) {
   df <- load_single_dataset(file.path(strain,paste(datasetname,".csv",sep="")))
   df <- apply_cutoff(df, RSC)
   validate_df(df)
@@ -73,11 +75,12 @@ plot_segment_distribution <- function(strain, datasetname, flattened, RSC) {
     theme_minimal() +
     labs(x="Segment of DelVG [%]", y=label)
 
+  prg$set(0.3, "Segment distribution plot")
   ggplotly(pl)
 }
 
 
-plot_lengths<-function(strain, datasetname, segment,flattened,n_bins, RSC) {
+plot_lengths<-function(strain, datasetname, segment,flattened,n_bins, RSC, prg) {
   df <- load_single_dataset(file.path(strain,paste(datasetname,".csv",sep="")))
   df <- apply_cutoff(df, RSC)
   df <- format_dataframe_lengths(df, segment, strain, flattened)
@@ -87,14 +90,15 @@ plot_lengths<-function(strain, datasetname, segment,flattened,n_bins, RSC) {
   pl <- ggplot(df, aes(x=Length, fill=Class)) +
     geom_histogram(alpha=0.3, bins=n_bins, position="identity") +
     labs(x="Length of DelVG", y="Number of occurrences", fill="Dataset")
-
   # add mean and median to plot
   pl <- add_stats_lengths(df, pl)
+
+  prg$set(0.4, "Deletion lengths plot")
   ggplotly(pl)
 }
 
 
-plot_locations <- function(strain, datasetname, segment, flattened, RSC) {
+plot_locations <- function(strain, datasetname, segment, flattened, RSC, prg) {
   df <- load_single_dataset(file.path(strain,paste(datasetname,".csv",sep="")))
   df <- apply_cutoff(df, RSC)
   df <- format_dataframe_locations(df, segment, flattened, strain)
@@ -116,11 +120,12 @@ plot_locations <- function(strain, datasetname, segment, flattened, RSC) {
     p <- add_packaging_signal(p, strain, segment)
   }
 
+  prg$set(0.5, "Deletion location plot")
   ggplotly(p)
 }
 
 
-plot_end_3_5 <- function(strain, datasetname, segment, RSC) {
+plot_end_3_5 <- function(strain, datasetname, segment, RSC, prg) {
   df <- load_single_dataset(file.path(strain,paste(datasetname,".csv",sep="")))
   df <- apply_cutoff(df, RSC)
   
@@ -151,11 +156,13 @@ plot_end_3_5 <- function(strain, datasetname, segment, RSC) {
     p <- p + geom_vline(xintercept=xv, color=color, linetype="dotted") +
      geom_hline(yintercept=xh, color=color, linetype="dotted")
   }
+
+  prg$set(0.6, "3' 5' plot")
   ggplotly(p)
 }
 
 
-plot_start_end_connection <- function(strain, datasetname, segment, RSC) {
+plot_start_end_connection <- function(strain, datasetname, segment, RSC, prg) {
   df <- load_single_dataset(file.path(strain,paste(datasetname,".csv",sep="")))
   df <- apply_cutoff(df, RSC)
   df <- df[df$Segment == segment, ]
@@ -177,11 +184,13 @@ plot_start_end_connection <- function(strain, datasetname, segment, RSC) {
     annotate(geom="text", x=round(max/2), y=-0.05, label="Start", col="white")+
     annotate(geom="text", x=round(max/2), y=1.05, label="End", col="white")
 
+  prg$set(0.7, "Start and end plot")
   ggplotly(p)
 }
 
 
-plot_direct_repeats <- function(strain, datasetname, segment, RSC, flattened) {
+plot_direct_repeats <- function(strain, datasetname, segment, RSC, flattened, prg) {
+  print("dir reps")
   df <- load_single_dataset(
     file.path(strain, paste(datasetname, ".csv", sep=""))
   )
@@ -212,9 +221,19 @@ plot_direct_repeats <- function(strain, datasetname, segment, RSC, flattened) {
   seq <- get_seq(strain, segment)
   n_samples <- nrow(r_df)
   r_df$direct_repeats <- apply(r_df,1,direct_repeats_counting_routine,seq)
-  exp_df$direct_repeats <- apply(exp_df,1,direct_repeats_counting_routine,seq)
   df_1 <- prepare_direct_repeat_plot_data(r_df, "observed")
-  df_2 <- prepare_direct_repeat_plot_data(exp_df, "expected")
+  
+  # only calculate direct repeats if expected data is available
+  if (nrow(exp_df) != 0) {
+    exp_df$direct_repeats <- apply(exp_df,1,direct_repeats_counting_routine,seq)
+    df_2 <- prepare_direct_repeat_plot_data(exp_df, "expected")
+    do_testing <- TRUE
+  } else {
+    df_2 <- data.frame(matrix(ncol=length(names(df_1)), nrow=0))
+    names(df_2) <- names(df_1)
+    do_testing <- FALSE
+  }
+
 
   # fill NA values with 0.0 to have a good representation in the final plot
   max_length <- max(max(df_1$length), max(df_2$length))
@@ -231,16 +250,20 @@ plot_direct_repeats <- function(strain, datasetname, segment, RSC, flattened) {
   plot_df$freq <- as.numeric(plot_df$freq)
 
   # statistical testing with Chi-squared test
-  matrix <- matrix(c(plot_df[plot_df$group == "observed", "counts"],
-                   plot_df[plot_df$group == "expected", "counts"]), ncol=2)
-  data_1 <- r_df$direct_repeats
-  data_2 <- exp_df$direct_repeats
-  if (length(data_1) == 0) {
-    s <- ""
+  if (do_testing) {
+    matrix <- matrix(c(plot_df[plot_df$group == "observed", "counts"],
+                    plot_df[plot_df$group == "expected", "counts"]), ncol=2)
+    data_1 <- r_df$direct_repeats
+    data_2 <- exp_df$direct_repeats
+    if (length(data_1) == 0) {
+      s <- ""
+    } else {
+      r <- chisq.test(matrix)
+      p <- r$p.value
+      s <- get_stat_symbol(p)
+    }
   } else {
-    r <- chisq.test(matrix)
-    p <- r$p.value
-    s <- get_stat_symbol(p)
+    s <- ""
   }
 
   text <- paste("n=", n_samples, ", ", s, sep="")
@@ -251,6 +274,8 @@ plot_direct_repeats <- function(strain, datasetname, segment, RSC, flattened) {
     labs(x="Length of direct repeat", y="Relative occurrence",fill="Dataset") +
     annotate("text", x=3, y=0.9, label=text) +
     theme(plot.title = element_text(size=20))
+  
+  prg$set(0.8, "Direct repeats plot")
   ggplotly(p)
 }
 
@@ -261,7 +286,8 @@ plot_nucleotide_enrichment <- function(strain,
                                        nuc,
                                        segment,
                                        RSC,
-                                       flattened) {
+                                       flattened,
+                                       prg) {  
   df <- load_single_dataset(
     file.path(strain, paste(datasetname, ".csv", sep=""))
   )
@@ -269,28 +295,43 @@ plot_nucleotide_enrichment <- function(strain,
     file.path(strain, paste(datasetname, ".tsv", sep="")),
     sep="\t"
   )
+
   df <- apply_cutoff(df, RSC)
   n <- sum(df$Segment == segment)
-
   count_df <- prepare_nuc_enr_data(df, segment, flattened, strain, pos, nuc)
   count_df["group"] <- rep("observed", nrow(count_df))
+  
+  # only calculate nucleotide enrichment if expected data is available
   sampling_df <- prepare_nuc_enr_data(exp_df,segment,flattened,strain,pos,nuc)
-  sampling_df["group"] <- rep("expected", nrow(sampling_df))
+  print(sampling_df)
+  if (nrow(sampling_df) != 0) {
+    print("hhhhhhhhhhhhhhhhhhhhheeeeeeeererererer")
+    sampling_df["group"] <- rep("expected", nrow(sampling_df))
+    do_testing <- TRUE
+  } else {
+    print("do no testing")
+    do_testing <- FALSE
+  }
+  
   final_df <- rbind(count_df, sampling_df)
-
   validate_plotting(final_df, segment)
 
   # statistical testing with binom test
+  # only performed when sampling data exists for this segment
   position <- c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
-  p_values <- list()
-  for (i in position) {
-    x <- as.integer(count_df[i, "rel_occurrence"] * n)
-    p <- sampling_df[i, "rel_occurrence"]
-    p_values[[i]] <- binom.test(x, n, p)$p.value
+  if (do_testing) {
+    p_values <- list()
+    for (i in position) {
+      x <- as.integer(count_df[i, "rel_occurrence"] * n)
+      p <- sampling_df[i, "rel_occurrence"]
+      p_values[[i]] <- binom.test(x, n, p)$p.value
+    symbols <- lapply(p_values, get_stat_symbol)
+    symbols <- gsub("ns.", "", symbols)
+    }
+  } else {
+    symbols <- rep("", 10)
   }
-  symbols <- lapply(p_values, get_stat_symbol)
-  symbols <- gsub("ns.", "", symbols)
-
+  
   # max of expected and observed -> is y location of text of stat test
   y_text <- tapply(final_df$rel_occurrence, final_df$position, max)
   y_max <- max(0.8, max(y_text)) + 0.05
@@ -325,6 +366,11 @@ plot_nucleotide_enrichment <- function(strain,
     annotate("text", x=x1, y=y_max, label="deleted sequence") +
     annotate("text", x=x2, y=y_max, label="remaining sequence")
 
+  if (pos == "Start") {
+    prg$set(0.9, "Nucleotide enrichment plot")
+  } else {
+    prg$close()
+  }
   ggplotly(p)
 }
 

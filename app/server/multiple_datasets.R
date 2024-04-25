@@ -1,4 +1,4 @@
-plot_multiple_ngs_distribution <- function(paths, RSC) {
+plot_multiple_ngs_distribution <- function(paths, RSC, prg) {
   validate_selection(paths)
   df <- load_all_datasets(paths)
   df <- apply_cutoff(df, RSC)
@@ -9,11 +9,12 @@ plot_multiple_ngs_distribution <- function(paths, RSC) {
     scale_y_log10() +
     labs(x="Dataset", y="NGS count (log scale)", fill="Dataset")
 
+  prg$set(0.1, "NGS count plot")
   ggplotly(pl)
 }
 
 
-plot_multiple_deletion_shift <- function(paths, flattened, RSC) {
+plot_multiple_deletion_shift <- function(paths, flattened, RSC, prg) {
   validate_selection(paths)
   df <- load_all_datasets(paths)
   df <- apply_cutoff(df, RSC)
@@ -53,11 +54,12 @@ plot_multiple_deletion_shift <- function(paths, flattened, RSC) {
     labs(x="Dataset" , y="Deletion shift [%]", fill="Shifts") +
     scale_x_discrete(labels=labels)
 
+  prg$set(0.2, "Frame shifts plot")
   ggplotly(pl)
 }
 
 
-plot_multiple_segment_distribution <- function(paths, flattened, RSC) {
+plot_multiple_segment_distribution <- function(paths, flattened, RSC, prg) {
   validate_selection(paths)
   df <- load_all_datasets(paths)
   df <- apply_cutoff(df, RSC)
@@ -90,11 +92,12 @@ plot_multiple_segment_distribution <- function(paths, flattened, RSC) {
     labs(x="Dataset" , y="Segment of DelVG [%]", fill="Segment") +
     scale_x_discrete(labels=labels)
 
+  prg$set(0.3, "Segment distribution plot")
   ggplotly(pl)
 }
 
 
-plot_multiple_deletion_length<-function(paths,segment,flattened,n_bins, RSC) {
+plot_multiple_deletion_length<-function(paths,segment,flattened,n_bins, RSC, prg) {
   validate_selection(paths)
   df <- load_all_datasets(paths)
   df <- apply_cutoff(df, RSC)
@@ -118,12 +121,13 @@ plot_multiple_deletion_length<-function(paths,segment,flattened,n_bins, RSC) {
   pl <- ggplot(df, aes(x=Length, fill=name)) +
     geom_histogram(position="identity", alpha=0.3, bins=n_bins) +
     labs(x="Length of DI candidate", y="Number of occurrences", fill="Dataset")
-    
+  
+  prg$set(0.5, "Deletion length plot")
   ggplotly(pl)
 }
 
 
-plot_multiple_nucleotide_enrichment<-function(paths,segment,pos,flat,nuc,RSC) {
+plot_multiple_nucleotide_enrichment<-function(paths,segment,pos,flat,nuc,RSC, prg) {
   validate_selection(paths)
   df <- load_all_datasets(paths)
   df <- apply_cutoff(df, RSC)
@@ -202,11 +206,13 @@ plot_multiple_nucleotide_enrichment<-function(paths,segment,pos,flat,nuc,RSC) {
     annotate("text", x=x2, y=y_max+0.05, label="remaining sequence") +
     annotate("text", x=positions, y=symb_ys, label=symbols)
 
+  value <- ifelse(pos == "Start", 0.7, 0.9)
+  prg$set(value, "Nucleotide enrichment plot")
   ggplotly(pl)
 }
 
 
-plot_multiple_direct_repeat<-function(paths, segment, flattened, RSC) {
+plot_multiple_direct_repeat<-function(paths, segment, flattened, RSC, prg) {
   validate_selection(paths)
   df <- load_all_datasets(paths)
   df <- apply_cutoff(df, RSC)
@@ -288,5 +294,6 @@ plot_multiple_direct_repeat<-function(paths, segment, flattened, RSC) {
     theme_minimal() +
     scale_x_continuous(breaks=position, labels=labels)
 
+  prg$close()
   ggplotly(pl)
 }

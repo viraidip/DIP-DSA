@@ -18,7 +18,7 @@ get_intersecting_candidates <- function(df) {
 }
 
 
-plot_overlap_matrix <- function(paths) {
+plot_overlap_matrix <- function(paths, prg) {
   validate_selection(paths)
   df <- load_all_datasets(paths)
   validate_df(df)
@@ -52,11 +52,12 @@ plot_overlap_matrix <- function(paths) {
     scale_x_discrete(labels=labels) +
     scale_y_discrete(labels=labels)
 
+  prg$set(0.3, "matrix plot")
   return(p)
 }
 
 
-plot_barplot_candidates <- function(paths) {
+plot_barplot_candidates <- function(paths, prg) {
   validate_selection(paths)
   df <- load_all_datasets(paths)
   validate_df(df)
@@ -71,11 +72,12 @@ plot_barplot_candidates <- function(paths) {
     labs(x="Segment", y="Identified DelVGs", fill="Datasets") +
     theme_minimal()
   
+  prg$set(0.7, "candidate count plot")
   ggplotly(pl)
 }
 
 
-plot_highest_n_ranked <- function(paths, segment, thresh) {
+plot_highest_n_ranked <- function(paths, segment, thresh, prg) {
   validate_selection(paths)
   df <- load_all_datasets(paths)
   df <- df %>%
@@ -132,5 +134,6 @@ plot_highest_n_ranked <- function(paths, segment, thresh) {
              label=results_df$cands_per_n) +
     theme_minimal()
 
+  prg$close()
   ggplotly(pl)
 }
