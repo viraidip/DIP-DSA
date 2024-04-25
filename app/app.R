@@ -35,6 +35,7 @@ ui <- bootstrapPage(
     dashboardSidebar(
       sidebarMenu(
         id="sidebarmenu",
+        style="position:fixed;width:220px;",
         menuItem("Add new dataset",
           tabName="new_dataset",
           icon=icon("file-circle-plus")
