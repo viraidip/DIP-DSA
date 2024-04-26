@@ -48,7 +48,6 @@ plot_multiple_deletion_shift <- function(paths, flattened, RSC, prg) {
     label <- paste(name, get_stat_symbol(r$p.value))
     labels <- c(labels, label)
   }
-  print(labels)
 
   pl <- ggplot(plot_df, aes(x=name, y=Freq, fill=factor(Shift))) +
     geom_bar(stat="identity", position="stack") +
@@ -201,8 +200,8 @@ plot_multiple_nucleotide_enrichment<-function(paths,segment,pos,flat,nuc,RSC, pr
     geom_tile() +
     scale_fill_gradient2(low="blue", mid="white", high="red") +
     labs(x="Position", y="Dataset", fill="\u0394 (obs. - exp.)") +
-    theme_minimal() +
     scale_x_continuous(breaks=position, labels=labels) +
+    scale_y_discrete(expand = expansion(add = c(0.5, 1)))  +
     annotate("text", x=x1, y=y_max+0.05, label="deleted sequence") +
     annotate("text", x=x2, y=y_max+0.05, label="remaining sequence") +
     annotate("text", x=positions, y=symb_ys, label=symbols)
@@ -292,7 +291,6 @@ plot_multiple_direct_repeat<-function(paths, segment, flattened, RSC, prg) {
     geom_tile() +
     scale_fill_gradient2(low="blue", mid="white", high="red") +
     labs(x="Direct repeat length", y="Dataset", fill="\u0394 (obs. - exp.)") +
-    theme_minimal() +
     scale_x_continuous(breaks=position, labels=labels)
 
   prg$close()
