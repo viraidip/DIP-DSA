@@ -35,6 +35,7 @@ ui <- bootstrapPage(
     dashboardSidebar(
       sidebarMenu(
         id="sidebarmenu",
+        style="position:fixed;width:220px;",
         menuItem("Add new dataset",
           tabName="new_dataset",
           icon=icon("file-circle-plus")
@@ -94,12 +95,16 @@ server <- function(input, output, session) {
   })
 
   observeEvent(input$dataset_submit, {
+    dataset_progress <- shiny::Progress$new()
+    dataset_progress$set(message="Start upload", value=0)
+
     # check if all fields are filled
     req(input$upload_strain, input$upload_dataset, input$upload_dataset_file)
     upload_strain <- format_strain_name(input$upload_strain)
     strain_path <- file.path(DATASETSPATH, upload_strain)
 
     # check if .csv file already exists and rename if so
+    dataset_progress$set(message="Check filename", value=0.1)
     dataset_name <- input$upload_dataset
     f_name <- dataset_name
     file_path <- file.path(strain_path, paste(f_name, ".csv", sep=""))
@@ -113,9 +118,10 @@ server <- function(input, output, session) {
     to_list <- list(file_path)
     move_files(from_list, to_list)
 
+    dataset_progress$set(message="Create random data", value=0.2)
     df <- read.csv(file_path)
     if (nrow(df) > 0) {
-      create_random_data(upload_strain, f_name)
+      create_random_data(upload_strain, f_name, dataset_progress)
     } else {
       to_list <- list(file.path(strain_path, paste(f_name, ".tsv", sep="")))
       move_files(from_list, to_list)
@@ -152,9 +158,12 @@ server <- function(input, output, session) {
       choices=c,
       selected=c[1:2]
     )
+    dataset_progress$close()
   })
 
   observeEvent(input$strain_submit, {
+    strain_progress <- shiny::Progress$new()
+    strain_progress$set(message="Start upload", value=0)
     # check if all fields are filled
     req(
       input$new_strain, input$upload_PB2_file, input$upload_PB1_file,
@@ -170,10 +179,12 @@ server <- function(input, output, session) {
       input$upload_M_file$datapath, input$upload_NS_file$datapath
     )
 
+    strain_progress$set(message="Check strain name", value=0.4)
     # check if strain exists create a folder if not
     upload_strain <- format_strain_name(input$new_strain)
     strain_path <- file.path(DATASETSPATH, upload_strain)
     if (dir.exists(strain_path)) {
+      strain_progress$close()
       return()     
     } else {
       dir.create(strain_path)
@@ -181,6 +192,7 @@ server <- function(input, output, session) {
     fasta_path <- file.path(strain_path, "fastas")
     dir.create(fasta_path)
     
+    strain_progress$set(message="Upload FASTA files", value=0.4)
     # create list with paths on where to save the files and then move them
     to_list <- list()
     for (s in SEGMENTS) {
@@ -195,6 +207,7 @@ server <- function(input, output, session) {
       inputId="upload_strain",
       choices=c
     )
+    strain_progress$close()
   })
 
 
@@ -208,21 +221,28 @@ server <- function(input, output, session) {
   })
 
   observeEvent(input$single_submit, {
+    # initialize progess bar
+    single_progress <- shiny::Progress$new()
+    single_progress$set(message="Generating plots", value=0)
+
     # NGS counts
     output$ngs_distribution_plot <- renderPlotly({
       plot_ngs_distribution(
         format_strain_name(isolate(input$single_strain)),
-        isolate(input$single_dataset)
+        isolate(input$single_dataset),
+        isolate(input$single_RSC),
+        single_progress
       )
     })
 
-    # deletion shifts
-    output$deletion_shift_plot <- renderPlotly({
-      plot_deletion_shift(
+    # frame shifts
+    output$frame_shift_plot <- renderPlotly({
+      plot_frame_shift(
         format_strain_name(isolate(input$single_strain)),
         isolate(input$single_dataset),
         isolate(input$single_flattened),
-        isolate(input$single_RSC)
+        isolate(input$single_RSC),
+        single_progress
       )
     })
 
@@ -232,7 +252,8 @@ server <- function(input, output, session) {
         format_strain_name(isolate(input$single_strain)),
         isolate(input$single_dataset),
         isolate(input$single_flattened),
-        isolate(input$single_RSC)
+        isolate(input$single_RSC),
+        single_progress
       )
     })
 
@@ -244,10 +265,11 @@ server <- function(input, output, session) {
         isolate(input$single_selected_segment),
         isolate(input$single_flattened),
         input$single_lengths_bins,
-        isolate(input$single_RSC)
+        isolate(input$single_RSC),
+        single_progress
       )
     })
-
+    
     # location
     output$locations_plot <- renderPlotly({
       plot_locations(
@@ -255,7 +277,8 @@ server <- function(input, output, session) {
         isolate(input$single_dataset),
         isolate(input$single_selected_segment),
         isolate(input$single_flattened),
-        isolate(input$single_RSC)
+        isolate(input$single_RSC),
+        single_progress
       )
     })
     
@@ -265,20 +288,22 @@ server <- function(input, output, session) {
         format_strain_name(isolate(input$single_strain)),
         isolate(input$single_dataset),
         isolate(input$single_selected_segment),
-        isolate(input$single_RSC)
+        isolate(input$single_RSC),
+        single_progress
       )
     })
 
-    # connections start-end
-    output$start_end_connection_plot <- renderPlotly({
-      plot_start_end_connection(
+    # mapping start-end
+    output$start_end_mapping_plot <- renderPlotly({
+      plot_start_end_mapping(
         format_strain_name(isolate(input$single_strain)),
         isolate(input$single_dataset),
         isolate(input$single_selected_segment),
-        isolate(input$single_RSC)
+        isolate(input$single_RSC),
+        single_progress
       )
     })
-    
+
     # direct repeats
     output$direct_repeats_plot <- renderPlotly({
       plot_direct_repeats(
@@ -286,7 +311,8 @@ server <- function(input, output, session) {
         isolate(input$single_dataset),
         isolate(input$single_selected_segment),
         isolate(input$single_RSC),
-        isolate(input$single_flattened)
+        isolate(input$single_flattened),
+        single_progress
       )
     })
 
@@ -299,7 +325,8 @@ server <- function(input, output, session) {
         input$enrichment_nucleotide_start,
         isolate(input$single_selected_segment),
         isolate(input$single_RSC),
-        isolate(input$single_flattened)
+        isolate(input$single_flattened),
+        single_progress
       )
     })
     output$nucleotide_enrichment_end_plot <- renderPlotly({
@@ -310,7 +337,8 @@ server <- function(input, output, session) {
         input$enrichment_nucleotide_end,
         isolate(input$single_selected_segment),
         isolate(input$single_RSC),
-        isolate(input$single_flattened)
+        isolate(input$single_flattened),
+        single_progress
       )
     })
   })
@@ -319,11 +347,16 @@ server <- function(input, output, session) {
 ### multiple datasets ###
 #########################
   observeEvent(input$multiple_submit, {
+    # initialize progess bar
+    multiple_progress <- shiny::Progress$new()
+    multiple_progress$set(message="Generating plots", value=0)
+    
     # NGS counts
     output$multiple_ngs_distribution_plot <- renderPlotly({
       plot_multiple_ngs_distribution(
         isolate(input$multiple_datasets),
-        isolate(input$multiple_RSC)
+        isolate(input$multiple_RSC),
+        multiple_progress
       )
     })
 
@@ -332,7 +365,8 @@ server <- function(input, output, session) {
       plot_multiple_segment_distribution(
         isolate(input$multiple_datasets),
         isolate(input$multiple_flattened),
-        isolate(input$multiple_RSC)
+        isolate(input$multiple_RSC),
+        multiple_progress
       )
     })
 
@@ -341,7 +375,8 @@ server <- function(input, output, session) {
       plot_multiple_deletion_shift(
         isolate(input$multiple_datasets),
         isolate(input$multiple_flattened),
-        isolate(input$multiple_RSC)
+        isolate(input$multiple_RSC),
+        multiple_progress
       )
     })
 
@@ -352,7 +387,8 @@ server <- function(input, output, session) {
         isolate(input$multiple_selected_segment),
         isolate(input$multiple_flattened),
         input$multiple_lengths_bins,
-        isolate(input$multiple_RSC)
+        isolate(input$multiple_RSC),
+        multiple_progress
       )
     })
 
@@ -364,7 +400,8 @@ server <- function(input, output, session) {
         "Start",
         isolate(input$multiple_flattened),
         input$multiple_enrichment_nucleotide_start,
-        isolate(input$multiple_RSC)
+        isolate(input$multiple_RSC),
+        multiple_progress
       )
     })
     output$multiple_nucleotide_enrichment_end_plot <- renderPlotly({
@@ -374,7 +411,8 @@ server <- function(input, output, session) {
         "End",
         isolate(input$multiple_flattened),
         input$multiple_enrichment_nucleotide_end,
-        isolate(input$multiple_RSC)
+        isolate(input$multiple_RSC),
+        multiple_progress
       )
     })
 
@@ -384,7 +422,8 @@ server <- function(input, output, session) {
         isolate(input$multiple_datasets),
         isolate(input$multiple_selected_segment),
         isolate(input$multiple_flattened),
-        isolate(input$multiple_RSC)
+        isolate(input$multiple_RSC),
+        multiple_progress
       )
     })
   })
@@ -393,17 +432,23 @@ server <- function(input, output, session) {
 ### dataset intersection ###
 ############################
   observeEvent(input$intersection_submit, {
+    # initialize progess bar
+    intersection_progress <- shiny::Progress$new()
+    intersection_progress$set(message="Generating plots", value=0)
+
     # matrix with intersecting candidates
     output$overlap_matrix_plot <- renderPlotly({
       plot_overlap_matrix(
-        isolate(input$selected_datasets)
+        isolate(input$selected_datasets),
+        intersection_progress
       )
     })
     
     # barplot with candidates that occur in at least half of the datasets
     output$barplot_candidates_plot <- renderPlotly({
       plot_barplot_candidates(
-        isolate(input$selected_datasets)
+        isolate(input$selected_datasets),
+        intersection_progress
       )
     })
 
@@ -412,10 +457,24 @@ server <- function(input, output, session) {
       plot_highest_n_ranked(
         isolate(input$selected_datasets),
         input$intersection_selected_segment,
-        input$intersection_thresh
+        input$intersection_thresh,
+        intersection_progress
       )
     })
+
+    # table of highest n ranked candidates
+    output$highest_n_ranked_table <- renderDataTable(
+      datatable(
+        get_highest_n_ranked_table(
+          isolate(input$selected_datasets),
+          input$intersection_selected_segment,
+          input$intersection_thresh,
+          intersection_progress
+        )
+      )
+    )
   })
+
 
 
 ### about ###

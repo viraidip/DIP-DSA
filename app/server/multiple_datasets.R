@@ -1,4 +1,4 @@
-plot_multiple_ngs_distribution <- function(paths, RSC) {
+plot_multiple_ngs_distribution <- function(paths, RSC, prg) {
   validate_selection(paths)
   df <- load_all_datasets(paths)
   df <- apply_cutoff(df, RSC)
@@ -6,14 +6,15 @@ plot_multiple_ngs_distribution <- function(paths, RSC) {
 
   pl <- ggplot(df, aes(x=name, y=NGS_read_count, fill=name)) +
     geom_boxplot() +
-    scale_y_log10() +
+    scale_y_log10(limits=c(1, NA)) +
     labs(x="Dataset", y="NGS count (log scale)", fill="Dataset")
 
+  prg$set(0.1, "NGS count plot")
   ggplotly(pl)
 }
 
 
-plot_multiple_deletion_shift <- function(paths, flattened, RSC) {
+plot_multiple_deletion_shift <- function(paths, flattened, RSC, prg) {
   validate_selection(paths)
   df <- load_all_datasets(paths)
   df <- apply_cutoff(df, RSC)
@@ -29,9 +30,7 @@ plot_multiple_deletion_shift <- function(paths, flattened, RSC) {
   plot_df <- df %>%
     group_by(name, Shift) %>%
     summarise(counts=sum(NGS_read_count)) %>%
-    mutate(Freq=counts / sum(counts) * 100)
-
-  plot_df <- plot_df %>%
+    mutate(Freq=counts / sum(counts) * 100) %>%
     mutate(Shift=case_when(
       Shift == 0 ~ "in-frame",
       Shift == 1 ~ "shift +1",
@@ -41,7 +40,7 @@ plot_multiple_deletion_shift <- function(paths, flattened, RSC) {
 
   expected <- c(1/3, 1/3, 1/3)
   labels <- c()
-  for (name in unique(plot_df$name)) {
+  for (name in sort(unique(plot_df$name))) {
     observed_values <- plot_df$Freq[plot_df[["name"]] == name]
     r <- chisq.test(observed_values, p=expected)
     label <- paste(name, get_stat_symbol(r$p.value))
@@ -53,11 +52,12 @@ plot_multiple_deletion_shift <- function(paths, flattened, RSC) {
     labs(x="Dataset" , y="Deletion shift [%]", fill="Shifts") +
     scale_x_discrete(labels=labels)
 
+  prg$set(0.2, "Frame shifts plot")
   ggplotly(pl)
 }
 
 
-plot_multiple_segment_distribution <- function(paths, flattened, RSC) {
+plot_multiple_segment_distribution <- function(paths, flattened, RSC, prg) {
   validate_selection(paths)
   df <- load_all_datasets(paths)
   df <- apply_cutoff(df, RSC)
@@ -70,14 +70,12 @@ plot_multiple_segment_distribution <- function(paths, flattened, RSC) {
   plot_df <- df %>%
     group_by(name, strain, Segment) %>%
     summarise(counts=sum(NGS_read_count)) %>%
-    mutate(Freq=counts / sum(counts) * 100)
-
-  plot_df <- plot_df %>%
+    mutate(Freq=counts / sum(counts) * 100) %>%
     rowwise() %>%
     mutate(seq_len=get_seq_len(strain, Segment))
 
   labels <- c()
-  for (name in unique(plot_df$name)) {
+  for (name in sort(unique(plot_df$name))) {
     subset_df <- plot_df[plot_df[["name"]] == name, ]
     expected <- subset_df$seq_len / sum(subset_df$seq_len)
     r <- chisq.test(subset_df$Freq, p=expected)
@@ -90,11 +88,12 @@ plot_multiple_segment_distribution <- function(paths, flattened, RSC) {
     labs(x="Dataset" , y="Segment of DelVG [%]", fill="Segment") +
     scale_x_discrete(labels=labels)
 
+  prg$set(0.3, "Segment distribution plot")
   ggplotly(pl)
 }
 
 
-plot_multiple_deletion_length<-function(paths,segment,flattened,n_bins, RSC) {
+plot_multiple_deletion_length<-function(paths,segment,flattened,n_bins, RSC, prg) {
   validate_selection(paths)
   df <- load_all_datasets(paths)
   df <- apply_cutoff(df, RSC)
@@ -118,12 +117,13 @@ plot_multiple_deletion_length<-function(paths,segment,flattened,n_bins, RSC) {
   pl <- ggplot(df, aes(x=Length, fill=name)) +
     geom_histogram(position="identity", alpha=0.3, bins=n_bins) +
     labs(x="Length of DI candidate", y="Number of occurrences", fill="Dataset")
-    
+  
+  prg$set(0.5, "Deletion length plot")
   ggplotly(pl)
 }
 
 
-plot_multiple_nucleotide_enrichment<-function(paths,segment,pos,flat,nuc,RSC) {
+plot_multiple_nucleotide_enrichment<-function(paths,segment,pos,flat,nuc,RSC, prg) {
   validate_selection(paths)
   df <- load_all_datasets(paths)
   df <- apply_cutoff(df, RSC)
@@ -138,7 +138,7 @@ plot_multiple_nucleotide_enrichment<-function(paths,segment,pos,flat,nuc,RSC) {
   p_vals <- c()
   symb_ys <- c()
   symb_y <- 1
-  unique_names <- unique(df$name)
+  unique_names <- sort(unique(df$name))
   for (name in unique_names) {
     n_df <- df[df$name == name, ]
     exp_n_df <- exp_df[exp_df$name == name, ]
@@ -148,7 +148,7 @@ plot_multiple_nucleotide_enrichment<-function(paths,segment,pos,flat,nuc,RSC) {
       next
     }
     
-    strain <- unique(n_df$strain)
+    strain <- sort(unique(n_df$strain))
     counts <- prepare_nuc_enr_data(n_df, segment, flat, strain, pos, nuc)
     exp_counts<-prepare_nuc_enr_data(exp_n_df, segment, flat, strain, pos, nuc)
 
@@ -161,8 +161,8 @@ plot_multiple_nucleotide_enrichment<-function(paths,segment,pos,flat,nuc,RSC) {
     diff <- c(diff, comb$diff)
 
     # calculate ANOVA for each position
+    n <- min(nrow(n_df), 1000)
     for (i in position) {
-      n <- min(nrow(n_df), 1000)
       obs_nucs <- as.integer(counts[i, "rel_occurrence"] * n)
       exp_nucs <- as.integer(exp_counts[i, "rel_occurrence"] * n)
       nucs <- c(rep(1, times=obs_nucs), rep(0, times=n-obs_nucs),
@@ -196,17 +196,19 @@ plot_multiple_nucleotide_enrichment<-function(paths,segment,pos,flat,nuc,RSC) {
     geom_tile() +
     scale_fill_gradient2(low="blue", mid="white", high="red") +
     labs(x="Position", y="Dataset", fill="\u0394 (obs. - exp.)") +
-    theme_minimal() +
     scale_x_continuous(breaks=position, labels=labels) +
+    scale_y_discrete(expand = expansion(add = c(0.5, 1)))  +
     annotate("text", x=x1, y=y_max+0.05, label="deleted sequence") +
     annotate("text", x=x2, y=y_max+0.05, label="remaining sequence") +
     annotate("text", x=positions, y=symb_ys, label=symbols)
 
+  value <- ifelse(pos == "Start", 0.7, 0.9)
+  prg$set(value, "Nucleotide enrichment plot")
   ggplotly(pl)
 }
 
 
-plot_multiple_direct_repeat<-function(paths, segment, flattened, RSC) {
+plot_multiple_direct_repeat<-function(paths, segment, flattened, RSC, prg) {
   validate_selection(paths)
   df <- load_all_datasets(paths)
   df <- apply_cutoff(df, RSC)
@@ -216,7 +218,7 @@ plot_multiple_direct_repeat<-function(paths, segment, flattened, RSC) {
   exp_df <- load_expected_data(paths)
   exp_df <- exp_df[exp_df$Segment == segment, ]
 
-  unique_names <- unique(df$name)
+  unique_names <- sort(unique(df$name))
   position <- c(rep(0:6, length(unique_names)))
   dataset <- c()
   diff <- c()
@@ -240,7 +242,7 @@ plot_multiple_direct_repeat<-function(paths, segment, flattened, RSC) {
     }
     validate_plotting(n_df, segment)
 
-    strain <- unique(n_df$strain)
+    strain <- sort(unique(n_df$strain))
     seq <- get_seq(strain, segment)
     n_samples <- nrow(n_df)
     n_df$direct_repeats <- apply(n_df,
@@ -285,8 +287,8 @@ plot_multiple_direct_repeat<-function(paths, segment, flattened, RSC) {
     geom_tile() +
     scale_fill_gradient2(low="blue", mid="white", high="red") +
     labs(x="Direct repeat length", y="Dataset", fill="\u0394 (obs. - exp.)") +
-    theme_minimal() +
     scale_x_continuous(breaks=position, labels=labels)
 
+  prg$close()
   ggplotly(pl)
 }

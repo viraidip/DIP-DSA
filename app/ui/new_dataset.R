@@ -25,7 +25,7 @@ new_dataset_tab <- tabItem(tabName="new_dataset",
       "More info about the structure of the csv file can be found in the",
       actionLink("link_to_about_tab", "about"),
       "tab. The upload can take a couple of minutes, because the sampling of",
-      "random data, used as expected values, takes some time.",
+      "random data, used as expected values, takes some time (5-20 mins).",
       br(),
       actionButton(
         inputId="dataset_submit",
@@ -35,10 +35,15 @@ new_dataset_tab <- tabItem(tabName="new_dataset",
     box(
       width=12,
       title="Create new strain",
+
       textInput(
         inputId="new_strain",
         label="Write the name of the new strain (e.g. A/Perth/16/2009):",
       ),
+      "Please enter the reference RNA sequences of the strain in the",
+      "following:",
+      br(),
+      br(),
       div(style="display:inline-block",
         fileInput(
           inputId="upload_PB2_file",

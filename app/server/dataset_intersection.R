@@ -18,7 +18,7 @@ get_intersecting_candidates <- function(df) {
 }
 
 
-plot_overlap_matrix <- function(paths) {
+plot_overlap_matrix <- function(paths, prg) {
   validate_selection(paths)
   df <- load_all_datasets(paths)
   validate_df(df)
@@ -52,11 +52,12 @@ plot_overlap_matrix <- function(paths) {
     scale_x_discrete(labels=labels) +
     scale_y_discrete(labels=labels)
 
+  prg$set(0.25, "matrix plot")
   return(p)
 }
 
 
-plot_barplot_candidates <- function(paths) {
+plot_barplot_candidates <- function(paths, prg) {
   validate_selection(paths)
   df <- load_all_datasets(paths)
   validate_df(df)
@@ -68,14 +69,14 @@ plot_barplot_candidates <- function(paths) {
 
   pl <- ggplot(c_df, aes(x=segment, fill=factor(occurrence))) +
     geom_bar(position="dodge") +
-    labs(x="Segment", y="Identified DelVGs", fill="Datasets") +
-    theme_minimal()
+    labs(x="Segment", y="Identified DelVGs", fill="Datasets")
   
+  prg$set(0.5, "candidate count plot")
   ggplotly(pl)
 }
 
 
-plot_highest_n_ranked <- function(paths, segment, thresh) {
+plot_highest_n_ranked <- function(paths, segment, thresh, prg) {
   validate_selection(paths)
   df <- load_all_datasets(paths)
   df <- df %>%
@@ -101,36 +102,56 @@ plot_highest_n_ranked <- function(paths, segment, thresh) {
   l2 <- mean_ranking$key
   n_values <- c(1:min(thresh, length(l1)))
   overlap_counts <- numeric()
-  found_cands <- c()
-  cands_per_n <- c()
   for (n in n_values) {
     overlap <- intersect(l1[1:n], l2[1:n])
-    overlap_counts <- c(overlap_counts, length(overlap))   
-    new_cands <- setdiff(overlap, found_cands)
-    if (length(new_cands) == 0) { # no new cand found
-      new_cands <- " "
-    } else if (length(new_cands) > 1) { # more than 1 new cand found
-      found_cands <- c(found_cands, new_cands)
-      new_cands <- paste(new_cands, collapse="\n")
-    } else { # exactly 1 new cand found
-      found_cands <- c(found_cands, new_cands)
-    }    
-    cands_per_n <- c(cands_per_n, new_cands)
+    overlap_counts <- c(overlap_counts, length(overlap)) 
   }
 
-  results_df <- data.frame(n=n_values,
-                           overlap_count=overlap_counts,
-                           cands_per_n=cands_per_n)
+  results_df <- data.frame(n=n_values, overlap_count=overlap_counts)
 
   pl <- ggplot(results_df, aes(x=n, y=overlap_count)) +
     geom_line() +
     geom_point() +
-    labs(x="n highest ranked DelVGs", y="# DelVGs in both rankings") +
-    annotate("text",
-             x=results_df$n+0.3,
-             y=results_df$overlap_count-0.15,
-             label=results_df$cands_per_n) +
-    theme_minimal()
+    labs(x="n highest ranked DelVGs", y="# DelVGs in both rankings")
 
+  print(prg$value)
+
+  prg$set(0.75, "highest n ranked plot")
   ggplotly(pl)
+}
+
+
+get_highest_n_ranked_table <- function(paths, segment, thresh, prg) {
+  validate_selection(paths)
+  df <- load_all_datasets(paths)
+  df <- df %>%
+    group_by(name) %>%
+    mutate(perc=ecdf(NGS_read_count)(NGS_read_count) * 100)
+
+  c_df <- get_intersecting_candidates(df)
+  df$key <- paste(df$Segment, df$Start, df$End, sep="_")
+  marked_points <- df[df$key %in% as.character(c_df[["DelVG candidate"]]), ]
+  marked_points <- marked_points[marked_points$Segment == segment, ]
+
+  sum_ranking <- marked_points %>%
+    group_by(key) %>%
+    summarise(sum=sum(perc, na.rm=TRUE)) %>%
+    arrange(desc(sum)) %>%
+    mutate(sum_rank=row_number())
+
+  mean_ranking <- marked_points %>%
+    group_by(key) %>%
+    summarise(mean=mean(perc, na.rm=TRUE)) %>%
+    arrange(desc(mean)) %>%
+    mutate(mean_rank=row_number())
+
+  intersect <- intersect(sum_ranking$key[1:thresh], mean_ranking$key[1:thresh])
+  results_df <- inner_join(sum_ranking, mean_ranking, by="key")
+  results_df <- results_df %>%
+    filter(key %in% intersect) %>%
+    mutate(sum=sprintf("%.2f", sum)) %>%
+    mutate(mean=sprintf("%.2f", mean))
+
+  prg$close()
+  return(results_df)
 }

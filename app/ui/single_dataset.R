@@ -26,12 +26,20 @@ single_dataset_tab <- tabItem(tabName="single_dataset",
         2,
         step=1
       ),
+      "The RSC is dataset-specific and is usually set to a value between 5",
+      "and 30. As reference: In our meta-analysis an RSC of 15 was used.",
+      br(),
+      br(),
       radioButtons(
         inputId="single_flattened",
         label="Show data flattened or unflattened (including NGS count):",
         choices=c("flattened", "unflattened"),
         inline=TRUE
       ),
+      "Flattened data do not take the NGS count into account. In unflattened",
+      "data, each individual DelVG is weighted by the NGS count.",
+      br(),
+      br(),
       selectInput(
         inputId="single_selected_segment",
         label="Select segment:",
@@ -50,15 +58,19 @@ single_dataset_tab <- tabItem(tabName="single_dataset",
       plotlyOutput("ngs_distribution_plot")
     ),
     box(
-      title="Deletion shift",
+      title="Frame shift",
       width=6,
-      "Shift of the reading frame introduced by deletion site.",
-      plotlyOutput("deletion_shift_plot"),
+      "Shift of the reading frame introduced by deletion site. A chi-squared",
+      "test is performed to compare the distribution against a random shifts.",
+      plotlyOutput("frame_shift_plot"),
     ),
     box(
       title="Segment distribution",
       width=6,
-      "Distribution of the DelVGs over the eight segments.",
+      "Distribution of the DelVGs over the eight segments. It is tested by a",
+      "chi-squared test if the distribution is similar to a distribution that",
+      "would be expected if the DelVGs occur solely dependent on the RNA",
+      "sequence length.",
       plotlyOutput("segment_distribution_plot"),
     ),
     box(  
@@ -77,10 +89,12 @@ single_dataset_tab <- tabItem(tabName="single_dataset",
       plotlyOutput("lengths_plot"),
     ),
     box(
-      title="Deletion locations",
+      title="Distribution of deletion sites",
       width=6,
       "Locations and nucleotides of all start and end positions of the ",
-      "deletion sites are plotted in reference to the full sequence.",
+      "deletion sites. If data about the packaging signal is available,",
+      "incorporation signal is included in blue and bundling signal is",
+      "included in red.",
       plotlyOutput("locations_plot"),
     ),
     box(
@@ -88,15 +102,15 @@ single_dataset_tab <- tabItem(tabName="single_dataset",
       width=6,
       "Comparision of the lengths of the 3' and 5' ends. If data about the",
       "packaging signal is available, incorporation signal is included in",
-      "blue and bundling signal is included in red",
+      "blue and bundling signal is included in red.",
       plotlyOutput("end_3_5_plot")
     ),
     box(
-      title="Deletion connections",
+      title="Deletion site mapping",
       width=6,
       "The plot displays the connection between the start and end positons",
       "of the DelVGs.",
-      plotlyOutput("start_end_connection_plot"),
+      plotlyOutput("start_end_mapping_plot"),
     ),
 
     box(
@@ -104,7 +118,8 @@ single_dataset_tab <- tabItem(tabName="single_dataset",
       width=6,
       "The length of the overlapping sequence of the start and end of the",
       "deletion site is calculated and plotted in a bar plot. The results are",
-      "compared against a sampling apporach.",
+      "compared against data from a random sampling apporach using a chi",
+      "squared test.",
       plotlyOutput("direct_repeats_plot")
     ),
     box(
@@ -116,6 +131,8 @@ single_dataset_tab <- tabItem(tabName="single_dataset",
         choices=c("A", "C", "G", "U"),
         inline=TRUE
       ),
+      "For each position the difference to randomly sampled data is estimated",
+      "using a one-way ANOVA.",
       plotlyOutput("nucleotide_enrichment_start_plot"),
     ),
     box(
@@ -127,6 +144,8 @@ single_dataset_tab <- tabItem(tabName="single_dataset",
         choices=c("A", "C", "G", "U"),
         inline=TRUE
       ),
+      "For each position the difference to randomly sampled data is estimated",
+      "using a one-way ANOVA.",
       plotlyOutput("nucleotide_enrichment_end_plot")
     )
   )

@@ -118,7 +118,7 @@ generate_sampling_data <- function(seq, s, e, n) {
   return(last_two_columns[sample(nrow(last_two_columns), n), , drop=FALSE])
 }
 
-create_random_data <- function(strain, dataset_name) {
+create_random_data <- function(strain, dataset_name, progress) {
   path <- file.path(DATASETSPATH, strain)
   file <- file.path(path, paste(dataset_name, ".csv", sep=""))
   names <- c("Segment", "Start", "End", "NGS_read_count")
@@ -126,7 +126,10 @@ create_random_data <- function(strain, dataset_name) {
   df <- read.csv(file, na.strings=c("NaN"), col.names=names, colClasses=cl)
   df <- apply_cutoff(df, 15) # filter here to remove at least some FP
 
+  value <- 0.25
   for (seg in SEGMENTS) {
+    progress$set(message=paste("Create random data (", seg, ")", sep=""), value=value)
+    value <- value + 0.1
     s_df <- df[df$Segment == seg, , drop=FALSE]
     if (nrow(s_df) == 0) {
       next
@@ -221,8 +224,8 @@ format_dataframe_lengths <- function(df, segment, strain, flattened) {
 }
 
 add_stats_lengths <- function(df, pl) {
-  col1 = "#8B2323"
-  col2 = "#FF4040"
+  col1 = "black"
+  col2 = "black"
   y_f = 1.0
   
   # calculate stats and add them to plot
