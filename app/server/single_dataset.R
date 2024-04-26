@@ -2,12 +2,14 @@ plot_ngs_distribution <- function(strain, datasetname, RSC, prg) {
   df <- load_single_dataset(file.path(strain,paste(datasetname,".csv",sep="")))
   df <- apply_cutoff(df, RSC)
   validate_df(df)
-  df$name <- paste(datasetname, " (n=", nrow(df), ")", sep="")
+  label <- paste(datasetname, " (n=", nrow(df), ")", sep="")
+  df$name <- datasetname
 
   pl <- ggplot(df, aes(x=name, y=NGS_read_count, fill=name)) +
     geom_boxplot() +
-    scale_y_log10(limits=c(0, NA)) +
-    labs(x="Dataset", y="NGS count (log scale)", fill="Dataset")
+    scale_y_log10(limits=c(1, NA)) +
+    labs(x=label, y="NGS count (log scale)") +
+    theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())
 
   prg$set(0.1, "NGS count plot")
   ggplotly(pl)
@@ -72,13 +74,13 @@ plot_segment_distribution <- function(strain, datasetname, flattened, RSC, prg) 
 
   plot_df$expected <- plot_df$seq_len / sum(plot_df$seq_len) * 100
   r <- chisq.test(plot_df[c("Freq", "expected")])
-  symbol <- get_stat_symbol(r$p.value)
-  label <- paste(datasetname, "", symbol)
+  label <- paste(datasetname, "", get_stat_symbol(r$p.value))
 
-  pl <- ggplot(plot_df, aes(x=Freq, y=factor("All Segments"), fill=Segment)) +
+  plot_df$name <- datasetname
+  pl <- ggplot(plot_df, aes(x=name, y=Freq, fill=Segment)) +
     geom_bar(stat="identity", position="stack") +
-    theme_minimal() +
-    labs(x="Segment of DelVG [%]", y=label)
+    labs(x=label, y="Segment of DelVG [%]") +
+    theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())
 
   prg$set(0.3, "Segment distribution plot")
   ggplotly(pl)
@@ -93,7 +95,7 @@ plot_lengths<-function(strain, datasetname, segment,flattened,n_bins, RSC, prg) 
   df$Class <- datasetname
 
   pl <- ggplot(df, aes(x=Length, fill=Class)) +
-    geom_histogram(alpha=0.3, bins=n_bins, position="identity") +
+    geom_histogram(bins=n_bins, position="identity") +
     labs(x="Length of DelVG", y="Number of occurrences", fill="Dataset")
   # add mean and median to plot
   pl <- add_stats_lengths(df, pl)
