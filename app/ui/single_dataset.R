@@ -118,7 +118,8 @@ single_dataset_tab <- tabItem(tabName="single_dataset",
       width=6,
       "The length of the overlapping sequence of the start and end of the",
       "deletion site is calculated and plotted in a bar plot. The results are",
-      "compared against a sampling apporach.",
+      "compared against data from a random sampling apporach using a chi",
+      "squared test.",
       plotlyOutput("direct_repeats_plot")
     ),
     box(
@@ -130,6 +131,8 @@ single_dataset_tab <- tabItem(tabName="single_dataset",
         choices=c("A", "C", "G", "U"),
         inline=TRUE
       ),
+      "For each position the difference to randomly sampled data is estimated",
+      "using a one-way ANOVA.",
       plotlyOutput("nucleotide_enrichment_start_plot"),
     ),
     box(
@@ -141,6 +144,8 @@ single_dataset_tab <- tabItem(tabName="single_dataset",
         choices=c("A", "C", "G", "U"),
         inline=TRUE
       ),
+      "For each position the difference to randomly sampled data is estimated",
+      "using a one-way ANOVA.",
       plotlyOutput("nucleotide_enrichment_end_plot")
     )
   )

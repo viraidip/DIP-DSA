@@ -58,13 +58,18 @@ multiple_datasets_tab <- tabItem(tabName="multiple_datasets",
     box(
       title="Deletion shift",
       width=12,
-      "Distribution of the deletion shift for the selected datasets",
+      "Distribution of the reading frame shift for the selected datasets. A",
+      "chi-squared test is performed to compare the distribution against a",
+      "random shifts.",
       plotlyOutput("multiple_deletion_shift_plot")
     ),
     box(
       title="Segment distribution",
       width=12,
-      "Distribution on the eight RNA segments of the selected datasets",
+      "Distribution of the DelVGs over the eight segments. It is tested by a",
+      "chi-squared test if the distribution is similar to a distribution that",
+      "would be expected if the DelVGs occur solely dependent on the RNA",
+      "sequence length.",
       plotlyOutput("multiple_segment_distribution_plot")
     ),
     box(
@@ -86,6 +91,8 @@ multiple_datasets_tab <- tabItem(tabName="multiple_datasets",
       title="Nucleotide enrichment (Start position)",
       width=6,
       "Distribution of nucleotide enrichment at start of the deletion site.",
+      "For each position the difference to randomly sampled data is estimated",
+      "using a one-way ANOVA.",
       radioButtons(
         inputId="multiple_enrichment_nucleotide_start",
         label="Select nucleotide:",
@@ -98,6 +105,8 @@ multiple_datasets_tab <- tabItem(tabName="multiple_datasets",
       title="Nucleotide enrichment (End position)",
       width=6,
       "Distribution of nucleotide enrichment at end of the deletion site.",
+      "For each position the difference to randomly sampled data is estimated",
+      "using a one-way ANOVA.",
       radioButtons(
         inputId="multiple_enrichment_nucleotide_end",
         label="Select nucleotide:",
@@ -109,7 +118,9 @@ multiple_datasets_tab <- tabItem(tabName="multiple_datasets",
     box(
       title="Direct repeats",
       width=12,
-      "Distribution of the direct repeat lengths.",
+      "Distribution of the direct repeat lengths. The distribution is",
+      "compared against data from a random sampling apporach using a chi",
+      "squared test.",
       plotlyOutput("multiple_direct_repeats_plot")
     )
   )
