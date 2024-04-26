@@ -68,7 +68,7 @@ multiple_datasets_tab <- tabItem(tabName="multiple_datasets",
       plotlyOutput("multiple_segment_distribution_plot")
     ),
     box(
-      title="DVG length",
+      title="DelVG length",
       width=12,
       sliderInput(
         inputId="multiple_lengths_bins",
@@ -78,7 +78,8 @@ multiple_datasets_tab <- tabItem(tabName="multiple_datasets",
         20,
         step=1
       ),
-      "Lengths of the DVGs",
+      "Length distribution of the DelVGs. Datasets can be (un-)selected by",
+      "clicking on them in the legend.",
       plotlyOutput("multiple_deletion_length_plot")
     ),
     box(
