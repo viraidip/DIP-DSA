@@ -25,12 +25,20 @@ multiple_datasets_tab <- tabItem(tabName="multiple_datasets",
         2,
         step=1
       ),
+      "The RSC is dataset-specific and is usually set to a value between 5",
+      "and 30. As reference: In our meta-analysis an RSC of 15 was used.",
+      br(),
+      br(),
       radioButtons(
         inputId="multiple_flattened",
         label="Show data flattened or unflattened (including NGS count):",
         choices=c("flattened", "unflattened"),
         inline=TRUE
       ),
+      "Flattened data do not take the NGS count into account. In unflattened",
+      "data, each individual DelVG is weighted by the NGS count.",
+      br(),
+      br(),
       selectInput(
         inputId="multiple_selected_segment",
         label="Select segment:",
