@@ -110,7 +110,7 @@ single_dataset_tab <- tabItem(tabName="single_dataset",
       width=6,
       "The plot displays the connection between the start and end positons",
       "of the DelVGs.",
-      plotlyOutput("start_end_mapping_plot"),
+      plotOutput("start_end_mapping_plot"),
     ),
 
     box(

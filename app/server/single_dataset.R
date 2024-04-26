@@ -165,30 +165,44 @@ plot_end_3_5 <- function(strain, datasetname, segment, RSC, prg) {
 }
 
 
+upper_circle <- function(x,y,r,nsteps=100,...){  
+  rs <- seq(0,pi,len=nsteps) 
+  xc <- x+r*cos(rs) 
+  yc <- y+2*r*sin(rs) 
+  polygon(xc, yc, border="green4", ...) 
+} 
+
+lower_circle <- function(x,y,r,nsteps=100,...){ 
+  rs <- seq(0,pi,len=nsteps) 
+  xc <- x-r*cos(rs) 
+  yc <- y-2*r*sin(rs) 
+  polygon(xc, yc, border="red", ...) 
+} 
+
 plot_start_end_mapping <- function(strain, datasetname, segment, RSC, prg) {
   df <- load_single_dataset(file.path(strain,paste(datasetname,".csv",sep="")))
   df <- apply_cutoff(df, RSC)
   df <- df[df$Segment == segment, ]
   validate_plotting(df, segment)
-  df["y"] <- 0
-  df["yend"] <- 1
 
   max <- get_seq_len(strain, segment) 
 
-  p <- ggplot() +
-    geom_segment(
-      df,
-      mapping=aes(x=Start, y=y, xend=End, yend=yend, color=NGS_read_count)
-    ) +
-    scale_color_gradient() +
-    labs(x="Nucleotide position", y=datasetname, color="NGS read count") +
-    geom_rect(aes(xmin=0, xmax=max, ymin=-0.1, ymax=0), alpha=0.9) +
-    geom_rect(aes(xmin=0, xmax=max, ymin=1, ymax=1.1), alpha=0.9) +
-    annotate(geom="text", x=round(max/2), y=-0.05, label="Start", col="white")+
-    annotate(geom="text", x=round(max/2), y=1.05, label="End", col="white")
-
+  p <- plot(1, type="n",axes=F,xlab="", ylab="",xlim=c(0,max),ylim=c(-400,max)) +
+    rect(xleft=0, xright=max, ybottom=-200, ytop=0, col="grey") +
+    axis(1, at=c(seq(0, max, by = 300), max))
+  
+  for (i in 1:nrow(df)) {
+    del_length <- (df[i, "End"] - df[i, "Start"])
+    radius <- del_length/2
+    if (del_length / max > 0.15) {
+      p <- p + upper_circle(df[i, "Start"]+radius,0,radius,nsteps=1000)
+    } else {
+      p <- p + lower_circle(df[i, "Start"]+radius,-200,radius,nsteps=1000)
+    }
+  }
+  
   prg$set(0.7, "Start and end plot")
-  ggplotly(p)
+  p
 }
 
 

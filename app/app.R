@@ -294,7 +294,7 @@ server <- function(input, output, session) {
     })
 
     # mapping start-end
-    output$start_end_mapping_plot <- renderPlotly({
+    output$start_end_mapping_plot <- renderPlot({
       plot_start_end_mapping(
         format_strain_name(isolate(input$single_strain)),
         isolate(input$single_dataset),
