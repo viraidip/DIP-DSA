@@ -30,9 +30,7 @@ plot_multiple_deletion_shift <- function(paths, flattened, RSC, prg) {
   plot_df <- df %>%
     group_by(name, Shift) %>%
     summarise(counts=sum(NGS_read_count)) %>%
-    mutate(Freq=counts / sum(counts) * 100)
-
-  plot_df <- plot_df %>%
+    mutate(Freq=counts / sum(counts) * 100) %>%
     mutate(Shift=case_when(
       Shift == 0 ~ "in-frame",
       Shift == 1 ~ "shift +1",
@@ -72,9 +70,7 @@ plot_multiple_segment_distribution <- function(paths, flattened, RSC, prg) {
   plot_df <- df %>%
     group_by(name, strain, Segment) %>%
     summarise(counts=sum(NGS_read_count)) %>%
-    mutate(Freq=counts / sum(counts) * 100)
-
-  plot_df <- plot_df %>%
+    mutate(Freq=counts / sum(counts) * 100) %>%
     rowwise() %>%
     mutate(seq_len=get_seq_len(strain, Segment))
 

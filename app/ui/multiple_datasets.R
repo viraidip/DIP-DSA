@@ -14,7 +14,7 @@ multiple_datasets_tab <- tabItem(tabName="multiple_datasets",
         ),
         multiple=TRUE,
         selected=c("A_California_07_2009/Alnaji2019_Cal07.csv",
-          "A_NewCaledonia_1999/Alnaji2019_NC.csv"
+          "A_NewCaledonia_20-JY2_1999/Alnaji2019_NC.csv"
         )
       ),
       sliderInput(
