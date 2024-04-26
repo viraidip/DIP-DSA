@@ -42,12 +42,13 @@ plot_multiple_deletion_shift <- function(paths, flattened, RSC, prg) {
 
   expected <- c(1/3, 1/3, 1/3)
   labels <- c()
-  for (name in unique(plot_df$name)) {
+  for (name in sort(unique(plot_df$name))) {
     observed_values <- plot_df$Freq[plot_df[["name"]] == name]
     r <- chisq.test(observed_values, p=expected)
     label <- paste(name, get_stat_symbol(r$p.value))
     labels <- c(labels, label)
   }
+  print(labels)
 
   pl <- ggplot(plot_df, aes(x=name, y=Freq, fill=factor(Shift))) +
     geom_bar(stat="identity", position="stack") +
@@ -79,7 +80,7 @@ plot_multiple_segment_distribution <- function(paths, flattened, RSC, prg) {
     mutate(seq_len=get_seq_len(strain, Segment))
 
   labels <- c()
-  for (name in unique(plot_df$name)) {
+  for (name in sort(unique(plot_df$name))) {
     subset_df <- plot_df[plot_df[["name"]] == name, ]
     expected <- subset_df$seq_len / sum(subset_df$seq_len)
     r <- chisq.test(subset_df$Freq, p=expected)
@@ -142,7 +143,7 @@ plot_multiple_nucleotide_enrichment<-function(paths,segment,pos,flat,nuc,RSC, pr
   p_vals <- c()
   symb_ys <- c()
   symb_y <- 1
-  unique_names <- unique(df$name)
+  unique_names <- sort(unique(df$name))
   for (name in unique_names) {
     n_df <- df[df$name == name, ]
     exp_n_df <- exp_df[exp_df$name == name, ]
@@ -152,7 +153,7 @@ plot_multiple_nucleotide_enrichment<-function(paths,segment,pos,flat,nuc,RSC, pr
       next
     }
     
-    strain <- unique(n_df$strain)
+    strain <- sort(unique(n_df$strain))
     counts <- prepare_nuc_enr_data(n_df, segment, flat, strain, pos, nuc)
     exp_counts<-prepare_nuc_enr_data(exp_n_df, segment, flat, strain, pos, nuc)
 
@@ -222,7 +223,7 @@ plot_multiple_direct_repeat<-function(paths, segment, flattened, RSC, prg) {
   exp_df <- load_expected_data(paths)
   exp_df <- exp_df[exp_df$Segment == segment, ]
 
-  unique_names <- unique(df$name)
+  unique_names <- sort(unique(df$name))
   position <- c(rep(0:6, length(unique_names)))
   dataset <- c()
   diff <- c()
@@ -246,7 +247,7 @@ plot_multiple_direct_repeat<-function(paths, segment, flattened, RSC, prg) {
     }
     validate_plotting(n_df, segment)
 
-    strain <- unique(n_df$strain)
+    strain <- sort(unique(n_df$strain))
     seq <- get_seq(strain, segment)
     n_samples <- nrow(n_df)
     n_df$direct_repeats <- apply(n_df,
