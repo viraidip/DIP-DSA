@@ -54,7 +54,8 @@ dataset_intersection_tab <- tabItem(tabName="dataset_intersection",
         10,
         step=1
       ),
-      plotlyOutput("highest_n_ranked_plot")
+      plotlyOutput("highest_n_ranked_plot"),
+      dataTableOutput("highest_n_ranked_table")
     )
   )
 )

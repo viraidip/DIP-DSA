@@ -461,7 +461,20 @@ server <- function(input, output, session) {
         intersection_progress
       )
     })
+
+    # table of highest n ranked candidates
+    output$highest_n_ranked_table <- renderDataTable(
+      datatable(
+        get_highest_n_ranked_table(
+          isolate(input$selected_datasets),
+          input$intersection_selected_segment,
+          input$intersection_thresh,
+          intersection_progress
+        )
+      )
+    )
   })
+
 
 
 ### about ###
