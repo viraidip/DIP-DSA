@@ -224,8 +224,8 @@ format_dataframe_lengths <- function(df, segment, strain, flattened) {
 }
 
 add_stats_lengths <- function(df, pl) {
-  col1 = "#8B2323"
-  col2 = "#FF4040"
+  col1 = "black"
+  col2 = "black"
   y_f = 1.0
   
   # calculate stats and add them to plot
