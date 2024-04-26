@@ -6,7 +6,7 @@ plot_multiple_ngs_distribution <- function(paths, RSC, prg) {
 
   pl <- ggplot(df, aes(x=name, y=NGS_read_count, fill=name)) +
     geom_boxplot() +
-    scale_y_log10() +
+    scale_y_log10(limits=c(0, NA)) +
     labs(x="Dataset", y="NGS count (log scale)", fill="Dataset")
 
   prg$set(0.1, "NGS count plot")

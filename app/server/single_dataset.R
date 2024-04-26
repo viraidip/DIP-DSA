@@ -1,15 +1,20 @@
-plot_ngs_distribution <- function(strain, datasetname, prg) {
+plot_ngs_distribution <- function(strain, datasetname, RSC, prg) {
   df <- load_single_dataset(file.path(strain,paste(datasetname,".csv",sep="")))
+  df <- apply_cutoff(df, RSC)
+  validate_df(df)
+  df$name <- paste(datasetname, " (n=", nrow(df), ")", sep="")
+
+  pl <- ggplot(df, aes(x=name, y=NGS_read_count, fill=name)) +
+    geom_boxplot() +
+    scale_y_log10(limits=c(0, NA)) +
+    labs(x="Dataset", y="NGS count (log scale)", fill="Dataset")
 
   prg$set(0.1, "NGS count plot")
-  pl <- plot_ly(data=df, y=~NGS_read_count, type="box", name=datasetname) %>%
-    layout(yaxis=list(title="NGS count (log scale)", type="log"))
-
-  pl
+  ggplotly(pl)
 }
 
 
-plot_deletion_shift <- function(strain, datasetname, flattened, RSC, prg) {
+plot_frame_shift <- function(strain, datasetname, flattened, RSC, prg) {
   df <- load_single_dataset(file.path(strain,paste(datasetname,".csv",sep="")))
   df <- apply_cutoff(df, RSC)
   validate_df(df)
@@ -190,7 +195,6 @@ plot_start_end_connection <- function(strain, datasetname, segment, RSC, prg) {
 
 
 plot_direct_repeats <- function(strain, datasetname, segment, RSC, flattened, prg) {
-  print("dir reps")
   df <- load_single_dataset(
     file.path(strain, paste(datasetname, ".csv", sep=""))
   )
@@ -303,13 +307,10 @@ plot_nucleotide_enrichment <- function(strain,
   
   # only calculate nucleotide enrichment if expected data is available
   sampling_df <- prepare_nuc_enr_data(exp_df,segment,flattened,strain,pos,nuc)
-  print(sampling_df)
   if (nrow(sampling_df) != 0) {
-    print("hhhhhhhhhhhhhhhhhhhhheeeeeeeererererer")
     sampling_df["group"] <- rep("expected", nrow(sampling_df))
     do_testing <- TRUE
   } else {
-    print("do no testing")
     do_testing <- FALSE
   }
   

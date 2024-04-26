@@ -230,13 +230,14 @@ server <- function(input, output, session) {
       plot_ngs_distribution(
         format_strain_name(isolate(input$single_strain)),
         isolate(input$single_dataset),
+        isolate(input$single_RSC),
         single_progress
       )
     })
 
-    # deletion shifts
-    output$deletion_shift_plot <- renderPlotly({
-      plot_deletion_shift(
+    # frame shifts
+    output$frame_shift_plot <- renderPlotly({
+      plot_frame_shift(
         format_strain_name(isolate(input$single_strain)),
         isolate(input$single_dataset),
         isolate(input$single_flattened),

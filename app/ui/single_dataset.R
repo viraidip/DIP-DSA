@@ -58,10 +58,10 @@ single_dataset_tab <- tabItem(tabName="single_dataset",
       plotlyOutput("ngs_distribution_plot")
     ),
     box(
-      title="Deletion shift",
+      title="Frame shift",
       width=6,
       "Shift of the reading frame introduced by deletion site.",
-      plotlyOutput("deletion_shift_plot"),
+      plotlyOutput("frame_shift_plot"),
     ),
     box(
       title="Segment distribution",
