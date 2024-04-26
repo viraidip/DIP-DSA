@@ -293,9 +293,9 @@ server <- function(input, output, session) {
       )
     })
 
-    # connections start-end
-    output$start_end_connection_plot <- renderPlotly({
-      plot_start_end_connection(
+    # mapping start-end
+    output$start_end_mapping_plot <- renderPlotly({
+      plot_start_end_mapping(
         format_strain_name(isolate(input$single_strain)),
         isolate(input$single_dataset),
         isolate(input$single_selected_segment),

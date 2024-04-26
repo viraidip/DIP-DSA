@@ -169,7 +169,7 @@ plot_end_3_5 <- function(strain, datasetname, segment, RSC, prg) {
 }
 
 
-plot_start_end_connection <- function(strain, datasetname, segment, RSC, prg) {
+plot_start_end_mapping <- function(strain, datasetname, segment, RSC, prg) {
   df <- load_single_dataset(file.path(strain,paste(datasetname,".csv",sep="")))
   df <- apply_cutoff(df, RSC)
   df <- df[df$Segment == segment, ]
