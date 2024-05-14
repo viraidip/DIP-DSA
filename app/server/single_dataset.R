@@ -192,11 +192,13 @@ plot_start_end_mapping <- function(strain, datasetname, segment, RSC, prg) {
     width=hist_data$breaks[2] - hist_data$breaks[1],
     space=0,
     xlab="Nucleotide position",
-    ylab="",
+    ylab="Relative occurrence",
     xlim=c(0,max),
     ylim=c(-400,max),
-    col="skyblue") +
-    axis(1, at=c(seq(0, max, by = 300), max))
+    col="skyblue",
+    axes=FALSE) +
+    axis(1, at=c(seq(0, max, by = 300), max)) +
+    axis(2, at=c(0, max/2, max), labels=c("0", "0.5", "1.0"))
   
   for (i in 1:nrow(df)) {
     del_length <- (df[i, "End"] - df[i, "Start"])
