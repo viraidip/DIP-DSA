@@ -7,6 +7,7 @@ library(plyr)
 library(shiny)
 library(shinydashboard)
 library(shinyvalidate)
+library(stringi)
 library(stringr)
 library(dplyr)
 

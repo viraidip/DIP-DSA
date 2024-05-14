@@ -299,7 +299,7 @@ direct_repeats_counting_routine <- function(row, sequence) {
 
   counter <- 0
   for (i in length(start_window):1) {
-    if (start_window[i] == end_window[i]) {
+    if (stri_sub(start_window, i, i) == stri_sub(end_window, i, i)) {
       counter <- counter + 1
     } else {
       return(counter)
