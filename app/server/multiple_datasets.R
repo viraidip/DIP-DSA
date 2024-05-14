@@ -144,7 +144,10 @@ plot_multiple_nucleotide_enrichment<-function(paths,segment,pos,flat,nuc,RSC, pr
     exp_n_df <- exp_df[exp_df$name == name, ]
 
     if (nrow(n_df) == 0 || nrow(exp_n_df) == 0) {
-      diff <- c(diff, rep(0, 10))
+      diff <- c(diff, rep(NA, 10))
+      p_vals <- c(p_vals, rep(1.0, 10))
+      symb_ys <- c(symb_ys, rep(symb_y, each=10))
+      symb_y <- symb_y + 1
       next
     }
     
@@ -181,7 +184,7 @@ plot_multiple_nucleotide_enrichment<-function(paths,segment,pos,flat,nuc,RSC, pr
   positions <- c(rep(1:10, length(unique_names)))
   dataset <- rep(unique_names, each=10)
   plot_df <- data.frame(position=positions, dataset=dataset, diff=diff)
-   
+
   y_max <- length(unique_names) + 0.5
   x1 <- ifelse(pos == "Start", 8, 3)
   x2 <- ifelse(pos == "Start", 3, 8)
@@ -237,7 +240,8 @@ plot_multiple_direct_repeat<-function(paths, segment, flattened, RSC, prg) {
     
     exp_n_df <- exp_df[exp_df$name == name, ]
     if (nrow(n_df) == 0 || nrow(exp_n_df) == 0) {
-      diff <- c(diff, rep(0, 7))
+      diff <- c(diff, rep(NA, 7))
+      dataset <- c(dataset, rep(name, each=7))
       next
     }
     validate_plotting(n_df, segment)
