@@ -1,9 +1,9 @@
 get_intersecting_candidates <- function(df) {
-  candidates <- c()
-  for (name in unique(df$name)) {
-    n_df <- df[df$name == name, ]
-    cand <- paste(n_df$Segment, n_df$Start, n_df$End, sep="_")
-    candidates <- append(candidates, cand)
+  split_df <- split(df, df$name)
+  candidates <- character()
+  for (n_df in split_df) {
+    cand <- paste(n_df$Segment, n_df$Start, n_df$End, sep = "_")
+    candidates <- c(candidates, cand)
   }
 
   final_df <- data.frame(table(candidates))
@@ -31,16 +31,13 @@ plot_overlap_matrix <- function(paths, prg) {
     lists <- c(lists, list(DI_list))
   }
 
-  # initialize an empty matrix
   matrix_size <- length(lists)
+  lengths <- sapply(lists, function(x) length(unique(x)))
   matrix <- matrix(0, nrow=matrix_size, ncol=matrix_size)
-  # populate matrix entrywise
   for (i in 1:matrix_size) {
     set1 <- unique(lists[[i]])
-    for (j in 1:matrix_size) {
-      set2 <- unique(lists[[j]])
-      matrix[i, j] <- (length(intersect(set1, set2)) / length(set2)) * 100
-    }
+    inter_lengths <- sapply(lists, function(x) length(intersect(set1, x)))
+    matrix[i, ] <- (inter_lengths / lengths) * 100
   }
 
   plot_df <- as.data.frame(as.table(matrix))
@@ -113,8 +110,6 @@ plot_highest_n_ranked <- function(paths, segment, thresh, prg) {
     geom_line() +
     geom_point() +
     labs(x="n highest ranked DelVGs", y="# DelVGs in both rankings")
-
-  print(prg$value)
 
   prg$set(0.75, "highest n ranked plot")
   ggplotly(pl)

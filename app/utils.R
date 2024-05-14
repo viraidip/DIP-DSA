@@ -292,12 +292,11 @@ add_packaging_signal <- function(p, strain, segment) {
 direct_repeats_counting_routine <- function(row, sequence) {
   start <- as.integer(row["Start"])
   end <- as.integer(row["End"])
-  i_s_1 <- start-5
-  i_s_2 <- start
-  i_e_1 <- end-5-1
-  i_e_2 <- end-1
-  start_window <- sequence[i_s_1:i_s_2]
-  end_window <- sequence[i_e_1:i_e_2]
+  start_index <- start - 5
+  end_index <- end - 5 - 1
+  start_window <- sequence[start_index:start]
+  end_window <- sequence[end_index:end]
+
   counter <- 0
   for (i in length(start_window):1) {
     if (start_window[i] == end_window[i]) {

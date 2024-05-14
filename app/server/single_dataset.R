@@ -231,13 +231,10 @@ plot_direct_repeats <- function(strain, datasetname, segment, RSC, flattened, pr
   
   # include NGS count or not
   if (flattened == "flattened") {
-    df$NGS_read_count[df$NGS_read_count != 1] <- 1
+    df$NGS_read_count <- pmin(df$NGS_read_count, 1)
     r_df <- df
   } else {
-    r_df <- data.frame(Start=integer(),End=integer(),NGS_read_count=integer())
-    for (i in 1:nrow(df)) {
-      r_df <- rbind(r_df, df[rep(i, df[i,3]),])
-    }
+    r_df <- df[rep(seq_len(nrow(df)), df$NGS_read_count), ]
   }
 
   validate_plotting(r_df, segment)
@@ -257,7 +254,6 @@ plot_direct_repeats <- function(strain, datasetname, segment, RSC, flattened, pr
     names(df_2) <- names(df_1)
     do_testing <- FALSE
   }
-
 
   # fill NA values with 0.0 to have a good representation in the final plot
   max_length <- max(max(df_1$length), max(df_2$length))
