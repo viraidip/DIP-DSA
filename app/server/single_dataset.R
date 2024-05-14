@@ -52,7 +52,7 @@ plot_frame_shift <- function(strain, datasetname, flattened, RSC, prg) {
 }
 
 
-plot_segment_distribution <- function(strain, datasetname, flattened, RSC, prg) {
+plot_segment_distribution <- function(strain,datasetname,flattened,RSC,prg) {
   df <- load_single_dataset(file.path(strain,paste(datasetname,".csv",sep="")))
   df <- apply_cutoff(df, RSC)
   validate_df(df)
@@ -83,7 +83,7 @@ plot_segment_distribution <- function(strain, datasetname, flattened, RSC, prg) 
 }
 
 
-plot_lengths<-function(strain, datasetname, segment,flattened,n_bins, RSC, prg) {
+plot_lengths<-function(strain, datasetname, segment,flattened,n_bins,RSC,prg) {
   df <- load_single_dataset(file.path(strain,paste(datasetname,".csv",sep="")))
   df <- apply_cutoff(df, RSC)
   df <- format_dataframe_lengths(df, segment, strain, flattened)
@@ -216,7 +216,7 @@ plot_start_end_mapping <- function(strain, datasetname, segment, RSC, prg) {
 }
 
 
-plot_direct_repeats <- function(strain, datasetname, segment, RSC, flattened, prg) {
+plot_direct_repeats <- function(strain,datasetname,segment,RSC,flattened,prg) {
   df <- load_single_dataset(
     file.path(strain, paste(datasetname, ".csv", sep=""))
   )
@@ -246,7 +246,7 @@ plot_direct_repeats <- function(strain, datasetname, segment, RSC, flattened, pr
   
   # only calculate direct repeats if expected data is available
   if (nrow(exp_df) != 0) {
-    exp_df$direct_repeats <- apply(exp_df,1,direct_repeats_counting_routine,seq)
+    exp_df$direct_repeats<-apply(exp_df,1,direct_repeats_counting_routine,seq)
     df_2 <- prepare_direct_repeat_plot_data(exp_df, "expected")
     do_testing <- TRUE
   } else {

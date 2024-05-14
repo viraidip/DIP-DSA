@@ -128,7 +128,7 @@ create_random_data <- function(strain, dataset_name, progress) {
 
   value <- 0.25
   for (seg in SEGMENTS) {
-    progress$set(message=paste("Create random data (", seg, ")", sep=""), value=value)
+    progress$set(paste("Create random data (", seg, ")", sep=""), value)
     value <- value + 0.1
     s_df <- df[df$Segment == seg, , drop=FALSE]
     if (nrow(s_df) == 0) {

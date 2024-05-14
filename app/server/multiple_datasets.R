@@ -93,7 +93,7 @@ plot_multiple_segment_distribution <- function(paths, flattened, RSC, prg) {
 }
 
 
-plot_multiple_deletion_length<-function(paths,segment,flattened,n_bins, RSC, prg) {
+plot_multiple_deletion_length<-function(paths,segment,flattened,n_bins,RSC,pr){
   validate_selection(paths)
   df <- load_all_datasets(paths)
   df <- apply_cutoff(df, RSC)
@@ -118,12 +118,12 @@ plot_multiple_deletion_length<-function(paths,segment,flattened,n_bins, RSC, prg
     geom_histogram(position="identity", alpha=0.3, bins=n_bins) +
     labs(x="Length of DI candidate", y="Number of occurrences", fill="Dataset")
   
-  prg$set(0.5, "Deletion length plot")
+  pr$set(0.5, "Deletion length plot")
   ggplotly(pl)
 }
 
 
-plot_multiple_nucleotide_enrichment<-function(paths,segment,pos,flat,nuc,RSC, prg) {
+plot_multiple_nuc_enrichment <- function(paths,segment,pos,flat,nuc,RSC,prg) {
   validate_selection(paths)
   df <- load_all_datasets(paths)
   df <- apply_cutoff(df, RSC)

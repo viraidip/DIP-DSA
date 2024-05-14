@@ -395,7 +395,7 @@ server <- function(input, output, session) {
 
     # nucleotide enrichment
     output$multiple_nucleotide_enrichment_start_plot <- renderPlotly({
-      plot_multiple_nucleotide_enrichment(
+      plot_multiple_nuc_enrichment(
         isolate(input$multiple_datasets),
         isolate(input$multiple_selected_segment),
         "Start",
@@ -406,7 +406,7 @@ server <- function(input, output, session) {
       )
     })
     output$multiple_nucleotide_enrichment_end_plot <- renderPlotly({
-      plot_multiple_nucleotide_enrichment(
+      plot_multiple_nuc_enrichment(
         isolate(input$multiple_datasets),
         isolate(input$multiple_selected_segment),
         "End",
