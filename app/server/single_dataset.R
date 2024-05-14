@@ -184,11 +184,18 @@ plot_start_end_mapping <- function(strain, datasetname, segment, RSC, prg) {
   df <- apply_cutoff(df, RSC)
   df <- df[df$Segment == segment, ]
   validate_plotting(df, segment)
-
   max <- get_seq_len(strain, segment) 
 
-  p <- plot(1, type="n",axes=F,xlab="", ylab="",xlim=c(0,max),ylim=c(-400,max)) +
-    rect(xleft=0, xright=max, ybottom=-200, ytop=0, col="grey") +
+  hist_data <- hist(c(df$Start, df$End), plot=FALSE, breaks=20)
+  norm_hist <- hist_data$counts / sum(hist_data$counts) * max
+  p <- barplot(norm_hist,
+    width=hist_data$breaks[2] - hist_data$breaks[1],
+    space=0,
+    xlab="Nucleotide position",
+    ylab="",
+    xlim=c(0,max),
+    ylim=c(-400,max),
+    col="skyblue") +
     axis(1, at=c(seq(0, max, by = 300), max))
   
   for (i in 1:nrow(df)) {
@@ -200,6 +207,7 @@ plot_start_end_mapping <- function(strain, datasetname, segment, RSC, prg) {
       p <- p + lower_circle(df[i, "Start"]+radius,-200,radius,nsteps=1000)
     }
   }
+  p <- p + rect(xleft=0, xright=max, ybottom=-200, ytop=0, col="grey")
   
   prg$set(0.7, "Start and end plot")
   p
@@ -216,11 +224,9 @@ plot_direct_repeats <- function(strain, datasetname, segment, RSC, flattened, pr
   )
 
   df <- apply_cutoff(df, RSC)
-  df <- df[df$Segment == segment,]
-  exp_df <- exp_df[exp_df$Segment == segment,]
-  df <- subset(df, select=-c(Segment))
-  exp_df <- subset(exp_df, select=-c(Segment))
-
+  df <- subset(df, Segment == segment, select=-c(Segment))
+  exp_df <- subset(exp_df, Segment == segment, select=-c(Segment))
+  
   # include NGS count or not
   if (flattened == "flattened") {
     df$NGS_read_count[df$NGS_read_count != 1] <- 1
