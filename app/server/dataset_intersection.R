@@ -111,7 +111,9 @@ plot_highest_n_ranked <- function(paths, segment, thresh, prg) {
     geom_point() +
     labs(x="n highest ranked DelVGs", y="# DelVGs in both rankings")
 
-  prg$set(0.75, "highest n ranked plot")
+  if (prg$getValue() < 0.75) {
+    prg$set(0.75, "highest n ranked plot")
+  }
   ggplotly(pl)
 }
 
@@ -147,6 +149,9 @@ get_highest_n_ranked_table <- function(paths, segment, thresh, prg) {
     mutate(sum=sprintf("%.2f", sum)) %>%
     mutate(mean=sprintf("%.2f", mean))
 
-  prg$close()
+  if (prg$getValue() < 0.8) {
+    prg$set(1.0, "Finished")
+    prg$close()
+  }
   return(results_df)
 }
