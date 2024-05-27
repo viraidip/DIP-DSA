@@ -97,7 +97,8 @@ server <- function(input, output, session) {
 
   observeEvent(input$dataset_submit, {
     dataset_progress <- shiny::Progress$new()
-    dataset_progress$set(message="Start upload", value=0)
+    on.exit(dataset_progress$close())
+    dataset_progress$set(message="Start upload", value=0.1)
 
     # check if all fields are filled
     req(input$upload_strain, input$upload_dataset, input$upload_dataset_file)
@@ -105,7 +106,7 @@ server <- function(input, output, session) {
     strain_path <- file.path(DATASETSPATH, upload_strain)
 
     # check if .csv file already exists and rename if so
-    dataset_progress$set(message="Check filename", value=0.1)
+    dataset_progress$set(message="Check filename", value=0.2)
     dataset_name <- input$upload_dataset
     f_name <- dataset_name
     file_path <- file.path(strain_path, paste(f_name, ".csv", sep=""))
@@ -119,7 +120,7 @@ server <- function(input, output, session) {
     to_list <- list(file_path)
     move_files(from_list, to_list)
 
-    dataset_progress$set(message="Create random data", value=0.2)
+    dataset_progress$set(message="Create random data", value=0.3)
     df <- read.csv(file_path)
     if (nrow(df) > 0) {
       create_random_data(upload_strain, f_name, dataset_progress)
@@ -128,7 +129,7 @@ server <- function(input, output, session) {
       move_files(from_list, to_list)
     }
     
-
+    dataset_progress$set(message="Update inputs", value=0.9)
     # add new options to select input
     updateSelectInput(
       session,
@@ -159,12 +160,13 @@ server <- function(input, output, session) {
       choices=c,
       selected=c[1:2]
     )
-    dataset_progress$close()
+    dataset_progress$set(message="Finished!", value=1.0)
   })
 
   observeEvent(input$strain_submit, {
     strain_progress <- shiny::Progress$new()
-    strain_progress$set(message="Start upload", value=0)
+    on.exit(strain_progress$close())
+    strain_progress$set(message="Start upload", value=0.1)
     # check if all fields are filled
     req(
       input$new_strain, input$upload_PB2_file, input$upload_PB1_file,
@@ -193,7 +195,7 @@ server <- function(input, output, session) {
     fasta_path <- file.path(strain_path, "fastas")
     dir.create(fasta_path)
     
-    strain_progress$set(message="Upload FASTA files", value=0.4)
+    strain_progress$set(message="Upload FASTA files", value=0.7)
     # create list with paths on where to save the files and then move them
     to_list <- list()
     for (s in SEGMENTS) {
@@ -208,7 +210,7 @@ server <- function(input, output, session) {
       inputId="upload_strain",
       choices=c
     )
-    strain_progress$close()
+    strain_progress$set(message="Finished!", value=1.0)
   })
 
 
