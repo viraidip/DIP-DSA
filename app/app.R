@@ -393,6 +393,17 @@ server <- function(input, output, session) {
       )
     })
 
+    # direct repeats
+    output$multiple_direct_repeats_plot <- renderPlotly({
+      plot_multiple_direct_repeat(
+        isolate(input$multiple_datasets),
+        isolate(input$multiple_selected_segment),
+        isolate(input$multiple_flattened),
+        isolate(input$multiple_RSC),
+        multiple_progress
+      )
+    })
+
     # nucleotide enrichment
     output$multiple_nucleotide_enrichment_start_plot <- renderPlotly({
       plot_multiple_nuc_enrichment(
@@ -412,17 +423,6 @@ server <- function(input, output, session) {
         "End",
         isolate(input$multiple_flattened),
         input$multiple_enrichment_nucleotide_end,
-        isolate(input$multiple_RSC),
-        multiple_progress
-      )
-    })
-
-    # direct repeats
-    output$multiple_direct_repeats_plot <- renderPlotly({
-      plot_multiple_direct_repeat(
-        isolate(input$multiple_datasets),
-        isolate(input$multiple_selected_segment),
-        isolate(input$multiple_flattened),
         isolate(input$multiple_RSC),
         multiple_progress
       )
