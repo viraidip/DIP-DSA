@@ -100,7 +100,9 @@ plot_lengths<-function(strain, datasetname, segment,flattened,n_bins,RSC,prg) {
   # add mean and median to plot
   pl <- add_stats_lengths(df, pl)
 
-  prg$set(0.4, "Deletion lengths plot")
+  if (prg$getValue() < 0.4) {
+    prg$set(0.4, "Deletion lengths plot")
+  }
   ggplotly(pl)
 }
 
@@ -393,9 +395,14 @@ plot_nucleotide_enrichment <- function(strain,
     annotate("text", x=x2, y=y_max, label="remaining sequence")
 
   if (pos == "Start") {
-    prg$set(0.9, "Nucleotide enrichment plot")
+    if (prg$getValue() < 0.9) {
+      prg$set(0.9, "Nucleotide enrichment plot")
+    }
   } else {
-    prg$close()
+    if (prg$getValue() < 0.95) {
+      prg$set(1.0, "Finished!")
+      prg$close()
+    }
   }
   ggplotly(p)
 }

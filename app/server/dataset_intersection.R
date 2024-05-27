@@ -150,7 +150,7 @@ get_highest_n_ranked_table <- function(paths, segment, thresh, prg) {
     mutate(mean=sprintf("%.2f", mean))
 
   if (prg$getValue() < 0.8) {
-    prg$set(1.0, "Finished")
+    prg$set(1.0, "Finished!")
     prg$close()
   }
   return(results_df)
