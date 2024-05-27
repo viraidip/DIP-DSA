@@ -28,9 +28,13 @@ plot_frame_shift <- function(strain, datasetname, flattened, RSC, prg) {
   df$del_length <- (df$End-1) - df$Start
   df$Shift <- df$del_length %% 3
 
+  # define three options to check for missing values
+  complete_shifts <- tibble(Shift = c(0, 1, 2))
   plot_df <- df %>%
     group_by(Shift) %>%
     summarise(counts=sum(NGS_read_count)) %>%
+    right_join(complete_shifts, by = "Shift") %>%
+    mutate(counts=ifelse(is.na(counts), 0, counts)) %>%
     mutate(Freq=counts / sum(counts) * 100) %>%
     mutate(Shift=case_when(
       Shift == 0 ~ "in-frame",
@@ -52,7 +56,7 @@ plot_frame_shift <- function(strain, datasetname, flattened, RSC, prg) {
 }
 
 
-plot_segment_distribution <- function(strain, datasetname, flattened, RSC, prg) {
+plot_segment_distribution <- function(strain,datasetname,flattened,RSC,prg) {
   df <- load_single_dataset(file.path(strain,paste(datasetname,".csv",sep="")))
   df <- apply_cutoff(df, RSC)
   validate_df(df)
@@ -83,7 +87,7 @@ plot_segment_distribution <- function(strain, datasetname, flattened, RSC, prg) 
 }
 
 
-plot_lengths<-function(strain, datasetname, segment,flattened,n_bins, RSC, prg) {
+plot_lengths<-function(strain, datasetname, segment,flattened,n_bins,RSC,prg) {
   df <- load_single_dataset(file.path(strain,paste(datasetname,".csv",sep="")))
   df <- apply_cutoff(df, RSC)
   df <- format_dataframe_lengths(df, segment, strain, flattened)
@@ -96,7 +100,9 @@ plot_lengths<-function(strain, datasetname, segment,flattened,n_bins, RSC, prg) 
   # add mean and median to plot
   pl <- add_stats_lengths(df, pl)
 
-  prg$set(0.4, "Deletion lengths plot")
+  if (prg$getValue() < 0.4) {
+    prg$set(0.4, "Deletion lengths plot")
+  }
   ggplotly(pl)
 }
 
@@ -165,34 +171,58 @@ plot_end_3_5 <- function(strain, datasetname, segment, RSC, prg) {
 }
 
 
+upper_circle <- function(x,y,r,nsteps=100,...){  
+  rs <- seq(0,pi,len=nsteps) 
+  xc <- x+r*cos(rs) 
+  yc <- y+2*r*sin(rs) 
+  polygon(xc, yc, border="green4", ...) 
+} 
+
+lower_circle <- function(x,y,r,nsteps=100,...){ 
+  rs <- seq(0,pi,len=nsteps) 
+  xc <- x-r*cos(rs) 
+  yc <- y-2*r*sin(rs) 
+  polygon(xc, yc, border="red", ...) 
+} 
+
 plot_start_end_mapping <- function(strain, datasetname, segment, RSC, prg) {
   df <- load_single_dataset(file.path(strain,paste(datasetname,".csv",sep="")))
   df <- apply_cutoff(df, RSC)
   df <- df[df$Segment == segment, ]
   validate_plotting(df, segment)
-  df["y"] <- 0
-  df["yend"] <- 1
-
   max <- get_seq_len(strain, segment) 
 
-  p <- ggplot() +
-    geom_segment(
-      df,
-      mapping=aes(x=Start, y=y, xend=End, yend=yend, color=NGS_read_count)
-    ) +
-    scale_color_gradient() +
-    labs(x="Nucleotide position", y=datasetname, color="NGS read count") +
-    geom_rect(aes(xmin=0, xmax=max, ymin=-0.1, ymax=0), alpha=0.9) +
-    geom_rect(aes(xmin=0, xmax=max, ymin=1, ymax=1.1), alpha=0.9) +
-    annotate(geom="text", x=round(max/2), y=-0.05, label="Start", col="white")+
-    annotate(geom="text", x=round(max/2), y=1.05, label="End", col="white")
-
+  hist_data <- hist(c(df$Start, df$End), plot=FALSE, breaks=20)
+  norm_hist <- hist_data$counts / sum(hist_data$counts) * max
+  p <- barplot(norm_hist,
+    width=hist_data$breaks[2] - hist_data$breaks[1],
+    space=0,
+    xlab="Nucleotide position",
+    ylab="Relative occurrence",
+    xlim=c(0,max),
+    ylim=c(-400,max),
+    col="skyblue",
+    axes=FALSE) +
+    axis(1, at=c(seq(0, max, by = 300), max)) +
+    axis(2, at=c(0, max/2, max), labels=c("0", "0.5", "1.0"))
+  
+  for (i in 1:nrow(df)) {
+    del_length <- (df[i, "End"] - df[i, "Start"])
+    radius <- del_length/2
+    if (del_length / max > 0.15) {
+      p <- p + upper_circle(df[i, "Start"]+radius,0,radius,nsteps=1000)
+    } else {
+      p <- p + lower_circle(df[i, "Start"]+radius,-200,radius,nsteps=1000)
+    }
+  }
+  p <- p + rect(xleft=0, xright=max, ybottom=-200, ytop=0, col="grey")
+  
   prg$set(0.7, "Start and end plot")
-  ggplotly(p)
+  p
 }
 
 
-plot_direct_repeats <- function(strain, datasetname, segment, RSC, flattened, prg) {
+plot_direct_repeats <- function(strain,datasetname,segment,RSC,flattened,prg) {
   df <- load_single_dataset(
     file.path(strain, paste(datasetname, ".csv", sep=""))
   )
@@ -202,20 +232,15 @@ plot_direct_repeats <- function(strain, datasetname, segment, RSC, flattened, pr
   )
 
   df <- apply_cutoff(df, RSC)
-  df <- df[df$Segment == segment,]
-  exp_df <- exp_df[exp_df$Segment == segment,]
-  df <- subset(df, select=-c(Segment))
-  exp_df <- subset(exp_df, select=-c(Segment))
-
+  df <- subset(df, Segment == segment, select=-c(Segment))
+  exp_df <- subset(exp_df, Segment == segment, select=-c(Segment))
+  
   # include NGS count or not
   if (flattened == "flattened") {
-    df$NGS_read_count[df$NGS_read_count != 1] <- 1
+    df$NGS_read_count <- pmin(df$NGS_read_count, 1)
     r_df <- df
   } else {
-    r_df <- data.frame(Start=integer(),End=integer(),NGS_read_count=integer())
-    for (i in 1:nrow(df)) {
-      r_df <- rbind(r_df, df[rep(i, df[i,3]),])
-    }
+    r_df <- df[rep(seq_len(nrow(df)), df$NGS_read_count), ]
   }
 
   validate_plotting(r_df, segment)
@@ -227,7 +252,7 @@ plot_direct_repeats <- function(strain, datasetname, segment, RSC, flattened, pr
   
   # only calculate direct repeats if expected data is available
   if (nrow(exp_df) != 0) {
-    exp_df$direct_repeats <- apply(exp_df,1,direct_repeats_counting_routine,seq)
+    exp_df$direct_repeats<-apply(exp_df,1,direct_repeats_counting_routine,seq)
     df_2 <- prepare_direct_repeat_plot_data(exp_df, "expected")
     do_testing <- TRUE
   } else {
@@ -235,7 +260,6 @@ plot_direct_repeats <- function(strain, datasetname, segment, RSC, flattened, pr
     names(df_2) <- names(df_1)
     do_testing <- FALSE
   }
-
 
   # fill NA values with 0.0 to have a good representation in the final plot
   max_length <- max(max(df_1$length), max(df_2$length))
@@ -371,9 +395,14 @@ plot_nucleotide_enrichment <- function(strain,
     annotate("text", x=x2, y=y_max, label="remaining sequence")
 
   if (pos == "Start") {
-    prg$set(0.9, "Nucleotide enrichment plot")
+    if (prg$getValue() < 0.9) {
+      prg$set(0.9, "Nucleotide enrichment plot")
+    }
   } else {
-    prg$close()
+    if (prg$getValue() < 0.95) {
+      prg$set(1.0, "Finished!")
+      prg$close()
+    }
   }
   ggplotly(p)
 }

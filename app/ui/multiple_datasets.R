@@ -88,6 +88,14 @@ multiple_datasets_tab <- tabItem(tabName="multiple_datasets",
       plotlyOutput("multiple_deletion_length_plot")
     ),
     box(
+      title="Direct repeats",
+      width=12,
+      "Distribution of the direct repeat lengths. The distribution is",
+      "compared against data from a random sampling apporach using a chi",
+      "squared test.",
+      plotlyOutput("multiple_direct_repeats_plot")
+    ),
+    box(
       title="Nucleotide enrichment (Start position)",
       width=6,
       "Distribution of nucleotide enrichment at start of the deletion site.",
@@ -114,14 +122,6 @@ multiple_datasets_tab <- tabItem(tabName="multiple_datasets",
         inline=TRUE
       ),
       plotlyOutput("multiple_nucleotide_enrichment_end_plot")
-    ),
-    box(
-      title="Direct repeats",
-      width=12,
-      "Distribution of the direct repeat lengths. The distribution is",
-      "compared against data from a random sampling apporach using a chi",
-      "squared test.",
-      plotlyOutput("multiple_direct_repeats_plot")
     )
   )
 )

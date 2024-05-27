@@ -7,6 +7,7 @@ library(plyr)
 library(shiny)
 library(shinydashboard)
 library(shinyvalidate)
+library(stringi)
 library(stringr)
 library(dplyr)
 
@@ -96,7 +97,8 @@ server <- function(input, output, session) {
 
   observeEvent(input$dataset_submit, {
     dataset_progress <- shiny::Progress$new()
-    dataset_progress$set(message="Start upload", value=0)
+    on.exit(dataset_progress$close())
+    dataset_progress$set(message="Start upload", value=0.1)
 
     # check if all fields are filled
     req(input$upload_strain, input$upload_dataset, input$upload_dataset_file)
@@ -104,7 +106,7 @@ server <- function(input, output, session) {
     strain_path <- file.path(DATASETSPATH, upload_strain)
 
     # check if .csv file already exists and rename if so
-    dataset_progress$set(message="Check filename", value=0.1)
+    dataset_progress$set(message="Check filename", value=0.2)
     dataset_name <- input$upload_dataset
     f_name <- dataset_name
     file_path <- file.path(strain_path, paste(f_name, ".csv", sep=""))
@@ -118,7 +120,7 @@ server <- function(input, output, session) {
     to_list <- list(file_path)
     move_files(from_list, to_list)
 
-    dataset_progress$set(message="Create random data", value=0.2)
+    dataset_progress$set(message="Create random data", value=0.3)
     df <- read.csv(file_path)
     if (nrow(df) > 0) {
       create_random_data(upload_strain, f_name, dataset_progress)
@@ -127,7 +129,7 @@ server <- function(input, output, session) {
       move_files(from_list, to_list)
     }
     
-
+    dataset_progress$set(message="Update inputs", value=0.9)
     # add new options to select input
     updateSelectInput(
       session,
@@ -158,12 +160,13 @@ server <- function(input, output, session) {
       choices=c,
       selected=c[1:2]
     )
-    dataset_progress$close()
+    dataset_progress$set(message="Finished!", value=1.0)
   })
 
   observeEvent(input$strain_submit, {
     strain_progress <- shiny::Progress$new()
-    strain_progress$set(message="Start upload", value=0)
+    on.exit(strain_progress$close())
+    strain_progress$set(message="Start upload", value=0.1)
     # check if all fields are filled
     req(
       input$new_strain, input$upload_PB2_file, input$upload_PB1_file,
@@ -192,7 +195,7 @@ server <- function(input, output, session) {
     fasta_path <- file.path(strain_path, "fastas")
     dir.create(fasta_path)
     
-    strain_progress$set(message="Upload FASTA files", value=0.4)
+    strain_progress$set(message="Upload FASTA files", value=0.7)
     # create list with paths on where to save the files and then move them
     to_list <- list()
     for (s in SEGMENTS) {
@@ -207,7 +210,7 @@ server <- function(input, output, session) {
       inputId="upload_strain",
       choices=c
     )
-    strain_progress$close()
+    strain_progress$set(message="Finished!", value=1.0)
   })
 
 
@@ -294,7 +297,7 @@ server <- function(input, output, session) {
     })
 
     # mapping start-end
-    output$start_end_mapping_plot <- renderPlotly({
+    output$start_end_mapping_plot <- renderPlot({
       plot_start_end_mapping(
         format_strain_name(isolate(input$single_strain)),
         isolate(input$single_dataset),
@@ -392,9 +395,20 @@ server <- function(input, output, session) {
       )
     })
 
+    # direct repeats
+    output$multiple_direct_repeats_plot <- renderPlotly({
+      plot_multiple_direct_repeat(
+        isolate(input$multiple_datasets),
+        isolate(input$multiple_selected_segment),
+        isolate(input$multiple_flattened),
+        isolate(input$multiple_RSC),
+        multiple_progress
+      )
+    })
+
     # nucleotide enrichment
     output$multiple_nucleotide_enrichment_start_plot <- renderPlotly({
-      plot_multiple_nucleotide_enrichment(
+      plot_multiple_nuc_enrichment(
         isolate(input$multiple_datasets),
         isolate(input$multiple_selected_segment),
         "Start",
@@ -405,23 +419,12 @@ server <- function(input, output, session) {
       )
     })
     output$multiple_nucleotide_enrichment_end_plot <- renderPlotly({
-      plot_multiple_nucleotide_enrichment(
+      plot_multiple_nuc_enrichment(
         isolate(input$multiple_datasets),
         isolate(input$multiple_selected_segment),
         "End",
         isolate(input$multiple_flattened),
         input$multiple_enrichment_nucleotide_end,
-        isolate(input$multiple_RSC),
-        multiple_progress
-      )
-    })
-
-    # direct repeats
-    output$multiple_direct_repeats_plot <- renderPlotly({
-      plot_multiple_direct_repeat(
-        isolate(input$multiple_datasets),
-        isolate(input$multiple_selected_segment),
-        isolate(input$multiple_flattened),
         isolate(input$multiple_RSC),
         multiple_progress
       )
