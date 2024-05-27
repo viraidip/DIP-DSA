@@ -27,9 +27,13 @@ plot_multiple_deletion_shift <- function(paths, flattened, RSC, prg) {
   df$del_length <- (df$End-1) - df$Start
   df$Shift <- df$del_length %% 3
 
+  # define three options to check for missing values
+  complete_shifts <- tibble(Shift = c(0, 1, 2))
   plot_df <- df %>%
     group_by(name, Shift) %>%
     summarise(counts=sum(NGS_read_count)) %>%
+    right_join(complete_shifts, by="Shift") %>%
+    mutate(counts=ifelse(is.na(counts), 0, counts)) %>%
     mutate(Freq=counts / sum(counts) * 100) %>%
     mutate(Shift=case_when(
       Shift == 0 ~ "in-frame",
@@ -42,6 +46,10 @@ plot_multiple_deletion_shift <- function(paths, flattened, RSC, prg) {
   labels <- c()
   for (name in sort(unique(plot_df$name))) {
     observed_values <- plot_df$Freq[plot_df[["name"]] == name]
+    # if one of the three options is not present add 0.0 for it
+    while (length(observed_values) < 3) {
+      observed_values <- c(observed_values, 0.0)
+    }
     r <- chisq.test(observed_values, p=expected)
     label <- paste(name, get_stat_symbol(r$p.value))
     labels <- c(labels, label)

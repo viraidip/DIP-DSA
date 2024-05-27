@@ -28,9 +28,13 @@ plot_frame_shift <- function(strain, datasetname, flattened, RSC, prg) {
   df$del_length <- (df$End-1) - df$Start
   df$Shift <- df$del_length %% 3
 
+  # define three options to check for missing values
+  complete_shifts <- tibble(Shift = c(0, 1, 2))
   plot_df <- df %>%
     group_by(Shift) %>%
     summarise(counts=sum(NGS_read_count)) %>%
+    right_join(complete_shifts, by = "Shift") %>%
+    mutate(counts=ifelse(is.na(counts), 0, counts)) %>%
     mutate(Freq=counts / sum(counts) * 100) %>%
     mutate(Shift=case_when(
       Shift == 0 ~ "in-frame",
