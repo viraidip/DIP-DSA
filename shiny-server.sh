@@ -2,7 +2,7 @@ export IMAGE="dip-dsa_r-shiny_app:latest"
 export FILE="Dockerfile"
 
 # stop old container
-docker ps --format "{{.ID}}" --filter "ancestor="${IMAGE} | xargs docker stop
+docker rm $(docker stop $(docker ps -a --filter ancestor="dip-dsa_r-shiny_app" --format="{{.ID}}"))
 docker rmi -f $IMAGE
 
 DOCKER_BUILDKIT=1 docker build --no-cache -f $FILE -t $IMAGE .
