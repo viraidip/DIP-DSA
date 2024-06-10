@@ -84,6 +84,33 @@ apply_cutoff <- function(df, RCS) {
   return(df)
 }
 
+validate_upload_csv <- function(file_path) {
+  df <- read.csv(file_path)
+  # checl number of columns, assign correct names, and check data types
+  if (ncol(df) != 4) {
+    return(FALSE)
+  }
+  colnames(df) <- c("Segment", "Start", "End", "NGS_read_count")
+  
+  # Check if the columns have the correct types
+  df$Start <- as.integer(df$Start)
+  df$End <- as.integer(df$End)
+  df$NGS_read_count <- as.integer(df$NGS_read_count)
+  if (any(is.na(df$Start)) ||
+      any(is.na(df$End)) ||
+      any(is.na(df$NGS_read_count))) {
+    return(FALSE)
+  }
+  
+  # check if segments are named correctly and save modified file
+  df$Segment <- toupper(df$Segment)
+  if (!all(df$Segment %in% SEGMENTS)) {
+    return(FALSE)
+  }
+  write.csv(df, file_path, row.names=FALSE, quote=FALSE)
+  return(TRUE)
+}
+
 ### random data generation ###
 generate_sampling_data <- function(seq, s, e, n) {
   # create all combinations of start and end positions that are possible
@@ -128,7 +155,8 @@ create_random_data <- function(strain, dataset_name, progress) {
 
   value <- 0.25
   for (seg in SEGMENTS) {
-    progress$set(paste("Create random data (", seg, ")", sep=""), value)
+    progress$set(message=paste("Create random data (", seg, ")", sep=""),
+      value=value)
     value <- value + 0.1
     s_df <- df[df$Segment == seg, , drop=FALSE]
     if (nrow(s_df) == 0) {
