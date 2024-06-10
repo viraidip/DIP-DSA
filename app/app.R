@@ -100,67 +100,74 @@ server <- function(input, output, session) {
     on.exit(dataset_progress$close())
     dataset_progress$set(message="Start upload", value=0.1)
 
-    # check if all fields are filled
+    # check if all fields are filled and data is formatted correctly
     req(input$upload_strain, input$upload_dataset, input$upload_dataset_file)
     upload_strain <- format_strain_name(input$upload_strain)
     strain_path <- file.path(DATASETSPATH, upload_strain)
-
-    # check if .csv file already exists and rename if so
-    dataset_progress$set(message="Check filename", value=0.2)
-    dataset_name <- input$upload_dataset
-    f_name <- dataset_name
-    file_path <- file.path(strain_path, paste(f_name, ".csv", sep=""))
-    idx <- 0
-    while (file.exists(file_path)) {
-      idx <- idx + 1
-      f_name <- paste(dataset_name, "_", idx, sep="")
+    if(validate_upload_csv(input$upload_dataset_file$datapath)) {
+      # check if .csv file already exists and rename if so
+      dataset_progress$set(message="Check filename", value=0.15)
+      dataset_name <- input$upload_dataset
+      f_name <- dataset_name
       file_path <- file.path(strain_path, paste(f_name, ".csv", sep=""))
-    }
-    from_list <- list(input$upload_dataset_file$datapath)
-    to_list <- list(file_path)
-    move_files(from_list, to_list)
-
-    dataset_progress$set(message="Create random data", value=0.3)
-    df <- read.csv(file_path)
-    if (nrow(df) > 0) {
-      create_random_data(upload_strain, f_name, dataset_progress)
-    } else {
-      to_list <- list(file.path(strain_path, paste(f_name, ".tsv", sep="")))
+      idx <- 0
+      while (file.exists(file_path)) {
+        idx <- idx + 1
+        f_name <- paste(dataset_name, "_", idx, sep="")
+        file_path <- file.path(strain_path, paste(f_name, ".csv", sep=""))
+      }
+      from_list <- list(input$upload_dataset_file$datapath)
+      to_list <- list(file_path)
       move_files(from_list, to_list)
-    }
-    
-    dataset_progress$set(message="Update inputs", value=0.9)
-    # add new options to select input
-    updateSelectInput(
-      session,
-      inputId="single_strain",
-      choices=gsub(
-        "_",
-        "/",
-        list.dirs(DATASETSPATH, full.names=FALSE, recursive=FALSE)
-      )
-    )
-    d_sets <- tools::file_path_sans_ext(list.files(strain_path, pattern="csv"))
-    updateSelectInput(
-      session,
-      inputId="single_dataset",
-      choices=d_sets
-    )
 
-    c <- list.files(DATASETSPATH, "csv$", full.names=FALSE, recursive=TRUE)
-    updateSelectInput(
-      session,
-      inputId="multiple_datasets",
-      choices=c,
-      selected=c[1:2]
-    )
-    updateSelectInput(
-      session,
-      inputId="selected_datasets",
-      choices=c,
-      selected=c[1:2]
-    )
-    dataset_progress$set(message="Finished!", value=1.0)
+      dataset_progress$set(message="Create random data", value=0.2)
+      df <- read.csv(file_path)
+      if (nrow(df) > 0) {
+        create_random_data(upload_strain, f_name, dataset_progress)
+      } else {
+        to_list <- list(file.path(strain_path, paste(f_name, ".tsv", sep="")))
+        move_files(from_list, to_list)
+      }
+      
+      dataset_progress$set(message="Update inputs", value=0.9)
+      # add new options to select input
+      updateSelectInput(
+        session,
+        inputId="single_strain",
+        choices=gsub(
+          "_",
+          "/",
+          list.dirs(DATASETSPATH, full.names=FALSE, recursive=FALSE)
+        )
+      )
+      d_sets <- tools::file_path_sans_ext(list.files(strain_path, pattern="csv"))
+      updateSelectInput(
+        session,
+        inputId="single_dataset",
+        choices=d_sets
+      )
+
+      c <- list.files(DATASETSPATH, "csv$", full.names=FALSE, recursive=TRUE)
+      updateSelectInput(
+        session,
+        inputId="multiple_datasets",
+        choices=c,
+        selected=c[1:2]
+      )
+      updateSelectInput(
+        session,
+        inputId="selected_datasets",
+        choices=c,
+        selected=c[1:2]
+      )
+      dataset_progress$set(message="Finished!", value=1.0)
+    } else {
+      showModal(modalDialog(
+        title="Warning",
+        "Could not upload csv file.",
+        easyClose=TRUE
+      ))
+    }
   })
 
   observeEvent(input$strain_submit, {
@@ -174,7 +181,6 @@ server <- function(input, output, session) {
       input$upload_NA_file, input$upload_M_file, input$upload_NS_file
     )
 
-    # move submitted files to right folder
     from_list <- list(
       input$upload_PB2_file$datapath, input$upload_PB1_file$datapath,
       input$upload_PA_file$datapath, input$upload_HA_file$datapath,
@@ -182,35 +188,43 @@ server <- function(input, output, session) {
       input$upload_M_file$datapath, input$upload_NS_file$datapath
     )
 
-    strain_progress$set(message="Check strain name", value=0.4)
-    # check if strain exists create a folder if not
-    upload_strain <- format_strain_name(input$new_strain)
-    strain_path <- file.path(DATASETSPATH, upload_strain)
-    if (dir.exists(strain_path)) {
-      strain_progress$close()
-      return()     
-    } else {
-      dir.create(strain_path)
-    }
-    fasta_path <- file.path(strain_path, "fastas")
-    dir.create(fasta_path)
-    
-    strain_progress$set(message="Upload FASTA files", value=0.7)
-    # create list with paths on where to save the files and then move them
-    to_list <- list()
-    for (s in SEGMENTS) {
-      f_name <- paste(s, ".fasta", sep="")
-      to_list <- append(to_list, file.path(fasta_path, f_name))
-    }
-    move_files(from_list, to_list)
+    if(validate_upload_fasta(from_list)) {
+      strain_progress$set(message="Check strain name", value=0.4)
+      # check if strain exists create a folder if not
+      upload_strain <- format_strain_name(input$new_strain)
+      strain_path <- file.path(DATASETSPATH, upload_strain)
+      if (dir.exists(strain_path)) {
+        strain_progress$close()
+        return()     
+      } else {
+        dir.create(strain_path)
+      }
+      fasta_path <- file.path(strain_path, "fastas")
+      dir.create(fasta_path)
+      
+      strain_progress$set(message="Upload FASTA files", value=0.7)
+      # create list with paths on where to save the files and then move them
+      to_list <- list()
+      for (s in SEGMENTS) {
+        f_name <- paste(s, ".fasta", sep="")
+        to_list <- append(to_list, file.path(fasta_path, f_name))
+      }
+      move_files(from_list, to_list)
 
-    c <- gsub("_","/",list.dirs(DATASETSPATH,full.names=FALSE,recursive=FALSE))
-    updateSelectInput(
-      session,
-      inputId="upload_strain",
-      choices=c
-    )
-    strain_progress$set(message="Finished!", value=1.0)
+      c <- gsub("_","/",list.dirs(DATASETSPATH,full.names=FALSE,recursive=FALSE))
+      updateSelectInput(
+        session,
+        inputId="upload_strain",
+        choices=c
+      )
+      strain_progress$set(message="Finished!", value=1.0)
+    } else {
+      showModal(modalDialog(
+        title="Warning",
+        "Could not upload FASTA files.",
+        easyClose=TRUE
+      ))
+    }
   })
 
 
