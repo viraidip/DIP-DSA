@@ -181,7 +181,6 @@ server <- function(input, output, session) {
       input$upload_NA_file, input$upload_M_file, input$upload_NS_file
     )
 
-    # move submitted files to right folder
     from_list <- list(
       input$upload_PB2_file$datapath, input$upload_PB1_file$datapath,
       input$upload_PA_file$datapath, input$upload_HA_file$datapath,
@@ -189,35 +188,43 @@ server <- function(input, output, session) {
       input$upload_M_file$datapath, input$upload_NS_file$datapath
     )
 
-    strain_progress$set(message="Check strain name", value=0.4)
-    # check if strain exists create a folder if not
-    upload_strain <- format_strain_name(input$new_strain)
-    strain_path <- file.path(DATASETSPATH, upload_strain)
-    if (dir.exists(strain_path)) {
-      strain_progress$close()
-      return()     
-    } else {
-      dir.create(strain_path)
-    }
-    fasta_path <- file.path(strain_path, "fastas")
-    dir.create(fasta_path)
-    
-    strain_progress$set(message="Upload FASTA files", value=0.7)
-    # create list with paths on where to save the files and then move them
-    to_list <- list()
-    for (s in SEGMENTS) {
-      f_name <- paste(s, ".fasta", sep="")
-      to_list <- append(to_list, file.path(fasta_path, f_name))
-    }
-    move_files(from_list, to_list)
+    if(validate_upload_fasta(from_list)) {
+      strain_progress$set(message="Check strain name", value=0.4)
+      # check if strain exists create a folder if not
+      upload_strain <- format_strain_name(input$new_strain)
+      strain_path <- file.path(DATASETSPATH, upload_strain)
+      if (dir.exists(strain_path)) {
+        strain_progress$close()
+        return()     
+      } else {
+        dir.create(strain_path)
+      }
+      fasta_path <- file.path(strain_path, "fastas")
+      dir.create(fasta_path)
+      
+      strain_progress$set(message="Upload FASTA files", value=0.7)
+      # create list with paths on where to save the files and then move them
+      to_list <- list()
+      for (s in SEGMENTS) {
+        f_name <- paste(s, ".fasta", sep="")
+        to_list <- append(to_list, file.path(fasta_path, f_name))
+      }
+      move_files(from_list, to_list)
 
-    c <- gsub("_","/",list.dirs(DATASETSPATH,full.names=FALSE,recursive=FALSE))
-    updateSelectInput(
-      session,
-      inputId="upload_strain",
-      choices=c
-    )
-    strain_progress$set(message="Finished!", value=1.0)
+      c <- gsub("_","/",list.dirs(DATASETSPATH,full.names=FALSE,recursive=FALSE))
+      updateSelectInput(
+        session,
+        inputId="upload_strain",
+        choices=c
+      )
+      strain_progress$set(message="Finished!", value=1.0)
+    } else {
+      showModal(modalDialog(
+        title="Warning",
+        "Could not upload FASTA files.",
+        easyClose=TRUE
+      ))
+    }
   })
 
 

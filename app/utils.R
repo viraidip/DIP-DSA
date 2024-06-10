@@ -111,6 +111,19 @@ validate_upload_csv <- function(file_path) {
   return(TRUE)
 }
 
+validate_upload_fasta <- function(from_list) {
+  all_valid <- TRUE
+  for(file in from_list) {
+    # check if FASTA can be read
+    tryCatch({
+      dna_sequences <- readDNAStringSet(file)
+    }, error = function(e) {
+      all_valid <<- FALSE
+    })
+  }
+  return(all_valid)
+}
+
 ### random data generation ###
 generate_sampling_data <- function(seq, s, e, n) {
   # create all combinations of start and end positions that are possible
