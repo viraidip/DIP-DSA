@@ -1,8 +1,10 @@
-plot_multiple_ngs_distribution <- function(paths, RSC, prg) {
+plot_multiple_ngs_distribution <- function(paths, segment, RSC, prg) {
   validate_selection(paths)
   df <- load_all_datasets(paths)
   df <- apply_cutoff(df, RSC)
   validate_df(df)
+  df <- df[df$Segment == segment, ]
+  validate_plotting(df, segment)
 
   pl <- ggplot(df, aes(x=name, y=NGS_read_count, fill=name)) +
     geom_boxplot() +
@@ -14,11 +16,13 @@ plot_multiple_ngs_distribution <- function(paths, RSC, prg) {
 }
 
 
-plot_multiple_deletion_shift <- function(paths, flattened, RSC, prg) {
+plot_multiple_deletion_shift <- function(paths, segment, flattened, RSC, prg) {
   validate_selection(paths)
   df <- load_all_datasets(paths)
   df <- apply_cutoff(df, RSC)
   validate_df(df)
+  df <- df[df$Segment == segment, ]
+  validate_plotting(df, segment)
 
   if (flattened == "flattened") {
     df["NGS_read_count"] <- 1
@@ -28,11 +32,15 @@ plot_multiple_deletion_shift <- function(paths, flattened, RSC, prg) {
   df$Shift <- df$del_length %% 3
 
   # define three options to check for missing values
-  complete_shifts <- tibble(Shift = c(0, 1, 2))
+  complete_shifts <- data.frame(name = unique(df$name)) %>%
+    mutate(key = 1) %>%
+    left_join(tibble(Shift = c(0, 1, 2)) %>% mutate(key=1), by="key") %>%
+    select(name, Shift)
+
   plot_df <- df %>%
     group_by(name, Shift) %>%
     summarise(counts=sum(NGS_read_count)) %>%
-    right_join(complete_shifts, by="Shift") %>%
+    right_join(complete_shifts, by=c("name", "Shift")) %>%
     mutate(counts=ifelse(is.na(counts), 0, counts)) %>%
     mutate(Freq=counts / sum(counts) * 100) %>%
     mutate(Shift=case_when(

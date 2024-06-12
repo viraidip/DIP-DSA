@@ -1,7 +1,9 @@
-plot_ngs_distribution <- function(strain, datasetname, RSC, prg) {
+plot_ngs_distribution <- function(strain, datasetname, segment, RSC, prg) {
   df <- load_single_dataset(file.path(strain,paste(datasetname,".csv",sep="")))
   df <- apply_cutoff(df, RSC)
   validate_df(df)
+  df <- df[df$Segment == segment, ]
+  validate_plotting(df, segment)
   label <- paste(datasetname, " (n=", nrow(df), ")", sep="")
   df$name <- datasetname
 
@@ -16,10 +18,12 @@ plot_ngs_distribution <- function(strain, datasetname, RSC, prg) {
 }
 
 
-plot_frame_shift <- function(strain, datasetname, flattened, RSC, prg) {
+plot_frame_shift <- function(strain, datasetname, segment, flattened,RSC,prg) {
   df <- load_single_dataset(file.path(strain,paste(datasetname,".csv",sep="")))
   df <- apply_cutoff(df, RSC)
   validate_df(df)
+  df <- df[df$Segment == segment, ]
+  validate_plotting(df, segment)
 
   if (flattened == "flattened") {
     df["NGS_read_count"] <- 1
