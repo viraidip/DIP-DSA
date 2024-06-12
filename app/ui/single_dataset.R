@@ -62,6 +62,7 @@ single_dataset_tab <- tabItem(tabName="single_dataset",
       width=6,
       "Shift of the reading frame introduced by deletion site. A chi-squared",
       "test is performed to compare the distribution against a random shifts.",
+      "(***, p < 0.00001, **, p < 0.001, *, p < 0.05, ns., not significant).",
       plotlyOutput("frame_shift_plot"),
     ),
     box(
@@ -71,6 +72,7 @@ single_dataset_tab <- tabItem(tabName="single_dataset",
       "chi-squared test if the distribution is similar to a distribution that",
       "would be expected if the DelVGs occur solely dependent on the RNA",
       "sequence length.",
+      "(***, p < 0.00001, **, p < 0.001, *, p < 0.05, ns., not significant).",
       plotlyOutput("segment_distribution_plot"),
     ),
     box(  
@@ -120,6 +122,7 @@ single_dataset_tab <- tabItem(tabName="single_dataset",
       "deletion site is calculated and plotted in a bar plot. The results are",
       "compared against data from a random sampling apporach using a chi",
       "squared test.",
+      "(***, p < 0.00001, **, p < 0.001, *, p < 0.05, ns., not significant).",
       plotlyOutput("direct_repeats_plot")
     ),
     box(
@@ -133,6 +136,7 @@ single_dataset_tab <- tabItem(tabName="single_dataset",
       ),
       "For each position the difference to randomly sampled data is estimated",
       "using a one-way ANOVA.",
+      "(***, p < 0.00001, **, p < 0.001, *, p < 0.05, ns., not significant).",
       plotlyOutput("nucleotide_enrichment_start_plot"),
     ),
     box(
@@ -146,6 +150,7 @@ single_dataset_tab <- tabItem(tabName="single_dataset",
       ),
       "For each position the difference to randomly sampled data is estimated",
       "using a one-way ANOVA.",
+      "(***, p < 0.00001, **, p < 0.001, *, p < 0.05, ns., not significant).",
       plotlyOutput("nucleotide_enrichment_end_plot")
     )
   )
