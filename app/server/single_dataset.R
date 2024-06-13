@@ -1,7 +1,9 @@
-plot_ngs_distribution <- function(strain, datasetname, RSC, prg) {
+plot_ngs_distribution <- function(strain, datasetname, segment, RSC, prg) {
   df <- load_single_dataset(file.path(strain,paste(datasetname,".csv",sep="")))
   df <- apply_cutoff(df, RSC)
   validate_df(df)
+  df <- df[df$Segment == segment, ]
+  validate_plotting(df, segment)
   label <- paste(datasetname, " (n=", nrow(df), ")", sep="")
   df$name <- datasetname
 
@@ -16,10 +18,12 @@ plot_ngs_distribution <- function(strain, datasetname, RSC, prg) {
 }
 
 
-plot_frame_shift <- function(strain, datasetname, flattened, RSC, prg) {
+plot_frame_shift <- function(strain, datasetname, segment, flattened,RSC,prg) {
   df <- load_single_dataset(file.path(strain,paste(datasetname,".csv",sep="")))
   df <- apply_cutoff(df, RSC)
   validate_df(df)
+  df <- df[df$Segment == segment, ]
+  validate_plotting(df, segment)
 
   if (flattened == "flattened") {
     df["NGS_read_count"] <- 1
@@ -353,7 +357,9 @@ plot_nucleotide_enrichment <- function(strain,
       group <- c(rep("obs", n_test), rep("exp", n_test))
       dat <- data.frame(nucs=nucs, group=group)
       anova <- aov(nucs ~ group, data=dat)
-      p_values <- c(p_values, summary(anova)[[1]][["Pr(>F)"]][1])
+      p <- summary(anova)[[1]][["Pr(>F)"]][1]
+      p <- ifelse(is.null(p), 1.0, p)
+      p_values <- c(p_values, p)
     }
     symbols <- gsub("ns.", "", lapply(p_values, get_stat_symbol))
   } else {
@@ -362,7 +368,7 @@ plot_nucleotide_enrichment <- function(strain,
 
   # max of expected and observed -> is y location of text of stat test
   y_text <- tapply(final_df$rel_occurrence, final_df$position, max)
-  y_max <- max(0.8, max(y_text)) + 0.05
+  y_max <- max(0.8, max(y_text)) + 0.1
   # get x coordinates for annotation
   x1 <- ifelse(pos == "Start", 8, 3)
   x2 <- ifelse(pos == "Start", 3, 8)

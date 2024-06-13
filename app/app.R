@@ -247,6 +247,7 @@ server <- function(input, output, session) {
       plot_ngs_distribution(
         format_strain_name(isolate(input$single_strain)),
         isolate(input$single_dataset),
+        isolate(input$single_selected_segment),
         isolate(input$single_RSC),
         single_progress
       )
@@ -257,6 +258,7 @@ server <- function(input, output, session) {
       plot_frame_shift(
         format_strain_name(isolate(input$single_strain)),
         isolate(input$single_dataset),
+        isolate(input$single_selected_segment),
         isolate(input$single_flattened),
         isolate(input$single_RSC),
         single_progress
@@ -372,16 +374,7 @@ server <- function(input, output, session) {
     output$multiple_ngs_distribution_plot <- renderPlotly({
       plot_multiple_ngs_distribution(
         isolate(input$multiple_datasets),
-        isolate(input$multiple_RSC),
-        multiple_progress
-      )
-    })
-
-    # segment distribution
-    output$multiple_segment_distribution_plot <- renderPlotly({
-      plot_multiple_segment_distribution(
-        isolate(input$multiple_datasets),
-        isolate(input$multiple_flattened),
+        isolate(input$multiple_selected_segment),
         isolate(input$multiple_RSC),
         multiple_progress
       )
@@ -390,6 +383,17 @@ server <- function(input, output, session) {
     # deletion shifts
     output$multiple_deletion_shift_plot <- renderPlotly({
       plot_multiple_deletion_shift(
+        isolate(input$multiple_datasets),
+        isolate(input$multiple_selected_segment),
+        isolate(input$multiple_flattened),
+        isolate(input$multiple_RSC),
+        multiple_progress
+      )
+    })
+
+    # segment distribution
+    output$multiple_segment_distribution_plot <- renderPlotly({
+      plot_multiple_segment_distribution(
         isolate(input$multiple_datasets),
         isolate(input$multiple_flattened),
         isolate(input$multiple_RSC),

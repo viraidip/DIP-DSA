@@ -1,8 +1,10 @@
-plot_multiple_ngs_distribution <- function(paths, RSC, prg) {
+plot_multiple_ngs_distribution <- function(paths, segment, RSC, prg) {
   validate_selection(paths)
   df <- load_all_datasets(paths)
   df <- apply_cutoff(df, RSC)
   validate_df(df)
+  df <- df[df$Segment == segment, ]
+  validate_plotting(df, segment)
 
   pl <- ggplot(df, aes(x=name, y=NGS_read_count, fill=name)) +
     geom_boxplot() +
@@ -14,11 +16,13 @@ plot_multiple_ngs_distribution <- function(paths, RSC, prg) {
 }
 
 
-plot_multiple_deletion_shift <- function(paths, flattened, RSC, prg) {
+plot_multiple_deletion_shift <- function(paths, segment, flattened, RSC, prg) {
   validate_selection(paths)
   df <- load_all_datasets(paths)
   df <- apply_cutoff(df, RSC)
   validate_df(df)
+  df <- df[df$Segment == segment, ]
+  validate_plotting(df, segment)
 
   if (flattened == "flattened") {
     df["NGS_read_count"] <- 1
@@ -28,11 +32,15 @@ plot_multiple_deletion_shift <- function(paths, flattened, RSC, prg) {
   df$Shift <- df$del_length %% 3
 
   # define three options to check for missing values
-  complete_shifts <- tibble(Shift = c(0, 1, 2))
+  complete_shifts <- data.frame(name = unique(df$name)) %>%
+    mutate(key = 1) %>%
+    left_join(tibble(Shift = c(0, 1, 2)) %>% mutate(key=1), by="key") %>%
+    select(name, Shift)
+
   plot_df <- df %>%
     group_by(name, Shift) %>%
     summarise(counts=sum(NGS_read_count)) %>%
-    right_join(complete_shifts, by="Shift") %>%
+    right_join(complete_shifts, by=c("name", "Shift")) %>%
     mutate(counts=ifelse(is.na(counts), 0, counts)) %>%
     mutate(Freq=counts / sum(counts) * 100) %>%
     mutate(Shift=case_when(
@@ -245,36 +253,37 @@ plot_multiple_nuc_enrichment <- function(paths,segment,pos,flat,nuc,RSC,prg) {
       p_vals <- c(p_vals, rep(1.0, 10))
       symb_ys <- c(symb_ys, rep(symb_y, each=10))
       symb_y <- symb_y + 1
-      next
+    } else {
+      strain <- sort(unique(n_df$strain))
+      counts <- prepare_nuc_enr_data(n_df, segment, flat, strain, pos, nuc)
+      exp_counts<-prepare_nuc_enr_data(exp_n_df, segment, flat, strain, pos, nuc)
+
+      comb <- cbind(counts, exp_counts$rel_occurrence)
+      current_names <- colnames(comb)
+      current_names[length(current_names)] <- "rel_occ2"
+      colnames(comb) <- current_names
+      
+      comb$diff <- comb$rel_occurrence - comb$rel_occ2
+      diff <- c(diff, comb$diff)
+
+      # calculate ANOVA for each position
+      n <- min(nrow(n_df), 1000)
+      for (i in position) {
+        obs_nucs <- as.integer(counts[i, "rel_occurrence"] * n)
+        exp_nucs <- as.integer(exp_counts[i, "rel_occurrence"] * n)
+        nucs <- c(rep(1, times=obs_nucs), rep(0, times=n-obs_nucs),
+                rep(1, times=exp_nucs), rep(0, times=n-exp_nucs))
+        group <- c(rep("obs", n), rep("exp", n))
+        dat <- data.frame(nucs=nucs, group=group)
+        anova <- aov(nucs ~ group, data=dat)
+        p <- summary(anova)[[1]][["Pr(>F)"]][1]
+        p <- ifelse(is.null(p), 1.0, p)
+        p_vals <- c(p_vals, p)
+
+      }
+      symb_ys <- c(symb_ys, rep(symb_y, each=10))
+      symb_y <- symb_y + 1
     }
-    
-    strain <- sort(unique(n_df$strain))
-    counts <- prepare_nuc_enr_data(n_df, segment, flat, strain, pos, nuc)
-    exp_counts<-prepare_nuc_enr_data(exp_n_df, segment, flat, strain, pos, nuc)
-
-    comb <- cbind(counts, exp_counts$rel_occurrence)
-    current_names <- colnames(comb)
-    current_names[length(current_names)] <- "rel_occ2"
-    colnames(comb) <- current_names
-    
-    comb$diff <- comb$rel_occurrence - comb$rel_occ2
-    diff <- c(diff, comb$diff)
-
-    # calculate ANOVA for each position
-    n <- min(nrow(n_df), 1000)
-    for (i in position) {
-      obs_nucs <- as.integer(counts[i, "rel_occurrence"] * n)
-      exp_nucs <- as.integer(exp_counts[i, "rel_occurrence"] * n)
-      nucs <- c(rep(1, times=obs_nucs), rep(0, times=n-obs_nucs),
-               rep(1, times=exp_nucs), rep(0, times=n-exp_nucs))
-      group <- c(rep("obs", n), rep("exp", n))
-      dat <- data.frame(nucs=nucs, group=group)
-      anova <- aov(nucs ~ group, data=dat)
-      p_vals <- c(p_vals, summary(anova)[[1]][["Pr(>F)"]][1])
-
-    }
-    symb_ys <- c(symb_ys, rep(symb_y, each=10))
-    symb_y <- symb_y + 1
   }
 
   symbols <- gsub("ns.", "", lapply(p_vals, get_stat_symbol))

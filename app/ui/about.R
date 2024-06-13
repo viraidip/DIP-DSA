@@ -6,7 +6,7 @@ about_tab <- tabItem(tabName="about",
       width=12,
       "This application allows to investigate datasets of deletion-containing",
       "viral genomes (DelVGs) for influenza viruses. Influenza DelVGs contain",
-      "large, usually single internal deletions in their vRNA sequnence. This",
+      "large, usually single internal deletions in their vRNA sequence. This",
       "deletion is defined in the corresponding datasets by the start and the",
       "end point of the deletion. Start corresponds to the 5'-end and End to",
       "the 3'-end of the vRNA sequence."
@@ -58,167 +58,211 @@ about_tab <- tabItem(tabName="about",
             tags$td("Alnaji2021"),
             tags$td("A/Puerto Rico/8/1934"),
             tags$td(tags$a(href="https://doi.org/10.1128/mBio.02959-21",
+              target="_blank",
               "'Influenza A Virus Defective Viral Genomes Are Inefficiently
-              Packaged into Virions Relative to Wild-Type Genomic RNAs.'"))
+              Packaged into Virions Relative to Wild-Type Genomic RNAs.'")
+            )
           ),
           tags$tr(
             tags$td("Pelz2021"),
             tags$td("A/Puerto Rico/8/1934"),
             tags$td(tags$a(href="https://doi.org/10.1128/JVI.01174-21",
+              target="_blank",
               "'Semi-continuous Propagation of Influenza A Virus and Its
               Defective Interfering Particles: Analyzing the Dynamic
-              Competition To Select Candidates for Antiviral Therapy.'"))
+              Competition To Select Candidates for Antiviral Therapy.'")
+            )
           ),
           tags$tr(
             tags$td("Wang2023"),
             tags$td("A/Puerto Rico/8/1934"),
             tags$td(tags$a(href="https://doi.org/10.1128/jvi.00493-23",
+              target="_blank",
               "'Influenza Defective Interfering Virus Promotes Multiciliated
               Cell Differentiation and Reduces the Inflammatory Response in
-              Mice.'"))
+              Mice.'")
+            )
           ),
           tags$tr(
             tags$td("Wang2020"),
             tags$td("A/Puerto Rico/8/1934"),
             tags$td(tags$a(href="https://doi.org/10.1128/mbio.02880-19",
+              target="_blank",
               "'Cell-to-Cell Variation in Defective Virus Expression and
-              Effects on Host Responses during Influenza Virus Infection'"))
+              Effects on Host Responses during Influenza Virus Infection'")
+            )
           ),
           tags$tr(
             tags$td("Zhuravlev2020"),
             tags$td("A/Puerto Rico/8/1934"),
             tags$td(tags$a(href="https://doi.org/10.1016/j.dib.2020.106604",
+              target="_blank",
               "'RNA-Seq transcriptome data of human cells infected with
-              influenza A/Puerto Rico/8/1934 (H1N1) virus'"))
+              influenza A/Puerto Rico/8/1934 (H1N1) virus'")
+            )
           ),
           tags$tr(
             tags$td("Kupke2020"),
             tags$td("A/Puerto Rico/8/1934"),
             tags$td(tags$a(href="https://doi.org/10.3390/v12010071",
+              target="_blank",
               "'Single-Cell Analysis Uncovers a Vast Diversity in Intracellular
               Viral Defective Interfering RNA Content Affecting the Large
-              Cell-to-Cell Heterogeneity in  Influenza A Virus Replication.'"))
+              Cell-to-Cell Heterogeneity in  Influenza A Virus Replication.'")
+            )
           ),
           tags$tr(
             tags$td("VdHoecke2015"),
             tags$td("A/Puerto Rico/8/1934"),
             tags$td(tags$a(href="https://doi.org/10.1186/s12864-015-1284-z",
+              target="_blank",
               "'Analysis of the genetic diversity of influenza A viruses using
-              next-generation DNA sequencing.'"))
+              next-generation DNA sequencing.'")
+            )
           ),
           tags$tr(
             tags$td("Alnaji2019_Cal07"),
             tags$td("A/California/07/2009"),
             tags$td(tags$a(href="https://doi.org/10.1128/JVI.00354-19",
+              target="_blank",
               "'Sequencing Framework for the Sensitive Detection and Precise
               Mapping of Defective Interfering Particle-Associated Deletions
-              across Influenza A and B Viruses.'"))
+              across Influenza A and B Viruses.'")
+            )
           ),
           tags$tr(
             tags$td("Alnaji2019_NC"),
             tags$td("A/New Caledonia/20-JY2/1999"),
             tags$td(tags$a(href="https://doi.org/10.1128/JVI.00354-19",
+              target="_blank",
               "'Sequencing Framework for the Sensitive Detection and Precise
               Mapping of Defective Interfering Particle-Associated Deletions
-              across Influenza A and B Viruses.'"))
+              across Influenza A and B Viruses.'")
+            )
           ),
           tags$tr(
             tags$td("Mendes2021"),
             tags$td("A/WSN/1933"),
             tags$td(tags$a(href="https://doi.org/10.1371/journal.ppat.1010125",
+              target="_blank",
               "'Library-based analysis reveals segment and length dependent
-              characteristics of defective influenza genomes.'"))
+              characteristics of defective influenza genomes.'")
+            )
           ),
           tags$tr(
             tags$td("Boussier2020"),
             tags$td("A/WSN/1933"),
             tags$td(tags$a(href="https://doi.org/10.1261/rna.077529.120",
+              target="_blank",
               "'RNA-seq accuracy and reproducibility for the mapping and
-              quantification of influenza defective viral genomes.'"))
+              quantification of influenza defective viral genomes.'")
+            )
           ),
           tags$tr(
-            tags$td("Alanji2019_Perth"),
+            tags$td("Alnaji2019_Perth"),
             tags$td("A/Perth/16/2009"),
             tags$td(tags$a(href="https://doi.org/10.1128/JVI.00354-19",
+              target="_blank",
               "'Sequencing Framework for the Sensitive Detection and Precise
               Mapping of Defective Interfering Particle-Associated Deletions
-              across Influenza A and B Viruses.'"))
+              across Influenza A and B Viruses.'")
+            )
           ),
           tags$tr(
             tags$td("Berry2021_A"),
             tags$td("A/Connecticut/Flu122/2013"),
             tags$td(tags$a(href="https://doi.org/10.1101/2021.07.01.450528",
+              target="_blank",
               "'High confidence identification of intra-host single nucleotide
               variants for person-to-person influenza transmission tracking in
-              congregate settings'"))
+              congregate settings'")
+            )
           ),
           tags$tr(
             tags$td("Penn2022"),
             tags$td("A/turkey/Turkey/1/2005"),
             tags$td(tags$a(href="https://doi.org/10.1128/jvi.01178-22",
+              target="_blank",
               "'Levels of Influenza A Virus Defective Viral Genomes Determine
-              Pathogenesis in the BALB/c Mouse Model.'"))
+              Pathogenesis in the BALB/c Mouse Model.'")
+            )
           ),
           tags$tr(
             tags$td("Lui2019"),
             tags$td("A/Anhui/1/2013"),
             tags$td(tags$a(href="http://doi.org/10.1080/22221751.2019.1611346",
+              target="_blank",
               "'SMRT sequencing revealed the diversity and characteristics of
               defective interfering RNAs in influenza A (H7N9) virus infection.
-              '"))
+              '")
+            )
           ),
           tags$tr(
-            tags$td("Alanji2019_BLEE"),
+            tags$td("Alnaji2019_BLEE"),
             tags$td("B/Lee/1940"),
             tags$td(tags$a(href="https://doi.org/10.1128/JVI.00354-19",
+              target="_blank",
               "'Sequencing Framework for the Sensitive Detection and Precise
               Mapping of Defective Interfering Particle-Associated Deletions
-              across Influenza A and B Viruses.'"))
+              across Influenza A and B Viruses.'")
+            )
           ),
           tags$tr(
             tags$td("Berry2021_B"),
             tags$td("B/Victoria/504/2000"),
             tags$td(tags$a(href="https://doi.org/10.1101/2021.07.01.450528",
+              target="_blank",
               "'High confidence identification of intra-host single nucleotide
               variants for person-to-person influenza transmission tracking in
-              congregate settings'"))
+              congregate settings'")
+            )
           ),
           tags$tr(
             tags$td("Valesano2020_Vic"),
             tags$td("B/Victoria/504/2000"),
             tags$td(tags$a(href="https://doi.org/10.1128/JVI.01710-19",
+              target="_blank",
               "'Influenza B Viruses Exhibit Lower Within-Host Diversity than
-              Influenza A Viruses in Human Hosts.'"))
+              Influenza A Viruses in Human Hosts.'")
+            )
           ),
           tags$tr(
             tags$td("Sheng2018"),
             tags$td("B/Brisbane/60/2008"),
             tags$td(tags$a(href="https://doi.org/10.1099/jgv.0.001018",
+              target="_blank",
               "'Identification and characterization of viral defective RNA
-              genomes in influenza B virus.'"))
+              genomes in influenza B virus.'")
+            )
           ),
           tags$tr(
             tags$td("Berry2021_B_Yam"),
             tags$td("B/Yamagata/16/1988"),
             tags$td(tags$a(href="https://doi.org/10.1101/2021.07.01.450528",
+              target="_blank",
               "'High confidence identification of intra-host single nucleotide
               variants for person-to-person influenza transmission tracking in
-              congregate settings'"))
+              congregate settings'")
+            )
           ),
           tags$tr(
             tags$td("Southgate2019"),
             tags$td("B/Yamagata/16/1988"),
             tags$td(tags$a(href="http://doi.org/10.1093/bioinformatics/btz814",
+              target="_blank",
               "'Influenza classification from short reads with VAPOR
               facilitates robust mapping pipelines and zoonotic strain
-              detection for routine surveillance applications'"))
+              detection for routine surveillance applications'")
+            )
           ),
           tags$tr(
             tags$td("Valesano2020_Yam"),
             tags$td("B/Yamagata/16/1988"),
             tags$td(tags$a(href="https://doi.org/10.1128/JVI.01710-19",
+              target="_blank",
               "'Influenza B Viruses Exhibit Lower Within-Host Diversity than
-              Influenza A Viruses in Human Hosts.'"))
+              Influenza A Viruses in Human Hosts.'")
+            )
           )
         )
       ),
@@ -319,7 +363,7 @@ about_tab <- tabItem(tabName="about",
       width=12,
       "The sequence of the RNA before the starting point and end point of the",
       "deletion site can be the same (is repeated). This phenomena is",
-      "described in literature a 'direct (sequence) repeat. Direct repeats",
+      "described in literature a 'direct (sequence) repeat'. Direct repeats",
       "can be of different length and are disscussed to be a driving factor",
       "in the generation of DelVGs.",
       br(),
@@ -336,7 +380,10 @@ about_tab <- tabItem(tabName="about",
       title="Contact information",
       width=12,
       "To get into contact with the developement team open a new",
-      tags$a(href="https://github.com/LohmannJens/DIP-DSA/issues", "issue"),
+      tags$a(href="https://github.com/LohmannJens/DIP-DSA/issues",
+        target="_blank",
+        "issue"
+      ),
       "on GitHub. There you can get help with more detailed questions and",
       "come up with new ideas and features for the application."
     )
