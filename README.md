@@ -3,8 +3,8 @@
 # Defective Interfering Particle Deletion Site Analyzer (DIP-DSA)
 
 This application allows the user to investigate datasets that include Defective
-Interfering Particles. It gives different analyses about the DI RNAs of these
-particles. They contain a long deletion site internally.
+Interfering Particles. It provides different analyses about the delVGs of these
+particles.
 
 ## How to set up
 
@@ -43,7 +43,7 @@ To run the application locally type the following command into the commandline.
 bash run_DIP-DSA_local.sh
 ```
 
-It will automatically open the application on http://localhost:3838.
+It will automatically open the application on http://localhost:8161.
 
 #### Building a docker container
 
@@ -55,25 +55,12 @@ and runs it locally.
 bash docker_commands.sh
 ```
 
-It will automatically open the application on http://localhost:3838.
-
-#### Pull docker image from docker hub
-
-A prebuild docker image can be pulled form docker hub. The image can be found on
-[docker hub](https://hub.docker.com/repository/docker/lohmannjens/dip-dsa/general).
-To run it the following steps need to be performed
-
-```
-docker pull lohmannjens/dip-dsa
-docker run -p 3838:3838 lohmannjens/dip-dsa
-```
-
-After this the appication can be accessed on http://localhost:3838.
+It will automatically open the application on http://localhost:8161.
 
 ### Example dataset
 
 When uploading a custom data set the user has to provide the data in a specific
-format. It is a csv file with four columns. The order correct ordering of the
+format. It is a csv file with four columns. Correct ordering of the
 columns is crucial! For more information about the content see the following
 table:
 
