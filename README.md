@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.12157628.svg)](https://doi.org/10.5281/zenodo.12157628)
+
 # Defective Interfering Particle Deletion Site Analyzer (DIP-DSA)
 
 This application allows the user to investigate datasets that include Defective
