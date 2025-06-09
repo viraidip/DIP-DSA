@@ -3,6 +3,7 @@ FROM rocker/shiny:latest
 RUN apt-get update
 RUN apt-get dist-upgrade -y && \
     apt-get install libcurl4-openssl-dev libssl-dev -y
+RUN apt remove nodejs
 RUN install2.r shiny shinydashboard ggplot2 DT stringr dplyr \
         hash plotly plyr jsonlite shinyvalidate
 RUN R -e "install.packages(c('BiocManager'), dependencies=TRUE, repos='https://cloud.r-project.org')"
