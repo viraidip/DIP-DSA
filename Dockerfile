@@ -2,8 +2,13 @@ FROM rocker/shiny:latest
 
 RUN apt-get update
 RUN apt-get dist-upgrade -y && \
-    apt-get install libcurl4-openssl-dev libssl-dev -y
-RUN apt remove nodejs
+    apt-get install libcurl4-openssl-dev libssl-dev xz-utils -y
+
+RUN wget https://nodejs.org/dist/v20.19.2/node-v20.19.2-linux-x64.tar.xz \
+    && tar -xf node-v20.19.2-linux-x64.tar.xz \
+    && cp node-v20.19.2-linux-x64/bin/node /opt/shiny-server/bin/node \
+    && rm -rf node-v20.19.2-linux-x64*
+
 RUN install2.r shiny shinydashboard ggplot2 DT stringr dplyr \
         hash plotly plyr jsonlite shinyvalidate
 RUN R -e "install.packages(c('BiocManager'), dependencies=TRUE, repos='https://cloud.r-project.org')"
