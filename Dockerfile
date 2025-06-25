@@ -4,10 +4,11 @@ RUN apt-get update
 RUN apt-get dist-upgrade -y && \
     apt-get install libcurl4-openssl-dev libssl-dev xz-utils -y
 
-RUN wget https://nodejs.org/dist/v20.19.2/node-v20.19.2-linux-x64.tar.xz \
-    && tar -xf node-v20.19.2-linux-x64.tar.xz \
-    && cp node-v20.19.2-linux-x64/bin/node /opt/shiny-server/bin/node \
-    && rm -rf node-v20.19.2-linux-x64*
+RUN wget https://nodejs.org/dist/v20.19.3/node-v20.19.3-linux-x64.tar.xz \
+    && tar -xf node-v20.19.3-linux-x64.tar.xz \
+    && cp node-v20.19.3-linux-x64/bin/node /opt/shiny-server/bin/node \
+    && cp node-v20.19.3-linux-x64/bin/node /opt/shiny-server/ext/node/bin/node \
+    && rm -rf node-v20.19.3-linux-x64*
 
 RUN install2.r shiny shinydashboard ggplot2 DT stringr dplyr \
         hash plotly plyr jsonlite shinyvalidate
