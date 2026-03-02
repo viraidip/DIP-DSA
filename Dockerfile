@@ -2,6 +2,8 @@ FROM rocker/shiny:latest
 
 RUN apt-get update && \
     apt-get upgrade -y && \
+    apt-get purge -y dirmngr && \
+    apt-get install -y dirmngr=2.4.4-2ubuntu17.4 gnupg2 && \
     apt-get install -y libcurl4-openssl-dev libssl-dev xz-utils wget && \
     rm -rf /var/lib/apt/lists/*
 
