@@ -7,11 +7,11 @@ RUN apt-get update && \
     apt-get install -y libcurl4-openssl-dev libssl-dev xz-utils wget && \
     rm -rf /var/lib/apt/lists/*
 
-RUN wget https://nodejs.org/dist/v25.3.0/node-v25.3.0-linux-x64.tar.xz \
-    && tar -xf node-v25.3.0-linux-x64.tar.xz \
-    && cp node-v25.3.0-linux-x64/bin/node /opt/shiny-server/bin/node \
-    && cp node-v25.3.0-linux-x64/bin/node /opt/shiny-server/ext/node/bin/node \
-    && rm -rf node-v25.3.0-linux-x64*
+RUN wget https://nodejs.org/dist/v25.8.2/node-v25.8.2-linux-x64.tar.xz \
+    && tar -xf node-v25.8.2-linux-x64.tar.xz \
+    && cp node-v25.8.2-linux-x64/bin/node /opt/shiny-server/bin/node \
+    && cp node-v25.8.2-linux-x64/bin/node /opt/shiny-server/ext/node/bin/node \
+    && rm -rf node-v25.8.2-linux-x64*
 
 RUN install2.r --skipinstalled \
     shiny shinydashboard ggplot2 DT stringr dplyr \
