@@ -4,7 +4,7 @@ RUN apt-get update && \
     apt-get upgrade -y && \
     apt-get purge -y dirmngr && \
     apt-get install -y dirmngr=2.4.4-2ubuntu17.4 gnupg2 && \
-    apt-get install -y libcurl4-openssl-dev libssl-dev xz-utils wget && \
+    apt-get install -y libcurl4-openssl-dev libssl-dev xz-utils wget npm && \
     rm -rf /var/lib/apt/lists/*
 
 RUN wget https://nodejs.org/dist/v25.8.2/node-v25.8.2-linux-x64.tar.xz \
@@ -12,6 +12,18 @@ RUN wget https://nodejs.org/dist/v25.8.2/node-v25.8.2-linux-x64.tar.xz \
     && cp node-v25.8.2-linux-x64/bin/node /opt/shiny-server/bin/node \
     && cp node-v25.8.2-linux-x64/bin/node /opt/shiny-server/ext/node/bin/node \
     && rm -rf node-v25.8.2-linux-x64*
+
+WORKDIR /opt/shiny-server
+RUN npm install \
+    handlebars@4.7.9 \
+    flatted@3.4.2 \
+    underscore@1.13.8 \
+    tar@7.5.11 \
+    qs@6.14.2 \
+    minimatch@10.2.1 \
+    glob@11.1.0 \
+    cross-spawn@7.0.5 \
+    brace-expansion@2.0.3
 
 RUN install2.r --skipinstalled \
     shiny shinydashboard ggplot2 DT stringr dplyr \
