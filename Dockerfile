@@ -23,20 +23,23 @@ RUN npm install \
     minimatch@10.2.1 \
     glob@11.1.0 \
     cross-spawn@7.0.5 \
-    brace-expansion@2.0.3
+    brace-expansion@5.0.5 \
+    tar@7.5.11 \
+    qs@6.14.2 \
+    minimatch@10.2.3
 
-RUN install2.r --skipinstalled \
+
+RUN install2.r --error --skipinstalled \
     shiny shinydashboard ggplot2 DT stringr dplyr \
-    hash plotly plyr jsonlite shinyvalidate
-RUN R -e "install.packages(c('BiocManager'), dependencies=TRUE, repos='https://cloud.r-project.org')"
-RUN R -e "BiocManager::install('Biostrings')"
-RUN R -e "BiocManager::install('ComplexHeatmap')"
+    hash plotly plyr jsonlite shinyvalidate BiocManager \
+    && R -e "BiocManager::install(c('Biostrings', 'ComplexHeatmap'), ask=FALSE)" \
+    && rm -rf /tmp/downloaded_packages
 
 COPY ./app/ /srv/shiny-server/dipdsa
 COPY ./shiny-server.conf /etc/shiny-server/shiny-server.conf
-RUN chmod -R 777 /srv/shiny-server/
 
-RUN sed -i -e 's/\blisten 3838\b/listen 8161/g' /etc/shiny-server/shiny-server.conf
+RUN chmod -R 777 /srv/shiny-server/ \
+    && sed -i -e 's/\blisten 3838\b/listen 8161/g' /etc/shiny-server/shiny-server.conf
 
 USER shiny
 
