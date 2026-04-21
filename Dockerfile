@@ -16,12 +16,12 @@ RUN wget https://nodejs.org/dist/v25.8.2/node-v25.8.2-linux-x64.tar.xz \
 WORKDIR /opt/shiny-server
 RUN npm install --no-cache \
     handlebars@4.7.9 flatted@3.4.2 underscore@1.13.8 \
-    tar@7.5.11 qs@6.14.2 minimatch@10.2.3 \
+    tar@7.5.11 qs@6.15.1 minimatch@10.2.3 \
     glob@11.1.0 cross-spawn@7.0.5 brace-expansion@5.0.5
 
 RUN wget https://registry.npmjs.org/tar/-/tar-7.5.11.tgz -O /tmp/tar.tgz && \
     wget https://registry.npmjs.org/minimatch/-/minimatch-10.2.3.tgz -O /tmp/mini.tgz && \
-    wget https://registry.npmjs.org/qs/-/qs-6.14.2.tgz -O /tmp/qs.tgz && \
+    wget https://registry.npmjs.org/qs/-/qs-6.15.1.tgz -O /tmp/qs.tgz && \
     wget https://registry.npmjs.org/glob/-/glob-11.1.0.tgz -O /tmp/glob.tgz && \
     wget https://registry.npmjs.org/cross-spawn/-/cross-spawn-7.0.6.tgz -O /tmp/spawn.tgz && \
     wget https://registry.npmjs.org/brace-expansion/-/brace-expansion-5.0.5.tgz -O /tmp/brace.tgz
