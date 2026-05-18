@@ -7,12 +7,12 @@ RUN apt-get update && \
     xz-utils wget ca-certificates build-essential python3 \
     && rm -rf /var/lib/apt/lists/*
 
-RUN wget https://nodejs.org/dist/v22.14.0/node-v22.14.0-linux-x64.tar.xz \
-    && tar -xf node-v22.14.0-linux-x64.tar.xz \
-    && cp -R node-v22.14.0-linux-x64/bin/* /usr/local/bin/ \
-    && cp -R node-v22.14.0-linux-x64/lib/* /usr/local/lib/ \
+RUN wget https://nodejs.org/dist/v22.22.0/node-v22.22.0-linux-x64.tar.xz \
+    && tar -xf node-v22.22.0-linux-x64.tar.xz \
+    && cp -R node-v22.22.0-linux-x64/bin/* /usr/local/bin/ \
+    && cp -R node-v22.22.0-linux-x64/lib/* /usr/local/lib/ \
     && ln -sf /usr/local/bin/node /opt/shiny-server/bin/node \
-    && rm -rf node-v22.14.0-linux-x64*
+    && rm -rf node-v22.22.0-linux-x64*
 
 WORKDIR /tmp/patch
 COPY package.json /tmp/patch/package.json
