@@ -1,23 +1,28 @@
 {
-    "name": "shiny-server-dependencies",
-    "version": "1.0.0",
-    "description": "Patched dependencies for Shiny Server",
-    "dependencies": {
-      "nan": "^2.22.0",
-      "handlebars": "4.7.9",
-      "flatted": "3.4.2",
-      "underscore": "1.13.8",
-      "tar": "7.5.11",
-      "qs": "6.14.2",
-      "minimatch": "10.2.3",
-      "glob": "11.1.0",
-      "cross-spawn": "7.0.6",
-      "brace-expansion": "5.0.5",
-      "follow-redirects": "1.16.0"
-    },
-    "overrides": {
-      "tar": "7.5.11",
-      "qs": "6.14.2",
-      "cross-spawn": "7.0.6"
-    }
+  "name": "shiny-server-dependencies",
+  "version": "1.0.0",
+  "description": "Patched dependencies for Shiny Server",
+  "dependencies": {
+    "nan": "^2.22.0",
+    "handlebars": "4.7.9",
+    "flatted": "3.4.2",
+    "underscore": "1.13.8",
+    "tar": "7.5.11",
+    "qs": "6.14.2",
+    "minimatch": "10.2.3",
+    "glob": "11.1.0",
+    "cross-spawn": "7.0.6",
+    "brace-expansion": "5.0.5",
+    "picomatch": "4.0.4",
+    "follow-redirects": "1.16.0"
+  },
+  "overrides": {
+    "tar": "7.5.11",
+    "qs": "6.14.2",
+    "cross-spawn": "7.0.6",
+    "minimatch": "10.2.3",
+    "glob": "11.1.0",
+    "brace-expansion": "5.0.5",
+    "picomatch": "4.0.4"
   }
+}

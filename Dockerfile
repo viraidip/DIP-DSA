@@ -9,15 +9,17 @@ RUN apt-get update && \
 
 RUN wget https://nodejs.org/dist/v22.22.0/node-v22.22.0-linux-x64.tar.xz \
     && tar -xf node-v22.22.0-linux-x64.tar.xz \
+    && cp -sf /node-v22.22.0-linux-x64/bin/node /usr/bin/node \ 
     && cp -R node-v22.22.0-linux-x64/bin/* /usr/local/bin/ \
     && cp -R node-v22.22.0-linux-x64/lib/* /usr/local/lib/ \
     && ln -sf /usr/local/bin/node /opt/shiny-server/bin/node \
+    && apt-get remove -y nodejs || true \ 
     && rm -rf node-v22.22.0-linux-x64*
 
 WORKDIR /tmp/patch
 COPY package.json /tmp/patch/package.json
 RUN npm install -g nan && \
-    npm install --omit=dev && \
+    npm install --omit=dev --no-audit --no-fund && \
     cp -R node_modules/* /opt/shiny-server/node_modules/ && \
     rm -rf /tmp/patch
 
