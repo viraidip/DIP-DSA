@@ -4,17 +4,16 @@ RUN apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y --no-install-recommends \
     dirmngr gnupg2 libcurl4-openssl-dev libssl-dev \
-    xz-utils wget ca-certificates build-essential python3 \
-    && rm -rf /var/lib/apt/lists/*
+    xz-utils wget ca-certificates build-essential python3 curl && \
+    mkdir -p /etc/apt/keyrings && \
+    curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg && \
+    echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_22.x nodistro main" | tee /etc/apt/sources.list.min.d/nodesource.list || \
+    echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_22.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list && \
+    apt-get update && \
+    apt-get install -y nodejs && \
+    rm -rf /var/lib/apt/lists/*
 
-RUN wget https://nodejs.org/dist/v22.22.0/node-v22.22.0-linux-x64.tar.xz \
-    && tar -xf node-v22.22.0-linux-x64.tar.xz \
-    && cp -sf /node-v22.22.0-linux-x64/bin/node /usr/bin/node \ 
-    && cp -R node-v22.22.0-linux-x64/bin/* /usr/local/bin/ \
-    && cp -R node-v22.22.0-linux-x64/lib/* /usr/local/lib/ \
-    && ln -sf /usr/local/bin/node /opt/shiny-server/bin/node \
-    && apt-get remove -y nodejs || true \ 
-    && rm -rf node-v22.22.0-linux-x64*
+RUN ln -sf /usr/bin/node /opt/shiny-server/bin/node
 
 WORKDIR /tmp/patch
 COPY package.json /tmp/patch/package.json
@@ -33,8 +32,8 @@ WORKDIR /srv/shiny-server
 COPY ./app/ /srv/shiny-server/dipdsa
 COPY ./shiny-server.conf /etc/shiny-server/shiny-server.conf
 
-RUN chmod -R 777 /srv/shiny-server/ \
-    && sed -i -e 's/\blisten 3838\b/listen 8161/g' /etc/shiny-server/shiny-server.conf
+RUN sed -i -e 's/\blisten 3838\b/listen 8161/g' /etc/shiny-server/shiny-server.conf && \
+    chown -R shiny:shiny /srv/shiny-server/
 
 USER shiny
 
