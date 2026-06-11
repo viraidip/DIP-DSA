@@ -17,6 +17,8 @@ library("ComplexHeatmap")
 
 source("utils.R")
 
+Sys.setenv(TMPDIR = "/srv/shiny-server/dipdsa/tmp")
+
 ##########
 ### UI ###
 ##########

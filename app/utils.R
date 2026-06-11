@@ -99,12 +99,17 @@ validate_upload_csv <- function(file_path) {
   if (any(is.na(df$Start)) ||
       any(is.na(df$End)) ||
       any(is.na(df$NGS_read_count))) {
+    print("any NAN found")
     return(FALSE)
   }
   
   # check if segments are named correctly and save modified file
-  df$Segment <- toupper(df$Segment)
-  if (!all(df$Segment %in% SEGMENTS)) {
+  df$Segment <- toupper(trimws(as.character(df$Segment)))
+  df <- df[df$Segment != "" & !is.na(df$Segment), ]
+  invalid_segments <- df$Segment[!(df$Segment %in% SEGMENTS)]
+  if (length(invalid_segments) > 0) {
+    print(paste("Validation failed! These segments are not allowed:", 
+                paste(unique(invalid_segments), collapse=", ")))
     return(FALSE)
   }
   write.csv(df, file_path, row.names=FALSE, quote=FALSE)

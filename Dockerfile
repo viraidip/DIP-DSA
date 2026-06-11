@@ -35,6 +35,9 @@ COPY ./shiny-server.conf /etc/shiny-server/shiny-server.conf
 RUN sed -i -e 's/\blisten 3838\b/listen 8161/g' /etc/shiny-server/shiny-server.conf && \
     chown -R shiny:shiny /srv/shiny-server/
 
+RUN mkdir -p /srv/shiny-server/dipdsa/tmp && \
+    chown -R shiny:shiny /srv/shiny-server/dipdsa/tmp
+
 USER shiny
 
 EXPOSE 8161
